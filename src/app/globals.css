@@ -1,0 +1,577 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   Tokens design - système jaune doré / ocre (DESIGN-RULES.md)
+   Rôles : Fond · Surface · Texte · Primaire · Accent (clair / sombre).
+   Aucune autre couleur de marque : tout dérive de l'échelle primary.
+   ============================================================ */
+@theme {
+  /* Échelle primaire (ocre → jaune lumineux) */
+  --color-primary-50: #fffbe6;
+  --color-primary-100: #fff1b8;
+  --color-primary-200: #ffe680;
+  --color-primary-300: #ffd84d;
+  --color-primary-400: #f2c21f;
+  --color-primary-500: #c99a0a;
+  --color-primary-600: #a87c00;
+  --color-primary-700: #8a6400;
+  --color-primary-800: #6b4d00;
+  --color-primary-900: #4a3500;
+
+  /* Rôles sémantiques (thème clair) */
+  --color-page: #fffcf0; /* Fond */
+  --color-card: #ffffff; /* Surface */
+  --color-fg: #28230c; /* Texte */
+  --color-accent: #8a6400; /* Primaire : ocre foncé, texte blanc AA */
+  --color-accent-hover: #6b4d00;
+  --color-accent-soft: #fff1b8; /* Accent : jaune clair lumineux */
+  --color-accent-fg: #ffffff; /* texte sur Primaire */
+  --color-bright: #ffd84d; /* jaune vif pour fonds toujours sombres */
+
+  --color-muted: #5a5224; /* texte secondaire (AA sur page et surface) */
+  --color-ink-soft: #5a5224; /* alias historique de muted */
+  --color-line: #eadfb0; /* bordures */
+
+  /* Anciens noms conservés, remappés sur le nouveau système */
+  --color-cacao: #8a6400;
+  --color-cacao-fg: #ffffff;
+  --color-cacao-deep: #28230c;
+  --color-cream: #fff8d8;
+  --color-cream-dark: #fff1b8;
+  --color-surface: #ffffff;
+  --color-ink: #17150b; /* panneaux toujours sombres */
+  --color-panel: #17150b;
+  --color-panel-fg: #fff8d8;
+  --color-footer: #17150b;
+  --color-hero: #8a6400;
+
+  /* États (hors marque, nécessaires aux formulaires) */
+  --color-alert: #b3382f;
+  --color-alert-soft: #fbe7e4;
+  --color-alert-fg: #ffffff;
+  --color-success: #2f6f4a;
+  --color-success-soft: #e6f3ec;
+
+  /* Rayons */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.4rem;
+  --radius-xl: 2rem;
+  --radius-full: 9999px;
+
+  /* Ombres chaudes teintées ocre */
+  --shadow-soft: 0 2px 12px rgb(138 100 0 / 0.1);
+  --shadow-lift: 0 10px 34px rgb(138 100 0 / 0.2);
+  --shadow-glass: 0 8px 32px rgb(40 35 12 / 0.12);
+
+  /* Typographie : Playfair Display (titres) + Lato (texte) */
+  --font-heading: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Thème sombre : surcharge des rôles. Appliqué sur <html data-theme> avant rendu. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --color-page: #17150b;
+  --color-card: #23200f;
+  --color-fg: #fff8d8;
+  --color-accent: #ffd84d;
+  --color-accent-hover: #ffe680;
+  --color-accent-soft: #41350e;
+  --color-accent-fg: #17150b;
+
+  --color-muted: #d6cb9a;
+  --color-ink-soft: #d6cb9a;
+  --color-line: #3a3319;
+
+  --color-cacao: #ffd84d;
+  --color-cacao-fg: #17150b;
+  --color-cacao-deep: #fff8d8;
+  --color-footer: #100e06;
+  --color-hero: #41350e;
+  --color-panel: #100e06;
+
+  --color-alert: #ff9a90;
+  --color-alert-soft: #3a1f1c;
+  --color-alert-fg: #2a0d0b;
+  --color-success: #86d6a8;
+  --color-success-soft: #173025;
+  --shadow-soft: 0 2px 12px rgb(0 0 0 / 0.45);
+  --shadow-lift: 0 10px 34px rgb(0 0 0 / 0.55);
+  --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.5);
+}
+
+/* Contraste : #FFFFFF sur #8A6400 ≈ 5.6:1 (AA) ; #17150B sur #FFD84D ≈ 12:1 (AAA). */
+
+html {
+  background-color: var(--color-page);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--color-accent);
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+}
+
+/* Focus visible - accessibilité P2.9 : anneau or toujours perceptible */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Fonds ocre/sombres : l'anneau or serait invisible, on passe au jaune clair */
+:where(.bg-hero, .bg-panel) :where(a, button, [tabindex]):focus-visible {
+  outline-color: var(--color-bright);
+}
+
+/* Champs de formulaire : pas d'anneau, seule la bordure change au focus */
+:where(input, select, textarea):focus,
+:where(input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Squelettes de chargement (P2.7) */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-line) 25%,
+    var(--color-card) 50%,
+    var(--color-line) 75%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Icônes du sélecteur de thème : une seule visible selon le thème actif. */
+.theme-icon-dark {
+  display: none;
+}
+html[data-theme='dark'] .theme-icon-dark {
+  display: inline-flex;
+}
+html[data-theme='dark'] .theme-icon-light {
+  display: none;
+}
+
+/* Reveal discret au scroll (P2.8) - désactivé si reduced motion */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   Effets : dégradés, verre (glass), flou, navbar flottante
+   ============================================================ */
+:root {
+  --gradient-primary: linear-gradient(135deg, #8a6400 0%, #7a5800 45%, #6b4d00 100%);
+  --gradient-soft: linear-gradient(160deg, #fff1b8 0%, #fffcf0 70%);
+  --glass-bg: rgb(255 252 240 / 0.62);
+  --glass-bg-strong: rgb(255 255 255 / 0.8);
+  --glass-border: rgb(138 100 0 / 0.18);
+}
+html[data-theme='dark'] {
+  --gradient-primary: linear-gradient(135deg, #ffe680 0%, #ffd84d 50%, #f2c21f 100%);
+  --gradient-soft: linear-gradient(160deg, #41350e 0%, #17150b 70%);
+  --glass-bg: rgb(35 32 15 / 0.6);
+  --glass-bg-strong: rgb(35 32 15 / 0.82);
+  --glass-border: rgb(255 216 77 / 0.2);
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: var(--shadow-glass);
+}
+.glass-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: var(--shadow-glass);
+}
+.bg-gradient-primary {
+  background-image: var(--gradient-primary);
+}
+.bg-gradient-soft {
+  background-image: var(--gradient-soft);
+}
+.text-gradient-primary {
+  background-image: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Navbar flottante : pilule en verre détachée du bord, web et mobile */
+.nav-floating {
+  position: fixed;
+  top: 0.75rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 40;
+  margin-inline: auto;
+  max-width: calc(80rem - 2rem);
+  border-radius: var(--radius-full);
+}
+.nav-floating[data-open='true'] {
+  border-radius: var(--radius-xl);
+}
+@media (min-width: 640px) {
+  .nav-floating {
+    left: 1.5rem;
+    right: 1.5rem;
+    max-width: calc(80rem - 3rem);
+  }
+}
+@media (min-width: 768px) {
+  .nav-floating {
+    top: 1rem;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: var(--color-card);
+  }
+}
+
+/* ============================================================
+   Titres immersifs : majuscules, Playfair 900 + Lato italique dégradé
+   ============================================================ */
+:root {
+  --gradient-title: linear-gradient(100deg, #6b4d00 0%, #a87c00 55%, #8a6400 100%);
+}
+html[data-theme='dark'] {
+  --gradient-title: linear-gradient(100deg, #ffe680 0%, #ffd84d 55%, #f2c21f 100%);
+}
+
+.display-title,
+.section-title {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--color-fg);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.display-title {
+  font-size: clamp(1.75rem, 6.5vw, 4.25rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+.section-title {
+  font-size: clamp(1.5rem, 4.2vw, 2.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.title-accent {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0;
+  background-image: var(--gradient-title);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.display-title .title-word {
+  display: inline-block;
+  animation: title-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+@keyframes title-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.5em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .display-title .title-word {
+    animation: none;
+  }
+}
+
+/* Titre posé sur fond foncé/ocre (hero) : texte clair, accent jaune vif */
+.title-on-dark {
+  color: var(--color-panel-fg);
+}
+.title-on-dark .title-accent {
+  background-image: linear-gradient(100deg, #fff1b8 0%, #ffd84d 100%);
+}
+
+/* ============================================================
+   Carte prestation immersive : voile + flou adaptés au thème
+   ============================================================ */
+:root {
+  --scrim: 40 35 12;
+}
+html[data-theme='dark'] {
+  --scrim: 16 14 6;
+}
+.prestation-card {
+  box-shadow: var(--shadow-lift);
+  outline: 1px solid var(--glass-border);
+  outline-offset: -1px;
+}
+.card-scrim {
+  background: linear-gradient(
+    to top,
+    rgb(var(--scrim) / 0.96) 0%,
+    rgb(var(--scrim) / 0.78) 30%,
+    rgb(var(--scrim) / 0.1) 58%,
+    transparent 75%
+  );
+}
+.card-blur {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to top, #000 22%, transparent 48%);
+  mask-image: linear-gradient(to top, #000 22%, transparent 48%);
+}
+/* Photos d'une carte prestation : balayage horizontal sur écran tactile, fondu à la souris. */
+.card-slides {
+  position: absolute;
+  inset: 0;
+  /* Sous le flou et le voile (même contexte d'empilement, ordre du DOM) */
+  z-index: 0;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: pointer;
+}
+.card-slides::-webkit-scrollbar {
+  display: none;
+}
+.card-slide {
+  position: relative;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+.card-dot {
+  transition:
+    width 0.25s ease,
+    opacity 0.25s ease;
+}
+/* Tactile : le lien étiré laisserait passer le balayage ; le clic est géré par le défilement. */
+.card-stretch {
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-stretch {
+    pointer-events: auto;
+  }
+  .card-slides {
+    z-index: auto;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .card-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.7s;
+  }
+  .card-slide[data-active='true'] {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-slide,
+  .card-dot {
+    transition: none;
+  }
+}
+
+.stretched-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Page plein écran (404) : pas de défilement, le fond couvre aussi derrière la navbar. */
+body:has([data-fullscreen]) {
+  overflow: hidden;
+}
+
+/* Gabarit de page publique : mêmes marges latérales/verticales partout (DESIGN-RULES.md). */
+.page-main {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding: 2rem 1rem;
+}
+@media (min-width: 640px) {
+  .page-main {
+    padding-inline: 1.5rem;
+  }
+}
+@media (min-width: 768px) {
+  .page-main {
+    padding-block: 3rem;
+  }
+}
+
+/* ============================================================
+   Landing : hero sur fond ocre/olive en dégradés, navbar intacte.
+   ============================================================ */
+.landing-hero {
+  background-image:
+    radial-gradient(55% 50% at 12% 88%, rgb(255 216 77 / 0.3), transparent 70%),
+    radial-gradient(50% 50% at 90% 82%, rgb(255 216 77 / 0.26), transparent 70%),
+    radial-gradient(70% 45% at 50% 22%, rgb(255 230 128 / 0.22), transparent 72%),
+    linear-gradient(180deg, rgb(255 241 184 / 0.08) 0%, transparent 40%, rgb(23 21 11 / 0.5) 100%);
+}
+.landing-title {
+  font-size: clamp(2.1rem, min(8vw, 10svh), 5.25rem);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+/* Portrait de la landing : cercle qui se déforme en continu (blob fluide) */
+.landing-blob-ring {
+  filter: drop-shadow(0 0 28px rgb(255 216 77 / 0.25));
+}
+.landing-blob {
+  overflow: hidden;
+  border-radius: 50%;
+  animation: landing-blob 12s ease-in-out infinite;
+  will-change: border-radius;
+}
+@keyframes landing-blob {
+  0%,
+  100% {
+    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+  }
+  25% {
+    border-radius: 58% 42% 46% 54% / 46% 56% 44% 54%;
+  }
+  50% {
+    border-radius: 44% 56% 58% 42% / 56% 44% 56% 44%;
+  }
+  75% {
+    border-radius: 52% 48% 40% 60% / 42% 52% 48% 58%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-blob {
+    animation: none;
+  }
+}
+
+/* === erreur/accueil === */
+.error-halo {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
+}
+.home-step-number {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  line-height: 1;
+  padding-bottom: 0.1em;
+}
+/* === fin erreur/accueil === */
+
+/* === dashboard === */
+/* Curseur main sur tout élément cliquable ; pas de scale au survol ; ombres atténuées */
+[data-dashboard]
+  :is(
+    button,
+    [role='button'],
+    [role='tab'],
+    [role='menuitem'],
+    summary,
+    select,
+    label[for],
+    a[href]
+  ):not(:disabled, [aria-disabled='true']),
+[data-dashboard]
+  input:is([type='checkbox'], [type='radio'], [type='file'], [type='submit']):not(:disabled) {
+  cursor: pointer;
+}
+[data-dashboard] :is(button, a, [role='button'], .dash-row):is(:hover, :active) {
+  scale: none;
+  transform: none;
+}
+[data-dashboard] {
+  --shadow-soft: 0 1px 3px rgb(40 35 12 / 0.07);
+  --shadow-lift: 0 3px 10px rgb(40 35 12 / 0.1);
+  --shadow-glass: 0 2px 8px rgb(40 35 12 / 0.08);
+}
+.dash-nav-link:focus-visible,
+.dash-row:focus-visible {
+  outline: 2px solid var(--color-bright);
+  outline-offset: -2px;
+}
+.dash-row:focus-visible {
+  outline-color: var(--color-accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-nav-link,
+  .dash-row {
+    transition: none;
+  }
+}
+/* === fin dashboard === */

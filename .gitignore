@@ -1,0 +1,74 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/.next-e2e/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# logs locaux de dev (non committés)
+build.log
+build-*.log
+lint.log
+playwright-*.log
+dev_*.log
+dev-*.log
+git-push.log
+ci-*.log
+
+# local env files — never commit real secrets
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# test / coverage
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+
+# sauvegardes locales — jamais commitées
+/backups/
+
+# tooling
+/.husky/_
+/.worktrees/
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.local
+
+# Cline / Claude config — retiré du suivi du dépôt
+.cline/
+.claude/
+.clinerule
+.clinerules/
+
+# captures E2E et archives locales (non versionnées)
+/tests/e2e/screenshots/
+/docs/archivage/
+/docs/migration/

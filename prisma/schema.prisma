@@ -1,0 +1,691 @@
+// Schéma complet — cahier des charges §14.3 (P1.4)
+// Règles §14.4 : instantanés prix/durée sur Appointment, stockage UTC +
+// heure locale de l'appareil (aucun fuseau configurable), notifications
+// idempotentes, AuditLog.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Authentification (P1.7) — credentials, admin unique
+// ============================================================
+
+enum Role {
+  ADMIN
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  name                   String
+  email                  String                  @unique
+  passwordHash           String
+  // Incrémenté pour révoquer toutes les sessions (déconnexion partout, changement de mot de passe).
+  sessionVersion         Int                     @default(0)
+  role                   Role                    @default(ADMIN)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  blockedPeriods         BlockedPeriod[]
+  auditLogs              AuditLog[]
+  assessmentDecisions    HairAssessment[]        @relation("AssessmentDecider")
+  customRequestDecisions CustomRequestDecision[] @relation("CustomRequestDecisionAuthor")
+  reviewModerations      Review[]                @relation("ReviewModerator")
+}
+
+// ============================================================
+// Catalogue (§4)
+// ============================================================
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  order       Int       @default(0)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  services    Service[]
+}
+
+enum ServiceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Service {
+  id                     String               @id @default(cuid())
+  name                   String
+  slug                   String               @unique
+  description            String?
+  categoryId             String
+  category               Category             @relation(fields: [categoryId], references: [id])
+  // Prix en centimes (entiers = pas d'erreur d'arrondi)
+  priceFromCents         Int?
+  priceToCents           Int?
+  priceOnRequest         Boolean              @default(false) // « Prix à confirmer »
+  durationMinutes        Int?
+  status                 ServiceStatus        @default(DRAFT)
+  order                  Int                  @default(0)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  images                 ServiceImage[]
+  options                ServiceOption[]
+  compatibility          CompatibilityRule?
+  questions              QuestionDefinition[]
+  appointments           Appointment[]
+  assessments            HairAssessment[]
+  proposedCustomRequests CustomRequest[]      @relation("CustomRequestProposedService")
+  waitlistEntries        WaitlistEntry[]
+  reviews                Review[]
+  galleryPhotos          GalleryPhoto[]
+  promotions             PromotionService[]
+}
+
+model ServiceImage {
+  id        String   @id @default(cuid())
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  // Clé objet S3/R2 — le contenu n'est JAMAIS en base (§14.4)
+  key       String
+  alt       String   @default("")
+  order     Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model ServiceOption {
+  id              String  @id @default(cuid())
+  serviceId       String
+  service         Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name            String
+  priceCents      Int
+  durationMinutes Int     @default(0)
+  active          Boolean @default(true)
+  // Position d'affichage (réordonnable depuis le dashboard).
+  order           Int     @default(0)
+}
+
+// ============================================================
+// Règles de compatibilité (§5) — 100 % côté serveur (§14.4)
+// ============================================================
+
+enum HairLength {
+  SHORT
+  MEDIUM
+  LONG
+  VERY_LONG
+}
+
+enum PhotoPolicy {
+  OPTIONAL
+  REQUIRED
+  FORBIDDEN
+}
+
+enum AnswerType {
+  SINGLE_CHOICE
+  MULTI_CHOICE
+  BOOLEAN
+  TEXT
+  PHOTO
+}
+
+model CompatibilityRule {
+  id                  String       @id @default(cuid())
+  serviceId           String       @unique
+  service             Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  acceptedLengths     HairLength[]
+  // Types de cheveux acceptés (valeurs libres, voir questions capillaires)
+  acceptedHairTypes   String[]     @default([])
+  requiresLocs        Boolean      @default(false)
+  incompatibleLocs    Boolean      @default(false)
+  photoPolicy         PhotoPolicy  @default(OPTIONAL)
+  autoApprove         Boolean      @default(false)
+  // Conditions particulières affichées à la cliente et à Patricia (§5.2)
+  conditionsNote      String?
+  // Messages configurables par situation (§5.2)
+  incompatibleMessage String?
+  uncertainMessage    String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
+
+model QuestionDefinition {
+  id        String     @id @default(cuid())
+  serviceId String
+  service   Service    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  key       String
+  label     String
+  type      AnswerType
+  // Choix proposés pour SINGLE_CHOICE et MULTI_CHOICE
+  options   String[]   @default([])
+  required  Boolean    @default(true)
+  order     Int        @default(0)
+  active    Boolean    @default(true)
+  // Conditions d'affichage (question conditionnelle §5.3),
+  // ex. { "dependsOn": "hasLocs", "equals": "yes" }
+  condition Json?
+}
+
+// ============================================================
+// Disponibilités (§7)
+// ============================================================
+
+enum AvailabilityKind {
+  WEEKLY // jour de la semaine récurrent
+  SPECIFIC // date précise
+}
+
+model AvailabilityRule {
+  id          String           @id @default(cuid())
+  kind        AvailabilityKind
+  // 0 = lundi … 6 = dimanche (null si kind = SPECIFIC)
+  weekday     Int?
+  // Date locale du salon au format YYYY-MM-DD (null si kind = WEEKLY)
+  date        String?
+  // Minutes depuis minuit, heure LOCALE du salon (§14.4 fuseau explicite)
+  startMinute Int
+  endMinute   Int
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([kind, weekday, date])
+}
+
+model BlockedPeriod {
+  id          String   @id @default(cuid())
+  startsAt    DateTime // UTC
+  endsAt      DateTime // UTC
+  reason      String?
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@index([startsAt, endsAt])
+}
+
+// ============================================================
+// Clients & réservations (§6, §8)
+// ============================================================
+
+model Customer {
+  id             String           @id @default(cuid())
+  name           String
+  email          String
+  phone          String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  appointments   Appointment[]
+  conversations  Conversation[]
+  customRequests CustomRequest[]
+  assessments    HairAssessment[]
+  reviews        Review[]
+
+  @@unique([email])
+}
+
+enum AppointmentStatus {
+  PENDING // en attente de confirmation, créneau réservé temporairement
+  CONFIRMED
+  RESCHEDULED // reprogrammée, conserve le créneau actuel
+  CANCELLED_BY_CUSTOMER
+  CANCELLED_BY_ADMIN
+  COMPLETED
+  NO_SHOW
+}
+
+model Appointment {
+  id                   String            @id @default(cuid())
+  customerId           String
+  customer             Customer          @relation(fields: [customerId], references: [id])
+  serviceId            String
+  service              Service           @relation(fields: [serviceId], references: [id])
+  startsAt             DateTime // UTC
+  endsAt               DateTime // UTC
+  status               AppointmentStatus @default(PENDING)
+  // Instantanés figés à la réservation (§14.4) : une modification
+  // du catalogue ne change JAMAIS l'historique
+  priceCents           Int?
+  durationMinutes      Int
+  selectedOptions      Json? // [{ optionId, name, priceCents }]
+  // Promotion appliquée, instantané figé (§14.4) : traçabilité uniquement,
+  // pas de relation forte vers Promotion (qui peut être modifiée/supprimée)
+  promotionId          String?
+  promotionName        String?
+  discountCents        Int?
+  // Réponses aux questions capillaires au moment de la réservation
+  hairInfo             Json?
+  comments             String?
+  // Lien d'annulation client signé (§9)
+  cancelToken          String?           @unique
+  cancelTokenExpiresAt DateTime?
+  // Réservation en attente : libération automatique après ce délai (§7.2)
+  holdExpiresAt        DateTime?
+  cancelledAt          DateTime?
+  cancelReason         String?
+  // Ancien créneau conservé lors d'une reprogrammation (§9.4)
+  rescheduledFrom      DateTime?
+  // Coiffure à domicile : instantané des frais et adresse de la cliente
+  homeService          Boolean           @default(false)
+  travelFeeCents       Int?
+  homeAddress          String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  assessments          HairAssessment[]
+  review               Review?
+
+  // Anti double-réservation : l'unicité (serviceId, startsAt) est un index unique PARTIEL
+  // ("Appointment_serviceId_startsAt_active_key", hors statuts annulés), créé par SQL dans la
+  // migration 20261022000000 car Prisma ne sait pas l'exprimer. Ne pas le recréer en @@unique.
+  // Renforcé par transaction + verrou P6.2.
+  @@index([serviceId, startsAt])
+  @@index([startsAt])
+  @@index([status, startsAt])
+  @@index([customerId])
+}
+
+// ============================================================
+// Demandes personnalisées (§11)
+// ============================================================
+
+enum CustomRequestStatus {
+  NEW
+  IN_REVIEW
+  INFO_REQUESTED
+  QUOTED
+  ACCEPTED
+  REFUSED
+  CLOSED
+}
+
+model CustomRequest {
+  id                  String                  @id @default(cuid())
+  customerId          String?
+  customer            Customer?               @relation(fields: [customerId], references: [id])
+  // Coordonnées du demandeur si pas encore de Customer
+  requesterName       String
+  requesterEmail      String
+  requesterPhone      String?
+  description         String
+  photoKeys           String[]                @default([]) // clés S3/R2 privées
+  hairInfo            Json? // réponses structurées (longueur, type, style actuel…)
+  desiredDate         DateTime?
+  status              CustomRequestStatus     @default(NEW)
+  adminReply          String?
+  estimatedPriceCents Int?
+  proposedServiceId   String?
+  proposedService     Service?                @relation("CustomRequestProposedService", fields: [proposedServiceId], references: [id])
+  proposedSlot        DateTime?
+  decidedAt           DateTime?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  assessments         HairAssessment[]
+  decisions           CustomRequestDecision[]
+
+  @@index([status, createdAt])
+  @@index([customerId])
+}
+
+enum CustomRequestDecisionAction {
+  IN_REVIEW
+  INFO_REQUESTED
+  QUOTED
+  ACCEPTED
+  REFUSED
+  CLOSED
+}
+
+model CustomRequestDecision {
+  id                  String                      @id @default(cuid())
+  customRequestId     String
+  customRequest       CustomRequest               @relation(fields: [customRequestId], references: [id], onDelete: Cascade)
+  userId              String?
+  user                User?                       @relation("CustomRequestDecisionAuthor", fields: [userId], references: [id])
+  action              CustomRequestDecisionAction
+  message             String?
+  priceCents          Int?
+  proposedServiceName String?
+  proposedSlot        DateTime?
+  createdAt           DateTime                    @default(now())
+
+  @@index([customRequestId, createdAt])
+}
+
+// ============================================================
+// Évaluations capillaires (§5) — photos privées (§15.2)
+// ============================================================
+
+enum AssessmentStatus {
+  RECEIVED // reçue
+  IN_PROGRESS // en cours
+  INFO_REQUESTED // infos demandées
+  ACCEPTED // acceptée
+  REFUSED // refusée
+  BOOKING_PENDING // réservation en attente
+  CONFIRMED // confirmée
+}
+
+model HairAssessment {
+  id              String           @id @default(cuid())
+  // Prestation évaluée : indispensable dès la demande, avant toute réservation
+  serviceId       String
+  service         Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customRequestId String?
+  customRequest   CustomRequest?   @relation(fields: [customRequestId], references: [id])
+  appointmentId   String?
+  appointment     Appointment?     @relation(fields: [appointmentId], references: [id])
+  customerId      String?
+  customer        Customer?        @relation(fields: [customerId], references: [id])
+  // Réponses aux questions capillaires (longueur, locs, type, repousse…)
+  answers         Json
+  photoKeys       String[]         @default([]) // PRIVÉ — jamais en galerie publique
+  status          AssessmentStatus @default(RECEIVED)
+  // Note interne de Patricia et message transmis à la cliente
+  decisionNote    String?
+  decisionMessage String?
+  decidedById     String?
+  decidedBy       User?            @relation("AssessmentDecider", fields: [decidedById], references: [id])
+  decidedAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([status, createdAt])
+  @@index([serviceId])
+  @@index([customerId])
+}
+
+// ============================================================
+// Messagerie (§11, §12)
+// ============================================================
+
+enum ConversationStatus {
+  NEW
+  IN_PROGRESS
+  WAITING_RESPONSE
+  TREATED
+  ARCHIVED
+}
+
+enum ConversationSource {
+  CONTACT
+  APPOINTMENT
+  COMPATIBILITY
+  CUSTOM
+}
+
+model Conversation {
+  id            String             @id @default(cuid())
+  customerId    String?
+  customer      Customer?          @relation(fields: [customerId], references: [id])
+  subject       String
+  status        ConversationStatus @default(NEW)
+  source        ConversationSource @default(CONTACT)
+  lastMessageAt DateTime           @default(now())
+  archivedAt    DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  messages      Message[]
+
+  @@index([status, lastMessageAt])
+  @@index([customerId])
+}
+
+enum MessageAuthor {
+  CUSTOMER
+  ADMIN
+  SYSTEM
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author         MessageAuthor
+  content        String
+  // Message interne = jamais sérialisé vers un client (§11)
+  isInternal     Boolean       @default(false)
+  sentAt         DateTime      @default(now())
+  readAt         DateTime?
+
+  @@index([conversationId, sentAt])
+}
+
+// ============================================================
+// Notifications (§10) — idempotentes (§14.4)
+// ============================================================
+
+enum NotificationChannel {
+  EMAIL
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model Notification {
+  id                String              @id @default(cuid())
+  // Clé d'idempotence unique par événement : un événement ne notifie
+  // qu'une fois, même si la job tourne plusieurs fois (§10, §14.4)
+  idempotencyKey    String              @unique
+  recipient         String
+  channel           NotificationChannel @default(EMAIL)
+  templateKey       String
+  payload           Json
+  status            NotificationStatus  @default(PENDING)
+  attempts          Int                 @default(0)
+  lastAttemptAt     DateTime?
+  nextAttemptAt     DateTime?
+  readAt            DateTime?
+  // Lien direct vers la fiche concernée dans le dashboard
+  link              String?
+  providerMessageId String?
+  sentAt            DateTime?
+  error             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([status, nextAttemptAt])
+  @@index([channel, readAt])
+  @@index([status, createdAt])
+}
+
+// ============================================================
+// Journal d'audit (§14.4)
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String // ex. "service.create", "appointment.cancel"
+  entityType String
+  entityId   String?
+  metadata   Json? // métadonnées minimales, jamais de données sensibles
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
+
+// ============================================================
+// Liste d'attente (§19, P8.8) — hors v1 initial
+// ============================================================
+
+enum WaitlistStatus {
+  WAITING
+  NOTIFIED
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
+
+model WaitlistEntry {
+  id                     String         @id @default(cuid())
+  serviceId              String
+  service                Service        @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  // Créneau exact souhaité (UTC) — pas de date "libre" : évite toute
+  // logique de fuseau côté serveur (P1.5), cohérent avec Appointment.startsAt.
+  desiredStartsAt        DateTime
+  customerName           String
+  customerEmail          String
+  customerPhone          String
+  status                 WaitlistStatus @default(WAITING)
+  notifyToken            String?        @unique
+  notifyTokenExpiresAt   DateTime?
+  notifiedAt             DateTime?
+  confirmedAppointmentId String?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([serviceId, desiredStartsAt, status])
+  @@index([status, notifyTokenExpiresAt])
+}
+
+// ============================================================
+// Avis clients (§19, P8.10) — hors v1 initial
+// ============================================================
+
+enum ReviewStatus {
+  PENDING // lien envoyé, pas encore répondu
+  SUBMITTED // soumis par la cliente, en attente de modération
+  APPROVED
+  REJECTED
+}
+
+model Review {
+  id             String       @id @default(cuid())
+  appointmentId  String       @unique
+  appointment    Appointment  @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  customerId     String
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  serviceId      String
+  service        Service      @relation(fields: [serviceId], references: [id])
+  token          String       @unique
+  tokenExpiresAt DateTime
+  rating         Int?
+  comment        String?
+  status         ReviewStatus @default(PENDING)
+  submittedAt    DateTime?
+  moderatedById  String?
+  moderatedBy    User?        @relation("ReviewModerator", fields: [moderatedById], references: [id])
+  moderatedAt    DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status, createdAt])
+  @@index([serviceId, status])
+}
+
+// ============================================================
+// Galerie de réalisations publique (§19, P8.11) — hors v1 initial
+// ============================================================
+
+model GalleryPhoto {
+  id               String   @id @default(cuid())
+  key              String // clé S3/R2 publique
+  alt              String   @default("")
+  serviceId        String?
+  service          Service? @relation(fields: [serviceId], references: [id])
+  // Confirmation explicite par Patricia que la cliente autorise l'usage public
+  consentConfirmed Boolean  @default(false)
+  published        Boolean  @default(false)
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([published, order])
+}
+
+// ============================================================
+// Promotions (§19, P8.12) — hors v1 initial
+// ============================================================
+
+enum PromotionKind {
+  PERCENT
+  FIXED
+}
+
+model Promotion {
+  id        String             @id @default(cuid())
+  name      String
+  // Code promo saisi par la cliente (null = promotion automatique).
+  code      String?            @unique
+  kind      PromotionKind
+  // Pourcentage (1-100) ou montant fixe en centimes selon `kind`
+  value     Int
+  startsAt  DateTime
+  endsAt    DateTime
+  active    Boolean            @default(true)
+  services  PromotionService[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([active, startsAt, endsAt])
+}
+
+model PromotionService {
+  id          String    @id @default(cuid())
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([promotionId, serviceId])
+  @@index([serviceId])
+}
+
+// ============================================================
+// Paramètres du salon (singleton, §7.4, §8)
+// ============================================================
+
+model SalonSettings {
+  id                   Int      @id @default(1)
+  name                 String   @default("Hairstyle by Patricia")
+  contactEmail         String?
+  phone                String?
+  address              String?
+  // Horaires standards, ex. [{ "weekday": 1, "open": "09:00", "close": "18:00" }]
+  openingHours         Json?
+  holdSlotMinutes      Int      @default(30)
+  minCancelNoticeHours Int      @default(24)
+  reminderLeadHours    Int      @default(24)
+  // Réservation (§7, §8)
+  bufferMinutes        Int      @default(0)
+  slotIntervalMinutes  Int      @default(15)
+  maxAdvanceDays       Int      @default(60)
+  minLeadTimeMinutes   Int      @default(120)
+  cancelReasonRequired Boolean  @default(false)
+  // Identité et communication (P8.4)
+  logoUrl              String?
+  emailSignature       String?
+  cancellationPolicy   String?
+  bookingPolicy        String?
+  // RGPD : conservation des données et des photos privées
+  dataRetentionMonths  Int      @default(36)
+  photoRetentionDays   Int      @default(90)
+  // Coiffure à domicile (option payante, frais de déplacement en 1/100 FCFA)
+  homeServiceEnabled   Boolean  @default(false)
+  travelFeeCents       Int      @default(0)
+  updatedAt            DateTime @updatedAt
+}
+
+// Compteurs de limitation de débit partagés entre instances (serverless).
+model RateLimitBucket {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
+}
