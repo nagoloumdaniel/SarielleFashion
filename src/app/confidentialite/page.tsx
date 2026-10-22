@@ -6,7 +6,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
 
 export const metadata: Metadata = {
-  title: 'Politique de confidentialité RGPD',
+  title: 'Politique de confidentialité (RGPD / DSGVO)',
   description:
     'Politique de confidentialité de Sarielle Fashion : données collectées, finalités, conservation, droits et cookies.',
   alternates: { canonical: '/confidentialite' },
@@ -139,7 +139,7 @@ export default async function ConfidentialitePage() {
 
       <section className="max-w-3xl space-y-8">
         <Title as="h2" className="">
-          6. Vos droits (RGPD)
+          6. Vos droits (RGPD / DSGVO)
         </Title>
         <p className="text-muted leading-relaxed">
           Conformément au RGPD, vous pouvez exercer gratuitement les droits suivants :
@@ -167,7 +167,9 @@ export default async function ConfidentialitePage() {
             {contactEmail}
           </a>
           . Une pièce d’identité peut vous être demandée pour prévenir tout abus. En cas de
-          désaccord persistant, vous pouvez introduire une réclamation auprès de la CNIL.
+          désaccord persistant, vous pouvez introduire une réclamation auprès de l’autorité de
+          protection des données compétente, en Basse-Saxe : Die Landesbeauftragte für den
+          Datenschutz Niedersachsen (lfd.niedersachsen.de).
         </p>
       </section>
 

@@ -8,7 +8,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Mentions légales',
   description:
-    'Mentions légales de Sarielle Fashion : identité, coordonnées, hébergement et publication du site.',
+    'Mentions légales (Impressum) de Sarielle Fashion : identité, coordonnées, hébergement et publication du site.',
   alternates: { canonical: '/mentions-legales' },
 };
 
@@ -84,8 +84,8 @@ export default function MentionsLegalesPage() {
           <Link href="/confidentialite" className="text-cacao underline font-medium">
             politique de confidentialité
           </Link>
-          . Conformément au RGPD, vous disposez d’un droit d’accès, de rectification, de suppression
-          et d’opposition sur vos données. Pour exercer ces droits, écrivez à{' '}
+          . Conformément au RGPD (DSGVO), vous disposez d’un droit d’accès, de rectification, de
+          suppression et d’opposition sur vos données. Pour exercer ces droits, écrivez à{' '}
           <a href="mailto:sarielletalla@gmail.com" className="text-cacao underline">
             sarielletalla@gmail.com
           </a>
@@ -99,7 +99,7 @@ export default function MentionsLegalesPage() {
         </Title>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <ButtonLink href="/contact" icon={Mail}>
-            Nous contacter
+            Me contacter
           </ButtonLink>
           <ButtonLink href="/coiffures" variant="secondary" icon={Scissors}>
             Voir le catalogue
