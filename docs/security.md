@@ -7,7 +7,7 @@ Document de référence pour l'exploitation et la revue de sécurité. Aucun sec
 - Application Next.js 15 / React 19 / Prisma 6, dashboard protégé par Auth.js.
 - Routes publiques : catalogue, contact, compatibilité, réservation, annulation par lien, demandes personnalisées.
 - Routes dashboard et API admin, crons protégés.
-- Stockage privé Cloudflare R2, e-mails Resend, base Neon PostgreSQL.
+- Stockage privé Cloudflare R2, e-mails Gmail SMTP, base Neon PostgreSQL.
 - Revue statique du code, vérification des en-têtes en runtime, `npm audit`, et tests Playwright de sécurité.
 
 ## Faiblesses corrigées pendant la phase 9
@@ -31,7 +31,7 @@ Document de référence pour l'exploitation et la revue de sécurité. Aucun sec
 - React échappe le contenu utilisateur ; les e-mails échappent les valeurs injectées.
 - Upload : taille, MIME déclaré et signature binaire vérifiés, clés aléatoires, bucket privé, URLs signées de 15 minutes.
 - Rate limiting sur contact, compatibilité, réservation, annulation et demandes personnalisées.
-- Aucune donnée sensible dans les journaux ; les adresses e-mail du fournisseur console sont masquées et les erreurs Resend sont tronquées.
+- Aucune donnée sensible dans les journaux ; les adresses e-mail du fournisseur console sont masquées et les erreurs Gmail SMTP sont tronquées.
 - Journal d'audit pour les opérations sensibles.
 
 ## Risques résiduels assumés
@@ -46,7 +46,7 @@ Document de référence pour l'exploitation et la revue de sécurité. Aucun sec
 
 ## Secrets et rotation
 
-Variables sensibles : `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_ADMIN_PASSWORD`, `RESEND_API_KEY`, `EMAIL_FROM`, `CRON_SECRET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`.
+Variables sensibles : `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_ADMIN_PASSWORD`, `EMAIL_FROM`, `CRON_SECRET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_ENDPOINT`.
 
 Procédure de rotation :
 

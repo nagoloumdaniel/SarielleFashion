@@ -46,7 +46,7 @@ Avec `EMAIL_MODE="console"` dans `.env.local`, aucun e-mail réel n'est envoyé 
 | Framework       | Next.js 15 (App Router) + React 19 + TypeScript strict     |
 | UI              | **Tailwind CSS v4** + composants personnalisés (shadcn/ui) |
 | Base de données | PostgreSQL (Neon) + Prisma                                 |
-| E-mails         | Resend                                                     |
+| E-mails         | Gmail SMTP                                                 |
 | Fichiers        | Cloudflare R2 (API S3)                                     |
 | Auth            | Auth.js (NextAuth) credentials + bcryptjs (coût 12)        |
 | Hébergement     | Vercel                                                     |

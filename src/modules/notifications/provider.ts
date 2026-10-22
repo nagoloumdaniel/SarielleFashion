@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 /* ============================================================
  * P7.1 : abstraction du fournisseur d'e-mail.
- * Resend en production, fournisseur console en développement et
+ * Gmail SMTP en production, fournisseur console en développement et
  * dans les tests. Aucune clé n'est jamais journalisée.
  * ============================================================ */
 
@@ -14,50 +14,11 @@ export interface EmailMessage {
 }
 
 export interface EmailProvider {
-  name: 'resend' | 'smtp' | 'console';
+  name: 'smtp' | 'console';
   send(message: EmailMessage): Promise<{ id: string }>;
 }
 
-const FROM = process.env.EMAIL_FROM?.trim() || 'Sarielle Fashion <onboarding@resend.dev>';
-const RESEND_ENDPOINT = 'https://api.resend.com/emails';
-
-class ResendEmailProvider implements EmailProvider {
-  name = 'resend' as const;
-
-  async send(message: EmailMessage): Promise<{ id: string }> {
-    const apiKey = process.env.RESEND_API_KEY?.trim();
-    if (!apiKey) throw new Error('RESEND_API_KEY absente');
-
-    const response = await fetch(RESEND_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: [message.to],
-        subject: message.subject,
-        html: message.html,
-        text: message.text,
-        ...(message.replyTo ? { reply_to: message.replyTo } : {}),
-      }),
-      signal: AbortSignal.timeout(10_000),
-    });
-
-    const body = (await response.json().catch(() => ({}))) as {
-      id?: string;
-      message?: string;
-    };
-    if (!response.ok || !body.id) {
-      throw new Error(
-        `Resend a refusé l'envoi (${response.status}) : ${body.message ?? 'erreur inconnue'}`,
-      );
-    }
-    return { id: body.id };
-  }
-}
-
+const FROM = process.env.EMAIL_FROM?.trim() || 'Sarielle Fashion <sarielletalla@gmail.com>';
 /* Gmail SMTP : compte Google avec validation en deux étapes + mot de passe d'application.
    Gmail réécrit l'expéditeur avec le compte authentifié : on l'utilise directement. */
 class SmtpEmailProvider implements EmailProvider {
@@ -130,10 +91,7 @@ export function getEmailProvider(): EmailProvider {
   ) {
     return new SmtpEmailProvider();
   }
-  if (forceConsole || !process.env.RESEND_API_KEY?.trim()) {
-    return new ConsoleEmailProvider();
-  }
-  return new ResendEmailProvider();
+  return new ConsoleEmailProvider();
 }
 
 export function isEmailDeliveryConfigured(): boolean {
