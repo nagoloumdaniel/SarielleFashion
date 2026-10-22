@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useT } from '@/i18n/client';
 
 /* Sélecteur de thème clair / sombre.
    Le thème initial est appliqué dans <head> avant le premier rendu
@@ -31,6 +32,7 @@ function applyTheme(theme: Theme, persist = true): void {
 }
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
+  const t = useT();
   const [theme, setTheme] = useState<Theme | null>(null);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
     setTheme(next);
   };
 
-  const label = theme === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre';
+  const label = theme === 'dark' ? t('common.theme.toLight') : t('common.theme.toDark');
 
   return (
     <button

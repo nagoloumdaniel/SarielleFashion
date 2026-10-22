@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/link';
 import type { ReactNode } from 'react';
 
 /* P2.3 : carte surface blanche, angles arrondis, ombre douce. */
