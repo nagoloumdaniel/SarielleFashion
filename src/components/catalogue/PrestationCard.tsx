@@ -1,6 +1,8 @@
 import { CalendarCheck } from 'lucide-react';
 import Link from 'next/link';
 import { ButtonLink } from '@/components/ui/Button';
+import { RatingLine } from '@/components/shared/Stars';
+import type { RatingSummary } from '@/modules/avis/engine';
 import { CardImages } from './CardImages';
 
 export type PrestationCardProps = {
@@ -14,6 +16,8 @@ export type PrestationCardProps = {
   duration: string;
   optionsLabel?: string;
   priority?: boolean;
+  /** Note moyenne et nombre d'avis ; masquée sans avis. */
+  rating?: RatingSummary;
 };
 
 /* Carte prestation immersive (DESIGN-RULES.md) : photo plein cadre, voile et flou
@@ -29,6 +33,7 @@ export function PrestationCard({
   duration,
   optionsLabel,
   priority = false,
+  rating,
 }: PrestationCardProps) {
   return (
     <article className="prestation-card group relative isolate aspect-[4/5] overflow-hidden rounded-[var(--radius-xl)] bg-line text-[#fff4f2] focus-within:ring-4 focus-within:ring-accent">
@@ -59,6 +64,14 @@ export function PrestationCard({
         </div>
         {subtitle ? (
           <p className="mt-1 line-clamp-1 text-sm font-light text-[#fff4f2]/75">{subtitle}</p>
+        ) : null}
+
+        {rating && rating.count > 0 ? (
+          <RatingLine
+            average={rating.average}
+            count={rating.count}
+            className="mt-1.5 text-[#fff4f2]/90"
+          />
         ) : null}
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/20 pt-3 text-sm">

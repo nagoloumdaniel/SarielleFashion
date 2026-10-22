@@ -12,6 +12,7 @@ const STATIC_ROUTES = [
   { url: '/', changeFrequency: 'weekly' as const, priority: 1 },
   { url: '/coiffures', changeFrequency: 'monthly' as const, priority: 0.9 },
   { url: '/contact', changeFrequency: 'monthly' as const, priority: 0.8 },
+  { url: '/galerie', changeFrequency: 'weekly' as const, priority: 0.7 },
   { url: '/faq', changeFrequency: 'monthly' as const, priority: 0.7 },
   { url: '/infos-pratiques', changeFrequency: 'monthly' as const, priority: 0.7 },
   { url: '/demandes-personnalisees', changeFrequency: 'monthly' as const, priority: 0.8 },

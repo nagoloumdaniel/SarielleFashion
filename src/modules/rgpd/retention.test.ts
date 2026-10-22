@@ -23,7 +23,7 @@ describe('retentionCutoff', () => {
 describe('retentionPolicyCutoffs', () => {
   const now = new Date('2026-10-19T12:00:00.000Z');
 
-  it('should keep unpublished reviews 12 months, read notifications 6 months, failed emails 3 months', () => {
+  it('should keep unanswered review requests 12 months, read notifications 6 months, failed emails 3 months', () => {
     const cutoffs = retentionPolicyCutoffs(now);
     expect(cutoffs.reviews.toISOString()).toBe('2025-10-19T12:00:00.000Z');
     expect(cutoffs.readNotifications.toISOString()).toBe('2026-04-19T12:00:00.000Z');
@@ -34,10 +34,9 @@ describe('retentionPolicyCutoffs', () => {
 describe('purge filters', () => {
   const cutoff = new Date('2025-10-19T12:00:00.000Z');
 
-  it('should never target published (approved) reviews', () => {
+  it('should only target unanswered review requests, never published reviews', () => {
     const where = expiredReviewsWhere(cutoff);
-    expect(where.status.in).toEqual(expect.arrayContaining(['PENDING', 'SUBMITTED', 'REJECTED']));
-    expect(where.status.in).not.toContain('APPROVED');
+    expect(where.submittedAt).toBeNull();
     expect(where.createdAt.lt).toBe(cutoff);
   });
 

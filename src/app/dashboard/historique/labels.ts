@@ -59,8 +59,6 @@ const EXACT: Record<string, string> = {
   'gallery.upload': 'Photo ajoutée à la galerie',
   'gallery.update': 'Photo de galerie modifiée',
   'gallery.delete': 'Photo de galerie supprimée',
-  'review.approved': 'Avis approuvé',
-  'review.rejected': 'Avis rejeté',
   'review.delete': 'Avis supprimé',
 };
 

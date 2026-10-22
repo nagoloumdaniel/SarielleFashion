@@ -16,24 +16,33 @@ export async function listGalleryPhotosAdmin(requestedPage = 1, pageSize = 24) {
 
 export interface PublicGalleryPhoto {
   id: string;
-  src: string | null;
+  src: string;
   alt: string;
   serviceName: string | null;
+  /** Légende saisie par l'admin (vide si aucune). */
+  caption: string;
 }
 
-/** Photos publiées (P8.11) : URL signée calculée à chaque lecture (bucket privé). */
-export async function listPublishedGalleryPhotos(): Promise<PublicGalleryPhoto[]> {
+/** Photos publiées : URL signée calculée à chaque lecture (bucket privé). Photos illisibles écartées. */
+export async function listPublishedGalleryPhotos(limit?: number): Promise<PublicGalleryPhoto[]> {
   const rows = await db.galleryPhoto.findMany({
-    where: { published: true, consentConfirmed: true },
+    where: { published: true },
     orderBy: [{ order: 'asc' }, { createdAt: 'desc' }],
+    take: limit,
     include: { service: { select: { name: true } } },
   });
-  return Promise.all(
-    rows.map(async (row) => ({
-      id: row.id,
-      src: await getImageSignedUrl(row.key, 3600).catch(() => null),
-      alt: row.alt || row.service?.name || 'Réalisation',
-      serviceName: row.service?.name ?? null,
-    })),
+  const photos = await Promise.all(
+    rows.map(async (row) => {
+      const src = await getImageSignedUrl(row.key, 3600).catch(() => null);
+      if (!src) return null;
+      return {
+        id: row.id,
+        src,
+        alt: row.alt || row.service?.name || 'Réalisation',
+        serviceName: row.service?.name ?? null,
+        caption: row.alt,
+      } satisfies PublicGalleryPhoto;
+    }),
   );
+  return photos.filter((photo): photo is PublicGalleryPhoto => photo !== null);
 }

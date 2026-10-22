@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { getReviewByToken } from '@/modules/avis/queries';
 import { isReviewTokenValid } from '@/modules/avis/engine';
-import { ReviewForm } from './review-form';
+import { ReviewForm } from '@/components/avis/ReviewForm';
+import { isStorageConfigured } from '@/modules/fichiers/storage';
 import { Title } from '@/components/ui/Title';
 
 export const metadata: Metadata = {
@@ -27,17 +28,18 @@ export default async function AvisTokenPage({ params }: { params: Promise<{ toke
   }
 
   const tokenValid = isReviewTokenValid(review.tokenExpiresAt, new Date());
-  if (!tokenValid || review.status !== 'PENDING') {
+  const answered = review.submittedAt !== null;
+  if (!tokenValid || answered) {
     return (
       <main className="page-main">
         <div className="rounded-[var(--radius-lg)] border border-line bg-card p-8 text-center">
           <Title as="h1" size="display" className="">
-            {review.status === 'PENDING' ? 'Lien expiré' : 'Avis déjà envoyé'}
+            {answered ? 'Avis déjà envoyé' : 'Lien expiré'}
           </Title>
           <p className="mt-3 text-muted">
-            {review.status === 'PENDING'
-              ? 'Ce lien d’avis a expiré. Contactez Sarielle si vous souhaitez tout de même laisser un avis.'
-              : 'Merci, votre avis a déjà été transmis.'}
+            {answered
+              ? 'Merci, ton avis a déjà été transmis.'
+              : 'Ce lien d’avis a expiré. Tu peux toujours donner ton avis depuis la fiche de la prestation.'}
           </p>
         </div>
       </main>
@@ -48,10 +50,10 @@ export default async function AvisTokenPage({ params }: { params: Promise<{ toke
     <main className="page-main">
       <div className="rounded-[var(--radius-lg)] border border-line bg-card p-8 shadow-soft">
         <Title as="h1" size="display" className="">
-          Votre avis sur « {review.service.name} »
+          Ton avis sur « {review.service.name} »
         </Title>
         <div className="mt-6">
-          <ReviewForm token={token} />
+          <ReviewForm mode="token" token={token} photosEnabled={isStorageConfigured()} />
         </div>
       </div>
     </main>

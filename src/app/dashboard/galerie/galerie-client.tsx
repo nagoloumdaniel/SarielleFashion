@@ -45,7 +45,6 @@ type GalleryRow = {
   id: string;
   url: string | null;
   alt: string;
-  consentConfirmed: boolean;
   published: boolean;
   serviceId: string;
   serviceName: string | null;
@@ -88,7 +87,6 @@ function UploadForm({ services, onDone }: { services: ServiceOption[]; onDone: (
   );
   const inputRef = useRef<HTMLInputElement>(null);
   const [previews, setPreviews] = useState<{ name: string; url: string }[]>([]);
-  const [consent, setConsent] = useState(false);
 
   useEffect(() => {
     if (state.success) {
@@ -171,17 +169,7 @@ function UploadForm({ services, onDone }: { services: ServiceOption[]; onDone: (
         icon={Scissors}
         options={serviceOptions(services)}
       />
-      <Input label="Légende (texte alternatif)" name="alt" icon={Type} maxLength={200} />
-      <label className="flex items-start gap-2.5 text-sm font-semibold text-fg">
-        <input
-          type="checkbox"
-          name="consentConfirmed"
-          checked={consent}
-          onChange={(event) => setConsent(event.target.checked)}
-          className="mt-0.5 size-4 shrink-0 accent-accent"
-        />
-        La cliente a explicitement autorisé l’usage public de ces photos.
-      </label>
+      <Input label="Légende (facultatif)" name="alt" icon={Type} maxLength={200} />
       {state.error ? (
         <p role="alert" className="text-sm font-medium text-alert">
           {state.error}
@@ -191,12 +179,7 @@ function UploadForm({ services, onDone }: { services: ServiceOption[]; onDone: (
         <Button type="button" variant="secondary" onClick={onDone}>
           Annuler
         </Button>
-        <Button
-          type="submit"
-          icon={ImagePlus}
-          loading={pending}
-          disabled={previews.length === 0 || !consent}
-        >
+        <Button type="submit" icon={ImagePlus} loading={pending} disabled={previews.length === 0}>
           Ajouter
         </Button>
       </div>
@@ -220,7 +203,6 @@ function EditForm({
     adminUpdateGalleryPhoto,
     {},
   );
-  const [consent, setConsent] = useState(photo.consentConfirmed);
   const [published, setPublished] = useState(photo.published);
 
   useEffect(() => {
@@ -243,7 +225,7 @@ function EditForm({
         <Thumb url={photo.url} alt={photo.alt || 'Photo de la galerie'} />
       </div>
       <Input
-        label="Légende (texte alternatif)"
+        label="Légende (facultatif)"
         name="alt"
         icon={Type}
         maxLength={200}
@@ -259,30 +241,13 @@ function EditForm({
       <label className="flex items-start gap-2.5 text-sm font-semibold text-fg">
         <input
           type="checkbox"
-          name="consentConfirmed"
-          value="true"
-          checked={consent}
-          onChange={(event) => {
-            setConsent(event.target.checked);
-            if (!event.target.checked) setPublished(false);
-          }}
-          className="mt-0.5 size-4 shrink-0 accent-accent"
-        />
-        La cliente a explicitement autorisé l’usage public de cette photo.
-      </label>
-      <label
-        className={`flex items-start gap-2.5 text-sm font-semibold ${consent ? 'text-fg' : 'text-muted'}`}
-      >
-        <input
-          type="checkbox"
           name="published"
           value="true"
           checked={published}
-          disabled={!consent}
           onChange={(event) => setPublished(event.target.checked)}
           className="mt-0.5 size-4 shrink-0 accent-accent"
         />
-        Publier dans la galerie du site
+        Afficher cette photo sur le site
       </label>
       {state.error ? (
         <p role="alert" className="text-sm font-medium text-alert">
@@ -356,7 +321,6 @@ export function GalerieClient({
     run(photo.id, adminUpdateGalleryPhoto, {
       serviceId: photo.serviceId,
       alt: photo.alt,
-      consentConfirmed: String(photo.consentConfirmed),
       published: String(!photo.published),
     });
   }
@@ -382,7 +346,7 @@ export function GalerieClient({
             onClick={() => open('new')}
             disabled={!storageReady}
           >
-            Ajouter une photo
+            Ajouter des photos
           </Button>
         }
       />
@@ -407,10 +371,11 @@ export function GalerieClient({
           </span>
           <p className="font-heading text-lg font-bold text-fg">Aucune photo</p>
           <p className="max-w-sm text-sm text-muted">
-            Une photo n’est visible sur le site qu’une fois publiée.
+            Ajoute tes réalisations : elles apparaissent tout de suite sur la page Galerie et sur
+            l’accueil.
           </p>
           <Button icon={Plus} onClick={() => open('new')} disabled={!storageReady}>
-            Ajouter une photo
+            Ajouter des photos
           </Button>
         </div>
       ) : (
@@ -436,7 +401,7 @@ export function GalerieClient({
                       size="sm"
                       className="absolute left-2 top-2"
                     >
-                      {photo.published ? 'Publiée' : 'Brouillon'}
+                      {photo.published ? 'Visible' : 'Masquée'}
                     </Badge>
                   </span>
                   <span className="block px-2.5 pt-2">
@@ -478,11 +443,10 @@ export function GalerieClient({
                     iconOnly
                     icon={photo.published ? EyeOff : Eye}
                     loading={loading}
-                    disabled={!photo.consentConfirmed && !photo.published}
                     onClick={() => togglePublish(photo)}
                     className="ml-auto"
                   >
-                    {photo.published ? 'Dépublier' : 'Publier'}
+                    {photo.published ? 'Masquer' : 'Afficher'}
                   </Button>
                   <Button
                     type="button"

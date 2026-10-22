@@ -1,178 +1,168 @@
 'use client';
 
-import { Check, Star, Trash2, X } from 'lucide-react';
+import { BadgeCheck, ExternalLink, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
-import { adminDeleteReview, adminModerateReview } from '@/modules/avis/actions';
+import { adminDeleteReview } from '@/modules/avis/actions';
+import { Stars } from '@/components/shared/Stars';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useConfirm } from '@/components/ui/Confirm';
+import { Lightbox } from '@/components/ui/Lightbox';
 import { useToast } from '@/components/ui/Toast';
 
 export type ReviewRow = {
   id: string;
-  rating: number | null;
+  rating: number;
   comment: string | null;
-  status: 'SUBMITTED' | 'APPROVED' | 'REJECTED' | string;
+  authorName: string;
+  verified: boolean;
   /** ISO : transmis sérialisé depuis le serveur. */
-  submittedAt: string | null;
-  customer: { id: string; name: string; email: string };
-  service: { name: string };
+  submittedAt: string;
+  customer: { id: string; name: string; email: string } | null;
+  service: { name: string; slug: string };
+  /** URLs signées des photos jointes. */
+  photos: string[];
 };
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'medium',
+  timeStyle: 'short',
   timeZone: 'Europe/Berlin',
 });
-
-function Stars({ rating }: { rating: number | null }) {
-  const value = rating ?? 0;
-  return (
-    <span role="img" aria-label={`Note : ${value} sur 5`} className="inline-flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Star
-          key={n}
-          aria-hidden="true"
-          className={`size-4 ${n <= value ? 'fill-accent text-accent' : 'text-line'}`}
-        />
-      ))}
-    </span>
-  );
-}
-
-type Action = 'APPROVED' | 'REJECTED' | 'DELETE';
 
 function ReviewCard({ review }: { review: ReviewRow }) {
   const confirm = useConfirm();
   const { notify } = useToast();
   const [pending, startTransition] = useTransition();
-  const [active, setActive] = useState<Action | null>(null);
-
-  function moderate(decision: 'APPROVED' | 'REJECTED') {
-    setActive(decision);
-    startTransition(async () => {
-      try {
-        const data = new FormData();
-        data.set('id', review.id);
-        data.set('decision', decision);
-        const result = await adminModerateReview({}, data);
-        if (result.error) notify(result.error, 'error');
-        else notify(result.success ?? 'Avis mis à jour.', 'success');
-      } catch {
-        notify('Action impossible. Réessayez.', 'error');
-      } finally {
-        setActive(null);
-      }
-    });
-  }
+  const [opened, setOpened] = useState<number | null>(null);
 
   async function remove() {
     const ok = await confirm({
       title: 'Supprimer cet avis ?',
-      message: `L’avis de ${review.customer.name} sera supprimé définitivement, y compris s’il est publié sur le site.`,
+      message: `L’avis de ${review.authorName} sera supprimé définitivement du site, photos comprises.`,
       confirmLabel: 'Supprimer',
     });
     if (!ok) return;
-    setActive('DELETE');
     startTransition(async () => {
       try {
         const result = await adminDeleteReview(review.id);
         if (result.error) notify(result.error, 'error');
         else notify(result.success ?? 'Avis supprimé.', 'success');
       } catch {
-        notify('Action impossible. Réessayez.', 'error');
-      } finally {
-        setActive(null);
+        notify('Action impossible. Réessaie.', 'error');
       }
     });
   }
 
-  const statusBadge =
-    review.status === 'APPROVED' ? (
-      <Badge tone="success" size="sm">
-        Publié
-      </Badge>
-    ) : review.status === 'REJECTED' ? (
-      <Badge tone="alert" size="sm">
-        Rejeté
-      </Badge>
-    ) : (
-      <Badge tone="accent" size="sm">
-        En attente
-      </Badge>
-    );
-
   return (
     <Card>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Stars rating={review.rating} />
-          {statusBadge}
+        <div className="flex flex-wrap items-center gap-2">
+          <Stars value={review.rating} />
+          <span className="text-sm font-semibold text-fg">{review.rating} / 5</span>
+          {review.verified ? (
+            <Badge tone="success" size="sm">
+              <BadgeCheck aria-hidden="true" className="mr-1 size-3.5" />
+              Client vérifié
+            </Badge>
+          ) : (
+            <Badge tone="neutral" size="sm">
+              Avis libre
+            </Badge>
+          )}
         </div>
-        {review.submittedAt ? (
-          <time dateTime={review.submittedAt} className="text-xs text-muted">
-            {dateFormatter.format(new Date(review.submittedAt))}
-          </time>
-        ) : null}
+        <time dateTime={review.submittedAt} className="text-xs text-muted">
+          {dateFormatter.format(new Date(review.submittedAt))}
+        </time>
       </div>
 
-      <p className="mt-2 text-sm">
-        <Link
-          href={`/dashboard/clients/${review.customer.id}`}
-          className="font-semibold text-fg hover:text-cacao hover:underline"
-        >
-          {review.customer.name}
-        </Link>
-        <span className="text-muted"> · {review.service.name}</span>
-      </p>
-      <p className="truncate text-xs text-muted">{review.customer.email}</p>
+      <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+        <div className="flex gap-2">
+          <dt className="text-muted">Client</dt>
+          <dd className="min-w-0 font-semibold text-fg">
+            {review.customer ? (
+              <Link
+                href={`/dashboard/clients/${review.customer.id}`}
+                className="hover:text-cacao hover:underline"
+              >
+                {review.customer.name}
+              </Link>
+            ) : (
+              review.authorName
+            )}
+            {review.customer ? (
+              <span className="block truncate text-xs font-normal text-muted">
+                {review.customer.email}
+              </span>
+            ) : null}
+          </dd>
+        </div>
+        <div className="flex gap-2">
+          <dt className="text-muted">Prestation</dt>
+          <dd className="min-w-0 font-semibold text-fg">
+            <Link
+              href={`/coiffures/${review.service.slug}#avis`}
+              className="inline-flex items-center gap-1 hover:text-cacao hover:underline"
+            >
+              {review.service.name}
+              <ExternalLink aria-hidden="true" className="size-3.5" />
+            </Link>
+          </dd>
+        </div>
+      </dl>
 
       {review.comment ? (
-        <blockquote className="mt-2 whitespace-pre-wrap wrap-break-word rounded-[var(--radius-md)] bg-page p-3 text-sm text-fg">
+        <blockquote className="mt-3 whitespace-pre-wrap break-words rounded-[var(--radius-md)] bg-page p-3 text-sm text-fg">
           {review.comment}
         </blockquote>
       ) : (
-        <p className="mt-2 text-sm text-muted">Note seule, sans commentaire.</p>
+        <p className="mt-3 text-sm text-muted">Note seule, sans commentaire.</p>
       )}
 
-      <div className="mt-3 flex items-center gap-2">
-        {review.status !== 'APPROVED' ? (
-          <Button
-            type="button"
-            size="sm"
-            icon={Check}
-            iconOnly="mobile"
-            loading={pending && active === 'APPROVED'}
-            disabled={pending}
-            onClick={() => moderate('APPROVED')}
-          >
-            {review.status === 'REJECTED' ? 'Republier' : 'Approuver'}
-          </Button>
-        ) : null}
-        {review.status !== 'REJECTED' ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            icon={X}
-            iconOnly="mobile"
-            loading={pending && active === 'REJECTED'}
-            disabled={pending}
-            onClick={() => moderate('REJECTED')}
-          >
-            {review.status === 'APPROVED' ? 'Retirer' : 'Rejeter'}
-          </Button>
-        ) : null}
+      {review.photos.length > 0 ? (
+        <ul className="mt-3 flex flex-wrap gap-2" aria-label="Photos de l’avis">
+          {review.photos.map((url, index) => (
+            <li key={url}>
+              <button
+                type="button"
+                onClick={() => setOpened(index)}
+                aria-label={`Agrandir la photo ${index + 1} sur ${review.photos.length}`}
+                className="relative block size-20 overflow-hidden rounded-[var(--radius-md)] bg-line"
+              >
+                <Image
+                  src={url}
+                  alt={`Photo ${index + 1} de l’avis de ${review.authorName}`}
+                  fill
+                  unoptimized
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <Lightbox
+        images={review.photos.map((url, index) => ({
+          src: url,
+          alt: `Photo ${index + 1} de l’avis de ${review.authorName}`,
+        }))}
+        index={opened}
+        onClose={() => setOpened(null)}
+        onIndexChange={setOpened}
+      />
+
+      <div className="mt-3 flex justify-end">
         <Button
           type="button"
           size="sm"
           variant="danger"
           icon={Trash2}
           iconOnly="mobile"
-          className="ml-auto"
-          loading={pending && active === 'DELETE'}
-          disabled={pending}
+          loading={pending}
           onClick={remove}
         >
           Supprimer
@@ -184,7 +174,7 @@ function ReviewCard({ review }: { review: ReviewRow }) {
 
 export function AvisClient({ reviews }: { reviews: ReviewRow[] }) {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-2" aria-label="Avis publiés">
       {reviews.map((review) => (
         <li key={review.id}>
           <ReviewCard review={review} />

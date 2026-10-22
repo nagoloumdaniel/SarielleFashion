@@ -1,4 +1,5 @@
 import { PrestationCard } from './PrestationCard';
+import type { RatingSummary } from '@/modules/avis/engine';
 import {
   bookingHref,
   formatDuration,
@@ -11,9 +12,11 @@ import {
 export function ServiceCard({
   service,
   priority = false,
+  rating,
 }: {
   service: CatalogueService;
   priority?: boolean;
+  rating?: RatingSummary;
 }) {
   const count = service.options.length;
   return (
@@ -28,6 +31,7 @@ export function ServiceCard({
       duration={formatDuration(service.durationMinutes)}
       optionsLabel={count === 0 ? undefined : count === 1 ? '1 option' : `${count} options`}
       priority={priority}
+      rating={rating}
     />
   );
 }

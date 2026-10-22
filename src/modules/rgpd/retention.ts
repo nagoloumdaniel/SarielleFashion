@@ -1,4 +1,4 @@
-import type { Prisma, ReviewStatus } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import { getSalonSettings } from '@/modules/disponibilites/queries';
 import { deletePrivateImages } from '@/modules/fichiers/private-images';
@@ -21,10 +21,10 @@ function monthsBefore(now: Date, months: number): Date {
 }
 
 /* Durées de conservation (docs/rgpd.md) :
-   - avis non publiés (en attente, soumis non modérés, rejetés) : 12 mois ;
+   - demandes d'avis restées sans réponse (jamais publiées) : 12 mois ;
    - notifications internes lues : 6 mois ;
    - e-mails définitivement en échec : 3 mois.
-   Les avis publiés (APPROVED), les e-mails en attente/en cours et les notifications
+   Les avis publiés (soumis), les e-mails en attente/en cours et les notifications
    non lues ne sont JAMAIS purgés ici. */
 export function retentionPolicyCutoffs(now: Date) {
   return {
@@ -34,11 +34,9 @@ export function retentionPolicyCutoffs(now: Date) {
   };
 }
 
-const PURGEABLE_REVIEW_STATUSES: ReviewStatus[] = ['PENDING', 'SUBMITTED', 'REJECTED'];
-
 export function expiredReviewsWhere(cutoff: Date) {
   return {
-    status: { in: PURGEABLE_REVIEW_STATUSES },
+    submittedAt: null,
     createdAt: { lt: cutoff },
   } satisfies Prisma.ReviewWhereInput;
 }

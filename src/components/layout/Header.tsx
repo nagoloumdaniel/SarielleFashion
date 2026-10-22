@@ -14,6 +14,7 @@ import { ThemeToggle } from './ThemeToggle';
 const LINKS = [
   { href: '/', label: 'Accueil' },
   { href: '/coiffures', label: 'Catalogue' },
+  { href: '/galerie', label: 'Réalisations' },
   { href: '/faq', label: 'FAQ' },
   { href: '/demandes-personnalisees', label: 'Demande spéciale' },
   { href: '/contact', label: 'Contact' },

@@ -1,56 +1,41 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import { listPublishedGalleryPhotos } from '@/modules/galerie/queries';
-import { IMAGE_BLUR_DATA_URL } from '@/lib/image-placeholder';
+import { GalleryGrid } from '@/components/galerie/GalleryGrid';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { Title } from '@/components/ui/Title';
+import { listPublishedGalleryPhotos } from '@/modules/galerie/queries';
 
 export const metadata: Metadata = {
-  title: 'Galerie de réalisations - Sarielle Fashion',
-  description: 'Un aperçu de réalisations de Sarielle, partagées avec l’autorisation des clientes.',
+  title: 'Mes réalisations',
+  description:
+    'Un aperçu de mes dernières réalisations : coiffures, make-up, pose de lace et cils.',
+  alternates: { canonical: '/galerie' },
 };
 
+// URLs signées valables 1 h : la page est régénérée bien avant leur expiration.
 export const revalidate = 300;
 
 export default async function GaleriePage() {
-  const photos = await listPublishedGalleryPhotos();
+  const photos = await listPublishedGalleryPhotos().catch(() => []);
 
   return (
-    <main className="page-main">
-      <Title as="h1" size="display" className="">
-        Galerie de réalisations
-      </Title>
-      {photos.length === 0 ? (
-        <p className="mt-10 rounded-[var(--radius-md)] border border-dashed border-line p-10 text-center text-muted">
-          La galerie sera bientôt disponible.
+    <main className="page-main space-y-8">
+      <header className="max-w-3xl space-y-3">
+        <Title as="h1" size="display">
+          Mes réalisations
+        </Title>
+        <p className="max-w-prose text-base leading-relaxed text-muted md:text-lg">
+          Quelques-unes de mes dernières coiffures. Clique sur une photo pour l’agrandir.
         </p>
+      </header>
+      {photos.length === 0 ? (
+        <EmptyState
+          title="Les réalisations arrivent bientôt"
+          message="Je publie mes photos très prochainement. En attendant, découvre mes prestations."
+          actionLabel="Voir le catalogue"
+          actionHref="/coiffures"
+        />
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {photos
-            .filter((photo) => photo.src)
-            .map((photo) => (
-              <figure
-                key={photo.id}
-                className="overflow-hidden rounded-[var(--radius-lg)] border border-line bg-card shadow-soft"
-              >
-                <div className="relative aspect-square w-full">
-                  <Image
-                    src={photo.src!}
-                    alt={photo.alt}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                    placeholder="blur"
-                    blurDataURL={IMAGE_BLUR_DATA_URL}
-                  />
-                </div>
-                {photo.serviceName ? (
-                  <figcaption className="p-3 text-sm font-medium text-fg">
-                    {photo.serviceName}
-                  </figcaption>
-                ) : null}
-              </figure>
-            ))}
-        </div>
+        <GalleryGrid photos={photos} />
       )}
     </main>
   );
