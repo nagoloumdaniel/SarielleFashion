@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ServiceCard } from '@/components/catalogue/ServiceCard';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { parseCatalogueQuery } from '@/lib/catalogue';
+import { getServiceRatingSummaries } from '@/modules/avis/queries';
 import { getCachedCategories, getCachedServices } from '@/lib/public-cache';
 import { CatalogueFilters } from '../catalogue-filters';
 import { Pagination } from '@/components/ui/Pagination';
@@ -34,6 +35,7 @@ export default async function CataloguePage({
   const [categories, result] = await Promise.all([getCachedCategories(), getCachedServices(query)]);
 
   const { services, total, page, totalPages } = result;
+  const summaries = await getServiceRatingSummaries(services.map((service) => service.id));
   const search = query.search ?? '';
   const category = query.category ?? '';
   const hasFilters = search !== '' || category !== '';
@@ -98,7 +100,11 @@ export default async function CataloguePage({
           >
             {services.map((service, index) => (
               <li key={service.id}>
-                <ServiceCard service={service} priority={index < 3} />
+                <ServiceCard
+                  service={service}
+                  priority={index < 3}
+                  rating={summaries[service.id]}
+                />
               </li>
             ))}
           </ul>

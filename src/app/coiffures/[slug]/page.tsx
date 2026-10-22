@@ -11,6 +11,9 @@ import {
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ReviewsSection } from '@/components/avis/ReviewsSection';
+import { RatingLine } from '@/components/shared/Stars';
+import { LOCAL_BUSINESS } from '@/components/seo/LocalBusiness';
 import { ServiceCard } from '@/components/catalogue/ServiceCard';
 import { ServiceGallery } from '@/components/catalogue/ServiceGallery';
 import { db } from '@/lib/db';
@@ -26,6 +29,8 @@ import {
   serviceGallery,
 } from '@/lib/catalogue';
 import { getCachedServices } from '@/lib/public-cache';
+import { getServiceRatingSummaries, listServiceReviews } from '@/modules/avis/queries';
+import { isStorageConfigured } from '@/modules/fichiers/storage';
 import { Title } from '@/components/ui/Title';
 
 type ServicePageProps = { params: Promise<{ slug: string }> };
@@ -95,6 +100,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
   if (!service) notFound();
 
   const similar = await getSimilarServices(service.category.slug, service.id);
+  const [summaries, reviewPage] = await Promise.all([
+    getServiceRatingSummaries([service.id, ...similar.map((item) => item.id)]),
+    listServiceReviews(service.id).catch(() => ({ items: [], hasMore: false })),
+  ]);
+  const summary = summaries[service.id] ?? { count: 0, average: 0 };
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
   const images = serviceGallery(service);
   const compatibility = service.compatibility;
   const acceptedLengths = compatibility?.acceptedLengths ?? [];
@@ -163,6 +174,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
             <Title as="h1" size="display">
               {service.name}
             </Title>
+            {summary.count > 0 ? (
+              <a
+                href="#avis"
+                className="inline-flex rounded-sm text-muted transition hover:text-accent"
+              >
+                <RatingLine average={summary.average} count={summary.count} />
+              </a>
+            ) : null}
           </div>
 
           <div className="space-y-5 rounded-[var(--radius-xl)] border border-line bg-card p-5 shadow-soft md:p-6">
@@ -330,6 +349,16 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </div>
       </div>
 
+      <ReviewsSection
+        service={{ id: service.id, name: service.name }}
+        summary={summary}
+        reviews={reviewPage.items}
+        hasMore={reviewPage.hasMore}
+        photosEnabled={isStorageConfigured()}
+        providerName={LOCAL_BUSINESS.name}
+        url={`${appUrl}/coiffures/${service.slug}`}
+      />
+
       {similar.length > 0 ? (
         <section aria-labelledby="similaires-titre" className="space-y-6 border-t border-line pt-8">
           <Title as="h2" id="similaires-titre">
@@ -338,7 +367,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {similar.map((item) => (
               <li key={item.id}>
-                <ServiceCard service={item} />
+                <ServiceCard service={item} rating={summaries[item.id]} />
               </li>
             ))}
           </ul>

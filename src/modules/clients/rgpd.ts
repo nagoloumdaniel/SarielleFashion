@@ -62,7 +62,6 @@ export interface CustomerDataExport {
   }>;
   reviews: Array<{
     id: string;
-    status: string;
     rating: number | null;
     comment: string | null;
     submittedAt: string | null;
@@ -93,7 +92,7 @@ export async function collectCustomerData(id: string): Promise<CustomerDataExpor
         },
       },
       reviews: {
-        select: { id: true, status: true, rating: true, comment: true, submittedAt: true },
+        select: { id: true, rating: true, comment: true, submittedAt: true },
       },
     },
   });
@@ -162,7 +161,6 @@ export async function collectCustomerData(id: string): Promise<CustomerDataExpor
     })),
     reviews: customer.reviews.map((review) => ({
       id: review.id,
-      status: review.status,
       rating: review.rating,
       comment: review.comment,
       submittedAt: review.submittedAt?.toISOString() ?? null,
@@ -192,7 +190,7 @@ export async function anonymizeCustomerData(
       assessments: { select: { id: true, photoKeys: true } },
       customRequests: { select: { id: true, photoKeys: true } },
       conversations: { select: { id: true } },
-      reviews: { select: { id: true } },
+      reviews: { select: { id: true, photos: { select: { key: true } } } },
       _count: { select: { assessments: true, customRequests: true, conversations: true } },
     },
   });
@@ -202,6 +200,7 @@ export async function anonymizeCustomerData(
   const photoKeys = [
     ...customer.assessments.flatMap((assessment) => assessment.photoKeys),
     ...customer.customRequests.flatMap((request) => request.photoKeys),
+    ...customer.reviews.flatMap((review) => review.photos.map((photo) => photo.key)),
   ];
 
   // Entités dont les métadonnées d'audit peuvent contenir du texte libre (motifs, noms, e-mails).

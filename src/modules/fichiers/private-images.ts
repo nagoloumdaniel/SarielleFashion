@@ -16,7 +16,7 @@ import {
 
 export const MAX_PRIVATE_PHOTOS = 3;
 
-export type PrivatePhotoFolder = 'assessments' | 'demandes';
+export type PrivatePhotoFolder = 'assessments' | 'demandes' | 'avis';
 
 function buildPrivateKey(folder: PrivatePhotoFolder, extension: string): string {
   return `${folder}/${randomUUID()}.${extension}`;

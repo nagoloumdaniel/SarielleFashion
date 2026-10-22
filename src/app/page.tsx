@@ -4,6 +4,7 @@ import {
   Car,
   Clock,
   Eye,
+  Images,
   LayoutGrid,
   Mail,
   MapPin,
@@ -15,7 +16,10 @@ import {
 } from 'lucide-react';
 import type { Metadata } from 'next';
 
-import { getApprovedReviews } from '@/modules/avis/queries';
+import { getServiceRatingSummaries, listLatestReviews } from '@/modules/avis/queries';
+import { GalleryGrid } from '@/components/galerie/GalleryGrid';
+import { listPublishedGalleryPhotos } from '@/modules/galerie/queries';
+import { Stars } from '@/components/shared/Stars';
 import { Title } from '@/components/ui/Title';
 import { ButtonLink } from '@/components/ui/Button';
 import { PrestationCard } from '@/components/catalogue/PrestationCard';
@@ -85,8 +89,16 @@ const steps = [
   },
 ];
 
+// Les URLs signées des photos (1 h) restent valides : la page est régénérée toutes les 5 min.
+export const revalidate = 300;
+
 export default async function HomePage() {
-  const [reviews, popular] = await Promise.all([getApprovedReviews(3), getCachedPopularServices()]);
+  const [reviews, popular, realisations] = await Promise.all([
+    listLatestReviews(3).catch(() => []),
+    getCachedPopularServices(),
+    listPublishedGalleryPhotos(6).catch(() => []),
+  ]);
+  const summaries = await getServiceRatingSummaries(popular.map((service) => service.id));
   return (
     <main>
       {/* Hero typographique (aucune image) : grand titre, index des savoir-faire à droite. */}
@@ -214,10 +226,26 @@ export default async function HomePage() {
                     title={service.name}
                     price={formatPrice(service)}
                     duration={formatDuration(service.durationMinutes)}
+                    rating={summaries[service.id]}
                   />
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {/* Mes réalisations : section absente s'il n'y a aucune photo publiée. */}
+        {realisations.length > 0 ? (
+          <section id="realisations" aria-labelledby="realisations-titre" className="space-y-10">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <Title as="h2" id="realisations-titre">
+                Mes réalisations
+              </Title>
+              <ButtonLink href="/galerie" variant="secondary" icon={Images}>
+                Voir toute la galerie
+              </ButtonLink>
+            </div>
+            <GalleryGrid photos={realisations} label="Mes dernières réalisations" compact />
           </section>
         ) : null}
 
@@ -292,24 +320,28 @@ export default async function HomePage() {
           </ButtonLink>
         </section>
 
-        {/* Témoignages : avis réels approuvés uniquement, jamais inventés. */}
+        {/* Témoignages : avis réels publiés uniquement, jamais inventés. */}
         {reviews.length > 0 ? (
-          <section id="temoignages" className="space-y-8">
-            <Title as="h2">Ils me font confiance</Title>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <section id="temoignages" aria-labelledby="temoignages-titre" className="space-y-8">
+            <Title as="h2" id="temoignages-titre">
+              Ils me font confiance
+            </Title>
+            <ul className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {reviews.map((review) => (
-                <blockquote
-                  key={review.id}
-                  className="rounded-[var(--radius-lg)] border border-line bg-card p-6 text-muted shadow-soft"
-                >
-                  {review.comment ? <p className="mb-4 text-lg">« {review.comment} »</p> : null}
-                  <footer className="text-sm font-semibold text-fg">
-                    - {review.customer.name.split(' ')[0]} · {review.service.name}
-                    {review.rating ? ` · ${review.rating}/5` : ''}
-                  </footer>
-                </blockquote>
+                <li key={review.id}>
+                  <figure className="flex h-full flex-col gap-4 rounded-[var(--radius-lg)] border border-line bg-card p-6 shadow-soft">
+                    <Stars value={review.rating} />
+                    <blockquote className="flex-1 whitespace-pre-line break-words text-lg leading-relaxed text-fg">
+                      « {review.comment} »
+                    </blockquote>
+                    <figcaption className="text-sm font-semibold text-fg">
+                      {review.authorName}
+                      <span className="font-normal text-muted"> · {review.serviceName}</span>
+                    </figcaption>
+                  </figure>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         ) : null}
 
