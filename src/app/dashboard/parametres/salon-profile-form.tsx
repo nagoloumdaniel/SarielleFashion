@@ -20,7 +20,6 @@ import { SettingsSection } from './settings-section';
 type Settings = {
   name: string;
   contactEmail: string | null;
-  phone: string | null;
   address: string | null;
   emailSignature: string | null;
   cancellationPolicy: string | null;
@@ -54,7 +53,6 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
   const [values, setValues] = useState({
     name: settings.name,
     contactEmail: settings.contactEmail ?? '',
-    phone: settings.phone ?? '',
     address: settings.address ?? '',
     emailSignature: settings.emailSignature ?? '',
     cancellationPolicy: settings.cancellationPolicy ?? '',
@@ -98,15 +96,6 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             onChange={set('contactEmail')}
             maxLength={200}
             error={errors.contactEmail}
-          />
-          <Input
-            label="Téléphone"
-            name="phone"
-            type="tel"
-            value={values.phone}
-            onChange={set('phone')}
-            maxLength={30}
-            error={errors.phone}
           />
           <Textarea
             label="Adresse ou quartier"

@@ -8,7 +8,6 @@ import { db } from '@/lib/db';
 export interface SalonSettingsData {
   name: string;
   contactEmail: string | null;
-  phone: string | null;
   address: string | null;
   holdSlotMinutes: number;
   minCancelNoticeMinutes: number;
@@ -34,7 +33,6 @@ export interface SalonSettingsData {
 export const DEFAULT_SALON_SETTINGS: SalonSettingsData = {
   name: 'Sarielle Fashion',
   contactEmail: null,
-  phone: null,
   address: null,
   holdSlotMinutes: 30,
   minCancelNoticeMinutes: 30,
@@ -59,7 +57,6 @@ export function mapSalonSettings(row: SalonSettings): SalonSettingsData {
   return {
     name: row.name,
     contactEmail: row.contactEmail,
-    phone: row.phone,
     address: row.address,
     holdSlotMinutes: row.holdSlotMinutes,
     minCancelNoticeMinutes: row.minCancelNoticeMinutes,

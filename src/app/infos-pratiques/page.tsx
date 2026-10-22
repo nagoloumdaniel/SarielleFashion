@@ -105,13 +105,6 @@ export default async function InfosPratiquesPage() {
               {homeServiceSentence(settings.travelFeeCents)}
             </p>
           ) : null}
-          {settings.phone ? (
-            <p className="text-muted">
-              <span className="font-semibold text-fg">Téléphone</span>
-              <br />
-              {settings.phone}
-            </p>
-          ) : null}
           <p className="text-muted">
             <span className="font-semibold text-fg">E-mail</span>
             <br />
