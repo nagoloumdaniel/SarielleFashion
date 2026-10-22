@@ -153,10 +153,12 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
           Ouvert
         </label>
       </div>
-      <div
-        className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2 transition-opacity ${
+      <fieldset
+        disabled={!active}
+        aria-label={`Horaires de ${WEEKDAYS[weekday]}`}
+        className={`min-w-0 border-0 p-0 transition-opacity ${
           active ? '' : 'opacity-50'
-        }`}
+        } ${active ? '' : 'grayscale'}`}
       >
         <Input
           label="Début"
@@ -173,7 +175,7 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
         <Button type="submit" variant="secondary" icon={Save} iconOnly loading={pending}>
           {`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
         </Button>
-      </div>
+      </fieldset>
     </form>
   );
 }
