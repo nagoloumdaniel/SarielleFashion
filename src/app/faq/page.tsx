@@ -8,6 +8,8 @@ import { formatEuro } from '@/i18n/format';
 import { pageMetadata } from '@/i18n/metadata';
 import { getI18n } from '@/i18n/server';
 import { getCachedSalonSettings } from '@/lib/public-cache';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { faqJsonLd } from '@/lib/seo-jsonld';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { locale, messages } = await getI18n();
@@ -60,6 +62,12 @@ export default async function FaqPage() {
   ];
   return (
     <main className="page-main space-y-12">
+      <JsonLd
+        data={faqJsonLd(
+          locale,
+          items.map((item) => ({ question: item.title, answer: item.content })),
+        )}
+      />
       <Breadcrumb items={[{ label: t('nav.home'), href: '/' }, { label: faq.breadcrumb }]} />
 
       <header className="max-w-3xl">

@@ -1,21 +1,23 @@
 import { MetadataRoute } from 'next';
+import { siteUrl } from '@/i18n/config';
 
 /**
- * P3.8 - robots.txt du site public.
- * Autorise l'exploration de toutes les pages publiques et pointe vers le sitemap.
+ * robots.txt : pages publiques explorables (fr + /de) ; espace privé, API, connexion et
+ * pages à jeton (annulation, avis, confirmation de liste d'attente) exclus et en noindex.
  */
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+const PRIVATE = ['/dashboard/', '/api/', '/connexion', '/annulation/', '/avis/', '/liste-attente/'];
 
 export default function robots(): MetadataRoute.Robots {
+  const base = siteUrl();
   return {
     rules: [
       {
         userAgent: '*',
         allow: ['/'],
-        disallow: ['/dashboard/', '/api/', '/connexion', '/annulation/'],
+        disallow: [...PRIVATE, ...PRIVATE.map((p) => `/de${p}`)],
       },
     ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
-    host: BASE_URL,
+    sitemap: `${base}/sitemap.xml`,
+    host: base,
   };
 }

@@ -1,0 +1,10 @@
+/* Bloc JSON-LD (rendu côté serveur dans le HTML). `<` échappé pour éviter toute sortie de balise. */
+export function JsonLd({ data }: { data: Record<string, unknown> | null | undefined }) {
+  if (!data) return null;
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\u003c') }}
+    />
+  );
+}

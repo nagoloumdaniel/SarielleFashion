@@ -14,6 +14,8 @@ import { I18nScope } from '@/i18n/client';
 import { absoluteUrl } from '@/i18n/config';
 import { pageMetadata } from '@/i18n/metadata';
 import { getI18n } from '@/i18n/server';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbJsonLd, serviceJsonLd } from '@/lib/seo-jsonld';
 import { notFound } from 'next/navigation';
 import { ReviewsSection } from '@/components/avis/ReviewsSection';
 import { RatingLine } from '@/components/shared/Stars';
@@ -139,6 +141,26 @@ export default async function ServicePage({ params }: ServicePageProps) {
   return (
     <I18nScope messages={{ catalogue: messages.catalogue }}>
       <main className="page-main space-y-8 md:space-y-10">
+        <JsonLd
+          data={breadcrumbJsonLd(locale, [
+            { name: t('catalogue.breadcrumb.home'), path: '/' },
+            { name: t('catalogue.breadcrumb.catalogue'), path: '/coiffures' },
+            { name: service.name, path: `/coiffures/${service.slug}` },
+          ])}
+        />
+        <JsonLd
+          data={serviceJsonLd({
+            locale,
+            slug: service.slug,
+            name: service.name,
+            description: service.description,
+            categoryName,
+            imageUrl: images[0]?.src ?? null,
+            priceFromCents: service.priceFromCents,
+            priceToCents: service.priceToCents,
+            priceOnRequest: service.priceOnRequest,
+          })}
+        />
         <nav aria-label={t('common.breadcrumb')} className="text-sm text-muted">
           <ol className="flex flex-wrap items-center gap-2">
             <li>

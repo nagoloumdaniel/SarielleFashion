@@ -4,6 +4,9 @@
  * horaires) dans les résultats enrichis.
  */
 
+import { siteUrl, absoluteUrl, type Locale } from '@/i18n/config';
+import { MESSAGES } from '@/i18n/messages';
+import { TIKTOK_URL } from '@/lib/seo-jsonld';
 import { LOCAL_BUSINESS, type LocalBusinessData } from './local-business-data';
 
 export { LOCAL_BUSINESS };
@@ -13,12 +16,25 @@ export type { LocalBusinessData };
  * Génère le bloc JSON-LD LocalBusiness.
  * Le composant est un Server Component : le script est rendu statiquement dans le HTML.
  */
-export default function LocalBusiness({ data }: { data: LocalBusinessData }) {
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+export default function LocalBusiness({
+  data,
+  locale = 'fr',
+}: {
+  data: LocalBusinessData;
+  locale?: Locale;
+}) {
+  const appUrl = siteUrl();
   const jsonLd: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'HealthAndBeautyBusiness',
+    '@id': `${appUrl}/#organization`,
     name: data.name,
+    url: absoluteUrl(locale, '/'),
+    description: MESSAGES[locale].common.meta.description,
+    inLanguage: locale,
+    knowsLanguage: ['fr', 'de'],
+    sameAs: [TIKTOK_URL],
+    image: `${appUrl}/brand/logo-mark-og.png`,
     logo: `${appUrl}/brand/logo-mark-og.png`,
     address: {
       '@type': 'PostalAddress',

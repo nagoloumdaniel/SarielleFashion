@@ -10,7 +10,7 @@ import { Inter, Manrope } from 'next/font/google';
 import { THEME_SCRIPT } from '@/lib/inline-scripts';
 import { HTML_LANG, OG_LOCALE, siteUrl } from '@/i18n/config';
 import { LocaleProvider } from '@/i18n/client';
-import { languageAlternates } from '@/i18n/metadata';
+import { languageAlternates, socialImages } from '@/i18n/metadata';
 import { getI18n } from '@/i18n/server';
 import './globals.css';
 
@@ -48,8 +48,22 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Sarielle Fashion',
       title: meta.ogTitle,
       description: meta.description,
+      images: socialImages(locale, meta.ogTitle),
     },
-    twitter: { card: 'summary_large_image', title: meta.ogTitle, description: meta.description },
+    twitter: {
+      card: 'summary_large_image',
+      title: meta.ogTitle,
+      description: meta.description,
+      images: socialImages(locale, meta.ogTitle),
+    },
+    manifest: '/site.webmanifest',
+    icons: {
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      ],
+      apple: '/apple-icon.png',
+    },
     robots: { index: true, follow: true },
   };
 }
@@ -78,7 +92,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             {messages.common.skipToContent}
           </a>
           {/* P3.8 : donnees structurees LocalBusiness (JSON-LD) */}
-          <LocalBusiness data={LOCAL_BUSINESS} />
+          <LocalBusiness data={LOCAL_BUSINESS} locale={locale} />
           <ToastProvider>
             <Header />
             <div id="contenu">{children}</div>

@@ -2,7 +2,7 @@ import type { Messages } from '../types';
 
 export const faq: Messages['faq'] = {
   meta: {
-    title: 'FAQ',
+    title: 'Häufige Fragen (FAQ)',
     description:
       'Häufige Fragen zu Leistungen, Terminbuchung, Stornierung und Haaren bei Sarielle Fashion.',
   },

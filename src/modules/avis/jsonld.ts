@@ -17,6 +17,7 @@ export function buildServiceReviewsJsonLd(input: {
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    '@id': `${input.url}#service`,
     name: input.serviceName,
     url: input.url,
     provider: { '@type': 'HealthAndBeautyBusiness', name: input.providerName },
