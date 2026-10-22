@@ -21,6 +21,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { PrestationCard } from '@/components/catalogue/PrestationCard';
 import { bookingHref, formatDuration, formatPrice, serviceImages } from '@/lib/catalogue';
 import { getCachedPopularServices } from '@/lib/popular-services';
+import { getPublicHoursLines } from '@/lib/public-hours';
 import { getCachedSalonSettings } from '@/lib/public-cache';
 import { travelFeeFromLabel } from '@/modules/parametres/home-service';
 
@@ -106,6 +107,7 @@ export default async function HomePage() {
     getCachedPopularServices(),
     loadTravelNote(),
   ]);
+  const hoursLines = await getPublicHoursLines();
   return (
     <main>
       {/* Hero typographique (aucune image) : grand titre, index des savoir-faire à droite. */}
@@ -363,7 +365,14 @@ export default async function HomePage() {
             </p>
             <p className="flex items-start gap-3 text-fg">
               <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
-              <span>Sur rendez-vous</span>
+              <span>
+                {hoursLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+                <span className="block text-muted">Sur rendez-vous</span>
+              </span>
             </p>
           </div>
         </section>
