@@ -70,7 +70,9 @@ export default async function CompatibilitePage({
                   >
                     <span>
                       <span className="block font-semibold text-fg">{service.name}</span>
-                      <span className="text-sm text-muted">{categoryLabel(locale, service.categorySlug, service.categoryName)}</span>
+                      <span className="text-sm text-muted">
+                        {categoryLabel(locale, service.categorySlug, service.categoryName)}
+                      </span>
                     </span>
                     <ArrowRight aria-hidden="true" className="size-4 text-cacao" />
                   </Link>
@@ -101,7 +103,9 @@ export default async function CompatibilitePage({
 
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="neutral">{categoryLabel(locale, service.categorySlug, service.categoryName)}</Badge>
+          <Badge tone="neutral">
+            {categoryLabel(locale, service.categorySlug, service.categoryName)}
+          </Badge>
           <Badge tone="accent">{t('compat.badge')}</Badge>
         </div>
         <Title as="h1" size="display" className="">

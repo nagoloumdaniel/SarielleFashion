@@ -54,7 +54,9 @@ export default async function ReserverPage({
 
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="neutral">{categoryLabel(locale, service.categorySlug, service.categoryName)}</Badge>
+          <Badge tone="neutral">
+            {categoryLabel(locale, service.categorySlug, service.categoryName)}
+          </Badge>
           <Badge tone="accent">{t('booking.page.paymentBadge')}</Badge>
         </div>
         <Title as="h1" size="display" className="">

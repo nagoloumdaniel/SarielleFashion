@@ -104,7 +104,12 @@ export async function listPublishedServicesForCompatibility(): Promise<
     .findMany({
       where: { status: 'PUBLISHED', category: { active: true } },
       orderBy: [{ order: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, category: { select: { name: true, slug: true } } },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        category: { select: { name: true, slug: true } },
+      },
     })
     .then((rows) =>
       rows.map((row) => ({

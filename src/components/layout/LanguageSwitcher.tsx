@@ -52,11 +52,11 @@ function SwitcherView({
                 lang={l}
                 hrefLang={l}
                 aria-current={active ? 'true' : undefined}
-                aria-label={
+                aria-label={`${short} - ${
                   active
                     ? t('nav.language.current', { name })
                     : t('nav.language.switchTo', { name })
-                }
+                }`}
                 title={name}
                 className={`flex h-8 min-w-9 items-center justify-center rounded-full px-2.5 text-xs font-bold tracking-wide transition ${
                   active
