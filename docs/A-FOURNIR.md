@@ -28,7 +28,7 @@ Ce qui est déjà fait ou décidé par la cliente : logo et icônes, palette rou
 
 - Base de données PostgreSQL neuve (ex. Neon) : `DATABASE_URL`, `DIRECT_URL`.
 - Stockage photos (ex. Cloudflare R2) : `S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`.
-- E-mails : Gmail SMTP (`EMAIL_MODE=smtp`, `SMTP_USER`, mot de passe d'application Google) ou Resend (domaine vérifié).
+- E-mails : Gmail SMTP (`EMAIL_MODE=smtp`, `SMTP_USER`, mot de passe d'application Google) ou Gmail SMTP (domaine vérifié).
 - `AUTH_SECRET` et `CRON_SECRET` : à générer pour ce projet (distincts de ceux de HairStyleByPati).
 - Mot de passe admin initial : variable `AUTH_ADMIN_PASSWORD` (jamais dans le dépôt) ; e-mail admin : `sarielletalla@gmail.com`.
 - Nom de domaine et projet Vercel (`NEXT_PUBLIC_APP_URL`).

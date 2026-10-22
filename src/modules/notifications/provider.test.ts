@@ -16,7 +16,6 @@ describe('getEmailProvider', () => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('EMAIL_MODE', 'smtp');
     vi.stubEnv('SMTP_USER', '');
-    vi.stubEnv('RESEND_API_KEY', '');
     expect(getEmailProvider().name).toBe('console');
   });
 

@@ -16,7 +16,7 @@
 | Toasts            | sonner                                                                                            | latest        | Toasts de statut de réservation, accessibles (rôle `status`)                                                                                                                                  |
 | ORM               | **Prisma**                                                                                        | latest        | Schéma §14.3 déclaratif, migrations versionnées, requêtes typées et paramétrées (anti injection SQL, §15)                                                                                     |
 | Base de données   | **PostgreSQL** sur **Neon**                                                                       | —             | §14.1 impose PostgreSQL. Neon : serverless, branches de dev isolées, sauvegardes quotidiennes (§15.4), gratuit jusqu'à un seuil                                                               |
-| E-mails           | **Resend** + `@react-email/components`                                                            | latest        | §14.1 liste Resend/Brevo. Resend : API simple, SDK officiel, taux de délivrabilité, templates React typés                                                                                     |
+| E-mails           | **Gmail SMTP** + `@react-email/components`                                                        | latest        | §14.1 liste Gmail SMTP/Brevo. Gmail SMTP : API simple, SDK officiel, taux de délivrabilité, templates React typés                                                                             |
 | Fichiers          | **Cloudflare R2** (API S3) via `@aws-sdk/client-s3`                                               | latest        | §14.1 « stockage objet compatible S3 ». R2 : zéro frais de sortie (egress), URLs signées pour photos privées (§15.2)                                                                          |
 | Authentification  | **Auth.js (NextAuth) v5** mode credentials + **Argon2id**                                         | v5            | §14.1 « solution éprouvée compatible avec le framework ». Sessions JWT httpOnly/secure/sameSite (§15.1)                                                                                       |
 | Validation        | **Zod**                                                                                           | latest        | Validation serveur de TOUTES les entrées (§17 Sécurité), schémas partagés client/serveur                                                                                                      |
@@ -35,7 +35,7 @@
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Drizzle (§14.1 « Prisma ou Drizzle ») | Prisma retenu : migrations + introspection + écosystème plus mature pour le schéma relationnel riche §14.3                     |
 | Supabase                              | Ajoute une couche BaaS alors que Neon = PostgreSQL pur, conforme au « maintenable, sans dépendance à un service propriétaire » |
-| Brevo                                 | Resend : templates React, SDK plus propre. Brevo reste un repli (abstraction fournisseur prévue P7.1)                          |
+| Brevo                                 | Gmail SMTP : templates React, SDK plus propre. Brevo reste un repli (abstraction fournisseur prévue P7.1)                      |
 | AWS S3                                | Frais de sortie egress + config IAM lourde pour un projet de cette taille ; R2 compatible S3                                   |
 | MongoDB                               | §14.1 impose PostgreSQL                                                                                                        |
 | Credentials maison sans framework     | Auth.js = sessions, CSRF, rotation de clé audités par la communauté                                                            |
@@ -58,7 +58,7 @@
 | ------------- | ----------------------------------------------------------------------------------------------------------- |
 | Neon          | ~0.5 GB PostgreSQL                                                                                          |
 | Vercel        | hobby — **retenu** : application non commercialisée (décision du 17/10/2026), conforme aux conditions Hobby |
-| Resend        | 3 000 e-mails/mois, 100/jour                                                                                |
+| Gmail SMTP    | 3 000 e-mails/mois, 100/jour                                                                                |
 | Cloudflare R2 | 10 GB stockage + 10 M lectures/mois                                                                         |
 | Sentry        | 5 000 erreurs/mois                                                                                          |
 
