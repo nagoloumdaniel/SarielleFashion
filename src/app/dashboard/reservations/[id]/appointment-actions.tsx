@@ -21,7 +21,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Textarea } from '@/components/ui/Textarea';
 
 /* ============================================================
- * Actions de Patricia sur un rendez-vous : confirmer, terminer,
+ * Actions de Sarielle sur un rendez-vous : confirmer, terminer,
  * cliente absente, annuler / refuser, reprogrammer.
  * Les transitions et la disponibilité sont re-contrôlées côté serveur.
  * ============================================================ */
@@ -43,9 +43,9 @@ function timeLabel(startMinute: number): string {
 
 function deviceTimeZone(): string {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar';
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin';
   } catch {
-    return 'Africa/Dakar';
+    return 'Europe/Berlin';
   }
 }
 

@@ -1,17 +1,17 @@
 {
-  "name": "hairstyle-by-pati",
+  "name": "sarielle-fashion",
   "version": "0.1.0",
   "private": true,
-  "description": "Site vitrine et réservation en ligne — Hairstyle by Patricia",
+  "description": "Site vitrine et réservation en ligne — Sarielle Fashion",
   "license": "UNLICENSED",
   "author": "Daniel Nagoloum Talla",
-  "homepage": "https://hairstylebypati.vercel.app",
+  "homepage": "https://sariellefashion.vercel.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nagoloumdaniel/HairStyleByPati.git"
+    "url": "git+https://github.com/nagoloumdaniel/SarielleFashion.git"
   },
   "bugs": {
-    "url": "https://github.com/nagoloumdaniel/HairStyleByPati/issues"
+    "url": "https://github.com/nagoloumdaniel/SarielleFashion/issues"
   },
   "keywords": [
     "nextjs",

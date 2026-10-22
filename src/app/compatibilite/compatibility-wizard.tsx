@@ -378,7 +378,7 @@ export function CompatibilityWizard({
               >
                 {preview.canRequestPhotoEvaluation
                   ? 'Envoyer une photo pour évaluation'
-                  : 'Demander une évaluation à Patricia'}
+                  : 'Demander une évaluation à Sarielle'}
               </Button>
             ) : null}
 
@@ -388,7 +388,7 @@ export function CompatibilityWizard({
                   Voir les autres coiffures
                 </ButtonLink>
                 <ButtonLink href="/contact" variant="secondary" icon={Mail}>
-                  Contacter Patricia
+                  Contacter Sarielle
                 </ButtonLink>
               </>
             ) : null}
@@ -442,7 +442,7 @@ export function CompatibilityWizard({
 
             className="outline-none"
           >
-            Demander l’évaluation de Patricia
+            Demander l’évaluation de Sarielle
           </Title>
 
           <form action={submitAction} className="mt-6 flex flex-col gap-5">
@@ -482,7 +482,7 @@ export function CompatibilityWizard({
                   className="w-full rounded-[var(--radius-md)] border border-line bg-card px-4 py-2.5 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-accent-soft file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-fg"
                 />
                 <p className="text-sm text-muted">
-                  JPEG, PNG ou WebP, 5 Mo et 3 photos maximum. Visibles par Patricia uniquement.
+                  JPEG, PNG ou WebP, 5 Mo et 3 photos maximum. Visibles par Sarielle uniquement.
                 </p>
               </div>
             ) : (

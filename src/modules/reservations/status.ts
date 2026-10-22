@@ -24,7 +24,7 @@ export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, string> = {
   CONFIRMED: 'Confirmée',
   RESCHEDULED: 'Reprogrammée',
   CANCELLED_BY_CUSTOMER: 'Annulée par la cliente',
-  CANCELLED_BY_ADMIN: 'Annulée par Patricia',
+  CANCELLED_BY_ADMIN: 'Annulée par Sarielle',
   COMPLETED: 'Terminée',
   NO_SHOW: 'Cliente absente',
 };
@@ -34,7 +34,7 @@ export const APPOINTMENT_STATUS_SHORT_LABELS: Record<AppointmentStatus, string> 
   CONFIRMED: 'Confirmée',
   RESCHEDULED: 'Reprogrammée',
   CANCELLED_BY_CUSTOMER: 'Annulée cliente',
-  CANCELLED_BY_ADMIN: 'Annulée Patricia',
+  CANCELLED_BY_ADMIN: 'Annulée Sarielle',
   COMPLETED: 'Terminée',
   NO_SHOW: 'Absente',
 };

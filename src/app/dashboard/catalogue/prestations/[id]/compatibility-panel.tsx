@@ -131,7 +131,7 @@ export function CompatibilityPanel({
           label="Conditions particulières (facultatif)"
           name="conditionsNote"
           defaultValue={rule?.conditionsNote ?? ''}
-          hint="Affichées à la cliente et à Patricia, par exemple un soin préalable ou un temps supplémentaire."
+          hint="Affichées à la cliente et à Sarielle, par exemple un soin préalable ou un temps supplémentaire."
           rows={2}
         />
         <Textarea
@@ -145,7 +145,7 @@ export function CompatibilityPanel({
           label="Message si la compatibilité est incertaine"
           name="uncertainMessage"
           defaultValue={rule?.uncertainMessage ?? ''}
-          hint="Par exemple : envoyez une photo pour que Patricia confirme."
+          hint="Par exemple : envoyez une photo pour que Sarielle confirme."
           rows={3}
         />
       </div>

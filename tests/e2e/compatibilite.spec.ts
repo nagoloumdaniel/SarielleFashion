@@ -6,7 +6,7 @@
  * - question conditionnelle affichée uniquement quand utile ;
  * - cas « Je ne suis pas sûr(e) » avec demande d'évaluation ;
  * - photo privée stockée puis consultée dans le dashboard ;
- * - décision de Patricia sans création de réservation ;
+ * - décision de Sarielle sans création de réservation ;
  * - prestation sans photo possible : demande bloquée sans évaluation.
  *
  * Les données de test sont créées en base avec le préfixe « ZZ E2E »
@@ -292,7 +292,7 @@ test.describe('Compatibilité capillaire', () => {
     expect(assessment?.customer?.email).toBe(customerEmail);
   });
 
-  test('should let Patricia accept the assessment without creating an appointment', async ({
+  test('should let Sarielle accept the assessment without creating an appointment', async ({
     page,
   }) => {
     test.skip(ADMIN_EMAIL === '' || ADMIN_PASSWORD === '', 'Identifiants admin absents.');

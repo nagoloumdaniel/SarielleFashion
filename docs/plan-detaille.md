@@ -212,7 +212,7 @@
 
 ## 10. Module `auth` — sessions, rôles, gardes
 
-**Responsabilité :** authentifier Patricia, protéger tout le dashboard.
+**Responsabilité :** authentifier Sarielle, protéger tout le dashboard.
 
 **Données :** `User` (nom, e-mail, mot de passe Argon2, rôle, créé le).
 

@@ -8,7 +8,7 @@ import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 import { adminSaveSalonProfile, type SalonProfileState } from '@/modules/parametres/actions';
-import { MAX_TRAVEL_FEE_FCFA } from '@/modules/parametres/home-service';
+import { MAX_TRAVEL_FEE_EUR } from '@/modules/parametres/home-service';
 import {
   OPENING_MAX,
   OPENING_MIN,
@@ -27,7 +27,7 @@ type Settings = {
   bookingPolicy: string | null;
   openingHours: unknown;
   homeServiceEnabled: boolean;
-  /** Frais de déplacement en 1/100 FCFA (affichés en FCFA). */
+  /** Frais de déplacement en centimes (affichés en euros). */
   travelFeeCents: number;
 };
 
@@ -116,7 +116,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             onChange={set('address')}
             maxLength={300}
             error={errors.address}
-            hint="Patricia reçoit sur rendez-vous : indiquez la ville ou le quartier."
+            hint="Sarielle reçoit sur rendez-vous : indiquez la ville ou le quartier."
           />
         </SettingsSection>
 
@@ -190,24 +190,24 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
           </label>
           <div className="max-w-xs">
             <Input
-              label="Frais de déplacement (FCFA)"
-              name="travelFeeFcfa"
+              label="Frais de déplacement (€)"
+              name="travelFeeEur"
               type="number"
               inputMode="numeric"
               icon={Banknote}
               min={0}
-              max={MAX_TRAVEL_FEE_FCFA}
+              max={MAX_TRAVEL_FEE_EUR}
               step={1}
               value={travelFee}
               onChange={(event) => setTravelFee(event.target.value)}
-              error={errors.travelFeeFcfa}
+              error={errors.travelFeeEur}
               hint="À la charge de la cliente, ajoutés au prix de la prestation. 0 = déplacement offert."
             />
           </div>
           <p className="text-sm text-muted">
             {homeEnabled
               ? 'Les clientes peuvent choisir l’option à la réservation et indiquent leur adresse.'
-              : 'Désactivé : Patricia reçoit uniquement sur rendez-vous, sans option à domicile.'}
+              : 'Désactivé : Sarielle reçoit uniquement sur rendez-vous, sans option à domicile.'}
           </p>
         </SettingsSection>
 

@@ -32,40 +32,40 @@ const SITE_URL =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : 'http://localhost:3000');
 const SITE_DESCRIPTION =
-  'Départ et retwist de locs, nattes collées, vanilles. Coiffure sur rendez-vous à Dakar pour hommes et femmes : catalogue, diagnostic capillaire et réservation en ligne.';
+  'Coiffure femme, homme et enfant, make-up, pose de lace et de cils à Clausthal-Zellerfeld. Déplacement possible, réservation en ligne.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Hairstyle by Patricia - Locs, nattes collées et vanilles à Dakar',
-    template: '%s | Hairstyle by Patricia',
+    default: 'Sarielle Fashion - Coiffure, make-up, lace et cils à Clausthal-Zellerfeld',
+    template: '%s | Sarielle Fashion',
   },
   description: SITE_DESCRIPTION,
-  applicationName: 'Hairstyle by Patricia',
-  authors: [{ name: 'Hairstyle by Patricia' }],
+  applicationName: 'Sarielle Fashion',
+  authors: [{ name: 'Sarielle Fashion' }],
   keywords: [
-    'coiffure Dakar',
-    'retwist locs',
-    'départ de locs',
-    'nattes collées',
-    'vanilles',
-    'coiffure sur rendez-vous Dakar',
+    'coiffure Clausthal-Zellerfeld',
+    'make-up',
+    'pose de lace',
+    'pose de cils',
+    'coiffure à domicile',
+    'coiffure sur rendez-vous Clausthal-Zellerfeld',
     'cheveux naturels',
-    'Hairstyle by Patricia',
+    'Sarielle Fashion',
   ],
   category: 'beauty',
   alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
-    locale: 'fr_SN',
+    locale: 'fr_DE',
     url: '/',
-    siteName: 'Hairstyle by Patricia',
-    title: 'Hairstyle by Patricia | Locs, nattes collées et vanilles à Dakar',
+    siteName: 'Sarielle Fashion',
+    title: 'Sarielle Fashion | Coiffure, make-up, lace et cils',
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Hairstyle by Patricia | Locs, nattes collées et vanilles à Dakar',
+    title: 'Sarielle Fashion | Coiffure, make-up, lace et cils',
     description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },

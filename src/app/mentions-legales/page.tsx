@@ -8,7 +8,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Mentions légales',
   description:
-    'Mentions légales de Hairstyle by Patricia : identité, coordonnées, hébergement et publication du site.',
+    'Mentions légales de Sarielle Fashion : identité, coordonnées, hébergement et publication du site.',
   alternates: { canonical: '/mentions-legales' },
 };
 
@@ -32,21 +32,21 @@ export default function MentionsLegalesPage() {
             <div className="bg-page p-6 rounded-xl border border-line">
               <dt className="font-medium text-fg mb-1">Nom commercial</dt>
               <dd>
-                Hairstyle by Patricia - coiffure sur rendez-vous à Dakar, spécialisée dans les
-                cheveux texturés.
+                Sarielle Fashion - coiffure, make-up, pose de lace et de cils à
+                Clausthal-Zellerfeld.
               </dd>
             </div>
             <div className="bg-page p-6 rounded-xl border border-line">
               <dt className="font-medium text-fg mb-1">Activité</dt>
-              <dd>Coiffures texturées : tresses, vanilles, locs, coiffures protectrices.</dd>
+              <dd>Coiffure, make-up, pose de lace, pose de cils.</dd>
             </div>
           </div>
           <div className="bg-page p-6 rounded-xl border border-line">
             <dt className="font-medium text-fg mb-1">Contact</dt>
             <dd>
               E-mail :{' '}
-              <a href="mailto:zepatricia7@gmail.com" className="text-cacao underline">
-                zepatricia7@gmail.com
+              <a href="mailto:sarielletalla@gmail.com" className="text-cacao underline">
+                sarielletalla@gmail.com
               </a>
             </dd>
           </div>
@@ -69,9 +69,9 @@ export default function MentionsLegalesPage() {
           3. Publication et contenus
         </Title>
         <p className="text-muted leading-relaxed">
-          La directrice de la publication est Patricia, gérante de Hairstyle by Patricia. Les
-          textes, photos et visuels du site sont la propriété de Patricia ou utilisés avec
-          l’autorisation de leurs auteurs. Toute reproduction est interdite sans accord écrit.
+          La directrice de la publication est Sarielle, gérante de Sarielle Fashion. Les textes,
+          photos et visuels du site sont la propriété de Sarielle ou utilisés avec l’autorisation de
+          leurs auteurs. Toute reproduction est interdite sans accord écrit.
         </p>
       </section>
 
@@ -86,8 +86,8 @@ export default function MentionsLegalesPage() {
           </Link>
           . Conformément au RGPD, vous disposez d’un droit d’accès, de rectification, de suppression
           et d’opposition sur vos données. Pour exercer ces droits, écrivez à{' '}
-          <a href="mailto:zepatricia7@gmail.com" className="text-cacao underline">
-            zepatricia7@gmail.com
+          <a href="mailto:sarielletalla@gmail.com" className="text-cacao underline">
+            sarielletalla@gmail.com
           </a>
           .
         </p>

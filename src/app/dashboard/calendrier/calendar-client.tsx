@@ -109,9 +109,9 @@ export function CalendarClient() {
   useEffect(() => {
     setDateISO(isoFromDate(new Date()));
     try {
-      setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar');
+      setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin');
     } catch {
-      setTimeZone('Africa/Dakar');
+      setTimeZone('Europe/Berlin');
     }
   }, []);
 

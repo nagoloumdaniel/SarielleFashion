@@ -7,7 +7,7 @@ import { AppError } from '@/lib/errors';
 import { requireAdmin } from '@/modules/auth/guards';
 import { logAudit } from '@/modules/stats/audit';
 import { OPENING_MAX, OPENING_MIN } from './hours';
-import { fcfaToCents, homeServiceSettingsSchema } from './home-service';
+import { eurosToCents, homeServiceSettingsSchema } from './home-service';
 
 export type SalonProfileState = {
   success?: string;
@@ -50,7 +50,7 @@ const profileSchema = z.object({
     .string()
     .trim()
     .max(30)
-    .regex(/^(\+?[0-9][0-9 ().-]{5,29})?$/, 'Numéro invalide (ex. +221 77 123 45 67).'),
+    .regex(/^(\+?[0-9][0-9 ().-]{5,29})?$/, 'Numéro invalide (ex. +49 151 23456789).'),
   address: z.string().trim().max(300),
   emailSignature: z.string().trim().max(1000),
   cancellationPolicy: z.string().trim().max(3000),
@@ -85,7 +85,7 @@ export async function adminSaveSalonProfile(
     });
     const homeParsed = homeServiceSettingsSchema.safeParse({
       homeServiceEnabled: formData.get('homeServiceEnabled'),
-      travelFeeFcfa: text('travelFeeFcfa'),
+      travelFeeEur: text('travelFeeEur'),
     });
     if (!parsed.success || !homeParsed.success) {
       const fieldErrors: Record<string, string> = {};
@@ -131,7 +131,7 @@ export async function adminSaveSalonProfile(
       cancellationPolicy: input.cancellationPolicy || null,
       bookingPolicy: input.bookingPolicy || null,
       homeServiceEnabled: homeService.homeServiceEnabled,
-      travelFeeCents: fcfaToCents(homeService.travelFeeFcfa),
+      travelFeeCents: eurosToCents(homeService.travelFeeEur),
     };
     await db.salonSettings.upsert({
       where: { id: 1 },
@@ -145,7 +145,7 @@ export async function adminSaveSalonProfile(
       entityId: '1',
       metadata: {
         homeServiceEnabled: homeService.homeServiceEnabled,
-        travelFeeFcfa: homeService.travelFeeFcfa,
+        travelFeeEur: homeService.travelFeeEur,
       },
     }).catch(() => undefined);
     revalidateTag('salon-settings');

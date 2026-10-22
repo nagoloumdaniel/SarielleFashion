@@ -103,7 +103,7 @@ export function CatalogueFilters({
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Tresses, vanilles, locs…"
+            placeholder="Coiffure, make-up, cils…"
             autoComplete="off"
             enterKeyHint="search"
             className="h-10 w-full rounded-[var(--radius-md)] border border-line bg-page pl-10 pr-10 text-base text-fg placeholder:text-muted/70 focus:border-cacao focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 [&::-webkit-search-cancel-button]:appearance-none"

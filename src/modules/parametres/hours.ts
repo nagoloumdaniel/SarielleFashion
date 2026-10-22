@@ -1,4 +1,4 @@
-/* Horaires de Patricia : de 5 h à 22 h au plus, 0 = lundi … 6 = dimanche (comme les disponibilités). */
+/* Horaires de Sarielle : de 5 h à 22 h au plus, 0 = lundi … 6 = dimanche (comme les disponibilités). */
 export const OPENING_MIN = '05:00';
 export const OPENING_MAX = '22:00';
 

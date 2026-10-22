@@ -1,8 +1,8 @@
-# Hairstyle by Patricia
+# Sarielle Fashion
 
-**Coiffure sur rendez-vous à Dakar (Sénégal)** : départ et retwist de locs, nattes collées, vanilles, pour hommes et femmes. Site vitrine et catalogue de prestations, diagnostic de compatibilité capillaire, réservation en ligne (paiement sur place), messagerie et back-office d'administration.
+**Coiffure, make-up, pose de lace et de cils à Clausthal-Zellerfeld (Allemagne)**, pour femmes, hommes, enfants et événements, avec déplacement possible. Site vitrine et catalogue de prestations, réservation en ligne (paiement sur place), messagerie et back-office d'administration.
 
-🌐 **Site** : <https://hairstylebypati.vercel.app>
+🌐 **Site** : <https://sariellefashion.vercel.app>
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
@@ -12,8 +12,8 @@
 
 ## Fonctionnalités
 
-- **Landing** : hero plein écran, portrait en cercle animé (forme fluide en boucle), accès direct au catalogue.
-- **Catalogue** de prestations (cartes immersives, photos, prix en FCFA, durée) et fiches détaillées.
+- **Landing** 100 % typographique (aucune image) : hero, index des savoir-faire, chiffres clés, à propos, déplacement, contact.
+- **Catalogue** de prestations (cartes immersives, photos, prix en euros, durée) et fiches détaillées.
 - **Compatibilité capillaire** configurable avant réservation.
 - **Réservation en ligne** en plusieurs étapes, créneaux protégés, liste d'attente, annulation en ligne.
 - **Demandes personnalisées** avec photos de référence, galerie, FAQ, avis approuvés.
@@ -66,7 +66,7 @@ Avec `EMAIL_MODE="console"` dans `.env.local`, aucun e-mail réel n'est envoyé 
 | [docs/rgpd.md](docs/rgpd.md)                   | Registre, droits et procédures RGPD                          |
 | [docs/performance.md](docs/performance.md)     | Scores Lighthouse, axe, SEO et responsive                    |
 | [docs/git.md](docs/git.md)                     | Branches, conventions de commit, hooks                       |
-| [docs/guide-admin.md](docs/guide-admin.md)     | Guide d'utilisation du dashboard (Patricia)                  |
+| [docs/guide-admin.md](docs/guide-admin.md)     | Guide d'utilisation du dashboard (Sarielle)                  |
 | [docs/maintenance.md](docs/maintenance.md)     | Environnements, déploiement, monitoring, plan de maintenance |
 | [.env.example](.env.example)                   | Variables d'environnement documentées                        |
 
@@ -89,7 +89,7 @@ npx playwright test tests/e2e/security.spec.ts --project=desktop --workers=1  # 
 node scripts/backup-db.mjs   # sauvegarde PostgreSQL dans backups/ (ignoré par Git)
 ```
 
-`npm run db:seed:demo` ajoute 12 prestations d'exemple publiées pour vérifier le site public. Ne jamais l'exécuter sur la base de production : le catalogue réel est saisi par Patricia depuis le dashboard (Phase 4).
+`npm run db:seed:demo` ajoute 12 prestations d'exemple publiées pour vérifier le site public. Ne jamais l'exécuter sur la base de production : le catalogue réel est saisi par Sarielle depuis le dashboard (Phase 4).
 
 Les hooks `pre-commit` (lint-staged + `tsc --noEmit`) et `pre-push` (`npm run ci`) sont installés automatiquement par `npm install` (script `prepare` → husky). CI/CD : locale via `npm run ci`, déploiement Vercel au push sur `main`.
 

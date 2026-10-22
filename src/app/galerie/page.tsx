@@ -5,8 +5,8 @@ import { IMAGE_BLUR_DATA_URL } from '@/lib/image-placeholder';
 import { Title } from '@/components/ui/Title';
 
 export const metadata: Metadata = {
-  title: 'Galerie de réalisations - Hairstyle by Patricia',
-  description: 'Un aperçu de réalisations de Patricia, partagées avec l’autorisation des clientes.',
+  title: 'Galerie de réalisations - Sarielle Fashion',
+  description: 'Un aperçu de réalisations de Sarielle, partagées avec l’autorisation des clientes.',
 };
 
 export const revalidate = 300;

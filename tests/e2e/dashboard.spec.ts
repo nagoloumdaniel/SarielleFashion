@@ -128,7 +128,7 @@ test.describe('Back-office catalogue', () => {
       .getByLabel(/^Description/)
       .fill('Prestation créée par le test de non-régression P4.10.');
     await selectOption(page, /^Catégorie/, { label: categoryName });
-    await page.getByLabel(/^Prix \(FCFA\)/).fill('65');
+    await page.getByLabel(/^Prix \((€)\)/).fill('65');
     await page.getByLabel(/^Durée \(minutes\)/).fill('180');
     await page.getByRole('button', { name: 'Créer la prestation' }).click();
 
@@ -159,7 +159,7 @@ test.describe('Back-office catalogue', () => {
     await page.getByRole('button', { name: 'Ajouter une option' }).click();
     const optionDialog = page.getByRole('dialog', { name: 'Nouvelle option' });
     await optionDialog.getByLabel(/^Nom de l'option/).fill('Soin profond');
-    await optionDialog.getByLabel(/^Prix \(FCFA\)/).fill('10');
+    await optionDialog.getByLabel(/^Prix \((€)\)/).fill('10');
     await optionDialog.getByRole('button', { name: "Ajouter l'option" }).click();
     await expect(optionDialog).toBeHidden();
     await expect(page.getByText('Soin profond', { exact: true })).toBeVisible();
@@ -231,7 +231,7 @@ test.describe('Back-office catalogue', () => {
 
     // ----- Modification de la prestation -----
     await page.getByRole('tab', { name: 'Informations' }).click();
-    await page.getByLabel(/^Prix \(FCFA\)/).fill('70');
+    await page.getByLabel(/^Prix \((€)\)/).fill('70');
     await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
     await expect(page.getByText('Prestation enregistrée.')).toBeVisible();
     await page.reload();

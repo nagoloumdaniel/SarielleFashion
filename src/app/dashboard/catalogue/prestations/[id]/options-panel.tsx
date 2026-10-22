@@ -29,12 +29,12 @@ import {
 
 /* ============================================================
  * P4.3 - Options payantes d'une prestation (prix et durée
- * additionnels). Prix en FCFA (colonne en 1/100 FCFA).
+ * additionnels). Prix en euros (colonne en centimes).
  * ============================================================ */
 
 const priceFormatter = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
-  currency: 'XOF',
+  currency: 'EUR',
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
@@ -71,7 +71,7 @@ function OptionForm({
       />
       <div className="grid gap-3 sm:grid-cols-2">
         <Input
-          label="Prix (FCFA)"
+          label="Prix (€)"
           name="priceEuros"
           type="number"
           inputMode="numeric"

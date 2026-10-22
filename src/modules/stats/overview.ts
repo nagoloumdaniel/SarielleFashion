@@ -5,13 +5,13 @@ import { deviceTimeToUtc } from '@/lib/dates';
  * P8.5 / P8.6 : indicateurs du tableau de bord.
  * Définitions :
  * - rendez-vous du jour : créneaux dont le début est dans la journée
- *   locale Africa/Dakar ;
+ *   locale Europe/Berlin ;
  * - revenus estimés : somme des prix figés des rendez-vous terminés ;
  * - annulations récentes : annulations client ou admin sur 7 jours ;
  * - taux de remplissage : non calculé dans cette version, voir ROADMAP.
  * ============================================================ */
 
-const SALON_TZ = 'Africa/Dakar';
+const SALON_TZ = 'Europe/Berlin';
 const ACTIVE_STATUSES = ['PENDING', 'CONFIRMED', 'RESCHEDULED'] as const;
 
 function parisDateISO(date: Date): string {
@@ -159,7 +159,7 @@ export async function getDashboardOverview(now = new Date()): Promise<DashboardO
 
 /* ============================================================
  * Statistiques (période) : tout est calculé sur les rendez-vous dont le début
- * tombe dans la période, en jour civil Africa/Dakar (UTC+0). Montants en 1/100 FCFA.
+ * tombe dans la période, en jour civil Europe/Berlin. Montants en centimes.
  * ============================================================ */
 
 export const STATS_PERIODS = ['7', '30', '90', '365'] as const;
@@ -197,7 +197,6 @@ export interface PeriodStatistics {
   seriesTruncated: boolean;
 }
 
-const DAY_MS = 24 * 3_600_000;
 const labelFmt = new Intl.DateTimeFormat('fr-FR', {
   timeZone: SALON_TZ,
   day: 'numeric',
@@ -220,52 +219,67 @@ const monthLongFmt = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric',
 });
 
-/** Prépare les intervalles du graphique et la fonction qui range un instant dans le bon. */
+/** Ajoute `n` jours civils à une date ISO (YYYY-MM-DD), sans effet de fuseau. */
+function addDaysISO(dateISO: string, n: number): string {
+  const [y, m, d] = dateISO.split('-').map(Number) as [number, number, number];
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
+/** Prépare les intervalles du graphique et la fonction qui range un instant dans le bon.
+ *  Les bornes sont des minuits LOCAUX (Europe/Berlin, heure d'été comprise). */
 function buildBuckets(period: StatsPeriod, now: Date) {
-  const { start: todayStart } = salonDayBounds(now);
+  const todayISO = parisDateISO(now);
   const buckets: StatsBucket[] = [];
+  const starts: Date[] = [];
+  const indexOf = (t: Date) => {
+    let found = -1;
+    for (let i = 0; i < starts.length; i++) {
+      if (starts[i]!.getTime() <= t.getTime()) found = i;
+      else break;
+    }
+    return found;
+  };
 
   if (period === '365') {
-    // 12 derniers mois civils, mois courant inclus (UTC = Dakar).
-    const first = new Date(Date.UTC(todayStart.getUTCFullYear(), todayStart.getUTCMonth() - 11, 1));
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + i, 1));
+    // 12 derniers mois civils, mois courant inclus.
+    const [ty, tm] = todayISO.split('-').map(Number) as [number, number];
+    for (let i = 11; i >= 0; i--) {
+      const monthStart = new Date(Date.UTC(ty, tm - 1 - i, 1));
+      const iso = monthStart.toISOString().slice(0, 10);
+      const start = deviceTimeToUtc(iso, 0, SALON_TZ);
+      starts.push(start);
       buckets.push({
-        key: d.toISOString().slice(0, 7),
-        label: monthFmt.format(d),
-        tip: monthLongFmt.format(d),
+        key: iso.slice(0, 7),
+        label: monthFmt.format(start),
+        tip: monthLongFmt.format(start),
         appointments: 0,
         revenueCents: 0,
       });
     }
-    return {
-      from: first,
-      granularity: 'month' as const,
-      buckets,
-      index: (t: Date) => buckets.findIndex((b) => b.key === t.toISOString().slice(0, 7)),
-    };
+    return { from: starts[0]!, granularity: 'month' as const, buckets, index: indexOf };
   }
 
   const days = Number(period);
   const weekly = period === '90';
   const count = weekly ? 13 : days;
   const span = weekly ? 7 : 1;
-  const from = new Date(todayStart.getTime() - (count * span - 1) * DAY_MS);
   for (let i = 0; i < count; i++) {
-    const d = new Date(from.getTime() + i * span * DAY_MS);
+    const iso = addDaysISO(todayISO, -(count - 1 - i) * span);
+    const start = deviceTimeToUtc(iso, 0, SALON_TZ);
+    starts.push(start);
     buckets.push({
-      key: d.toISOString().slice(0, 10),
-      label: labelFmt.format(d),
-      tip: weekly ? `Semaine du ${labelFmt.format(d)}` : tipFmt.format(d),
+      key: iso,
+      label: labelFmt.format(start),
+      tip: weekly ? `Semaine du ${labelFmt.format(start)}` : tipFmt.format(start),
       appointments: 0,
       revenueCents: 0,
     });
   }
   return {
-    from,
+    from: starts[0]!,
     granularity: weekly ? ('week' as const) : ('day' as const),
     buckets,
-    index: (t: Date) => Math.floor((t.getTime() - from.getTime()) / (span * DAY_MS)),
+    index: indexOf,
   };
 }
 

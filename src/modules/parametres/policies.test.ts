@@ -23,7 +23,7 @@ describe('resolveCancellationPolicy', () => {
 
 describe('resolveBookingPolicy', () => {
   it('should return the custom text when provided', () => {
-    expect(resolveBookingPolicy('Acompte de 5 000 FCFA.')).toBe('Acompte de 5 000 FCFA.');
+    expect(resolveBookingPolicy('Acompte de 5 000 EUR.')).toBe('Acompte de 5 000 EUR.');
   });
 
   it('should fall back to a default mentioning on-site payment', () => {
@@ -45,12 +45,12 @@ describe('splitParagraphs', () => {
 describe('emailContextFromSettings', () => {
   it('should resolve policies and keep the signature', () => {
     const ctx = emailContextFromSettings({
-      emailSignature: ' Patricia ',
+      emailSignature: ' Sarielle ',
       cancellationPolicy: null,
       bookingPolicy: 'Acompte.',
       minCancelNoticeHours: 12,
     });
-    expect(ctx.signature).toBe('Patricia');
+    expect(ctx.signature).toBe('Sarielle');
     expect(ctx.cancellationPolicy).toContain('12 heures');
     expect(ctx.bookingPolicy).toBe('Acompte.');
   });

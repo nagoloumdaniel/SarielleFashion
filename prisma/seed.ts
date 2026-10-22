@@ -6,12 +6,13 @@ const db = new PrismaClient();
 // Catégories de base §4.2 (P1.6) — l administratrice peut tout
 // modifier ensuite depuis le dashboard.
 const CATEGORIES = [
-  { name: 'Tresses', slug: 'tresses', order: 0 },
-  { name: 'Vanilles', slug: 'vanilles', order: 1 },
-  { name: 'Locs', slug: 'locs', order: 2 },
-  { name: 'Départ de locs', slug: 'depart-de-locs', order: 3 },
-  { name: 'Protectrices', slug: 'protectrices', order: 4 },
-  { name: 'Coupes', slug: 'coupes', order: 5 },
+  { name: 'Coiffure femme', slug: 'coiffure-femme', order: 0 },
+  { name: 'Coiffure homme', slug: 'coiffure-homme', order: 1 },
+  { name: 'Coiffure enfant', slug: 'coiffure-enfant', order: 2 },
+  { name: 'Make-up', slug: 'make-up', order: 3 },
+  { name: 'Pose de lace', slug: 'pose-de-lace', order: 4 },
+  { name: 'Cils', slug: 'cils', order: 5 },
+  { name: 'Événements', slug: 'evenements', order: 6 },
 ] as const;
 
 async function main(): Promise<void> {
@@ -44,7 +45,7 @@ async function main(): Promise<void> {
       update: {},
       create: {
         email,
-        name: 'Patricia',
+        name: 'Sarielle',
         passwordHash: await hash(adminPassword, 12),
         role: 'ADMIN',
       },
@@ -55,7 +56,7 @@ async function main(): Promise<void> {
   }
 
   // Disponibilités par défaut (P6.1) : du lundi au samedi, 9h-18h.
-  // Patricia peut tout modifier depuis /dashboard/disponibilites.
+  // Sarielle peut tout modifier depuis /dashboard/disponibilites.
   const availabilityCount = await db.availabilityRule.count();
   if (availabilityCount === 0) {
     await db.availabilityRule.createMany({

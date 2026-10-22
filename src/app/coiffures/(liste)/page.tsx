@@ -12,7 +12,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Catalogue des coiffures',
   description:
-    'Découvrez les prestations de Hairstyle by Patricia : tresses, vanilles, locs, départ de locs, coiffures protectrices et coupes. Prix, durées et réservation en ligne.',
+    'Découvrez les prestations de Sarielle Fashion : coiffure, make-up, pose de lace et de cils. Prix, durées et réservation en ligne.',
   alternates: { canonical: '/coiffures' },
 };
 
@@ -63,7 +63,8 @@ export default async function CataloguePage({
           Coiffures et prestations
         </Title>
         <p className="max-w-prose text-base leading-relaxed text-muted md:text-lg">
-          Prix et durée affichés avant la réservation. Patricia vous reçoit sur rendez-vous à Dakar.
+          Prix et durée affichés avant la réservation. Sarielle vous reçoit sur rendez-vous à
+          Clausthal-Zellerfeld.
         </p>
       </header>
 

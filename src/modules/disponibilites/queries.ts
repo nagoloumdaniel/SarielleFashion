@@ -27,12 +27,12 @@ export interface SalonSettingsData {
   photoRetentionDays: number;
   /** Coiffure à domicile proposée en option payante. */
   homeServiceEnabled: boolean;
-  /** Frais de déplacement, en 1/100 FCFA (affichage = valeur / 100). */
+  /** Frais de déplacement, en centimes (affichage = valeur / 100). */
   travelFeeCents: number;
 }
 
 export const DEFAULT_SALON_SETTINGS: SalonSettingsData = {
-  name: 'Hairstyle by Patricia',
+  name: 'Sarielle Fashion',
   contactEmail: null,
   phone: null,
   address: null,

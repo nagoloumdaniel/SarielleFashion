@@ -56,7 +56,7 @@ export function verifyBookingCompatibility(input: {
         allowed: true,
         reason: 'ASSESSMENT_ACCEPTED',
         verdict: evaluation.verdict,
-        message: 'Évaluation capillaire acceptée par Patricia.',
+        message: 'Évaluation capillaire acceptée par Sarielle.',
       };
     }
     if (assessment.status === 'REFUSED') {
@@ -80,7 +80,7 @@ export function verifyBookingCompatibility(input: {
         allowed: false,
         reason: 'AWAITING_DECISION',
         verdict: evaluation.verdict,
-        message: 'L’évaluation capillaire est en attente de la décision de Patricia.',
+        message: 'L’évaluation capillaire est en attente de la décision de Sarielle.',
       };
     }
   }

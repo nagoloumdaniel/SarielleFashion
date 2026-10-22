@@ -111,7 +111,7 @@ describe('resolveHomeService', () => {
 
 describe('addTravelFee', () => {
   it('should add the fee after the discount, so promotions never reduce the travel fee', () => {
-    // Prestation 60 000 FCFA, remise 10 % => 54 000 FCFA, frais 5 000 FCFA => 59 000 FCFA.
+    // Prestation 60 000 EUR, remise 10 % => 54 000 EUR, frais 5 000 EUR => 59 000 EUR.
     const discountedService = 5400000;
     expect(addTravelFee(discountedService, 500000)).toBe(5900000);
   });

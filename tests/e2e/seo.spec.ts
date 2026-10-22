@@ -29,7 +29,7 @@ async function login(page: Page): Promise<void> {
 test.describe('SEO et métadonnées', () => {
   test('should expose complete public metadata and social tags', async ({ page, request }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/Hairstyle by Patricia/);
+    await expect(page).toHaveTitle(/Sarielle Fashion/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.+/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',

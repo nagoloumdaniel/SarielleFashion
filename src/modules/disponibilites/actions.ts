@@ -18,7 +18,7 @@ import {
 /* ============================================================
  * Actions de gestion des disponibilités (P6.10)
  * Toute modification qui touche des rendez-vous actifs exige
- * une confirmation explicite de Patricia.
+ * une confirmation explicite de Sarielle.
  * ============================================================ */
 
 /* `conflictCount` : nombre de rendez-vous actifs touchés ; l'interface demande alors une

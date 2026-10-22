@@ -65,7 +65,7 @@ const STEPS = [
 
 const euroFormatter = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
-  currency: 'XOF',
+  currency: 'EUR',
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
@@ -119,7 +119,7 @@ export function BookingWizard({
   const [homeService, setHomeService] = useState(false);
   const [homeAddress, setHomeAddress] = useState('');
   const [dateISO, setDateISO] = useState('');
-  const [timeZone, setTimeZone] = useState('Africa/Dakar');
+  const [timeZone, setTimeZone] = useState('Europe/Berlin');
   const [selectedSlot, setSelectedSlot] = useState<{
     startsAt: string;
     endsAt: string;
@@ -166,9 +166,9 @@ export function BookingWizard({
     now.setDate(now.getDate() + 1);
     setDateISO(localDateISO(now));
     try {
-      setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar');
+      setTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin');
     } catch {
-      setTimeZone('Africa/Dakar');
+      setTimeZone('Europe/Berlin');
     }
   }, []);
 
@@ -401,7 +401,7 @@ export function BookingWizard({
               href={`/compatibilite?service=${encodeURIComponent(service.slug)}`}
               icon={ClipboardList}
             >
-              Demander une évaluation à Patricia
+              Demander une évaluation à Sarielle
             </ButtonLink>
             <Button
               type="button"
@@ -494,7 +494,7 @@ export function BookingWizard({
                       Coiffure à domicile
                     </span>
                     <span className="text-sm text-muted">
-                      Option payante : Patricia vient à votre adresse.
+                      Option payante : Sarielle vient à votre adresse.
                     </span>
                   </span>
                 </span>
@@ -512,7 +512,7 @@ export function BookingWizard({
                   maxLength={HOME_ADDRESS_MAX}
                   required
                   autoComplete="street-address"
-                  hint="Où Patricia doit venir (rue, quartier, repère). Frais de déplacement à votre charge."
+                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à votre charge."
                 />
               ) : null}
             </div>
@@ -986,7 +986,7 @@ export function BookingWizard({
           <p className="mt-3 text-lg text-fg">
             {bookingState.success.status === 'CONFIRMED'
               ? 'Votre créneau est réservé.'
-              : 'Créneau réservé temporairement, en attente de confirmation par Patricia.'}
+              : 'Créneau réservé temporairement, en attente de confirmation par Sarielle.'}
           </p>
           <dl className="mt-4 space-y-2 rounded-[var(--radius-md)] bg-line px-4 py-3 text-sm text-fg">
             <div className="flex justify-between gap-4">

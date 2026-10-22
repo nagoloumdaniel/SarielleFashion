@@ -4,7 +4,7 @@ import { WaitlistForm } from './waitlist-form';
 import { Title } from '@/components/ui/Title';
 
 export const metadata: Metadata = {
-  title: 'Liste d’attente - Hairstyle by Patricia',
+  title: 'Liste d’attente - Sarielle Fashion',
   description: 'Soyez prévenue par e-mail si un créneau se libère pour la prestation souhaitée.',
 };
 

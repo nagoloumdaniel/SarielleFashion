@@ -1,6 +1,6 @@
 /* ============================================================
  * Textes de politique (annulation, réservation) et contexte e-mail.
- * Fonctions pures : valeur saisie par Patricia dans les paramètres,
+ * Fonctions pures : valeur saisie par Sarielle dans les paramètres,
  * sinon texte par défaut sobre. Aucune dépendance base de données.
  * ============================================================ */
 
@@ -21,9 +21,9 @@ export function resolveCancellationPolicy(
   if (text) return text;
   const notice = Math.max(0, Math.round(minCancelNoticeHours));
   if (notice > 0) {
-    return `Vous pouvez annuler ou déplacer votre rendez-vous gratuitement jusqu’à ${notice} heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, contactez Patricia directement.`;
+    return `Vous pouvez annuler ou déplacer votre rendez-vous gratuitement jusqu’à ${notice} heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, contactez Sarielle directement.`;
   }
-  return 'Vous pouvez annuler ou déplacer votre rendez-vous via le lien sécurisé reçu par e-mail. En cas de difficulté, contactez Patricia directement.';
+  return 'Vous pouvez annuler ou déplacer votre rendez-vous via le lien sécurisé reçu par e-mail. En cas de difficulté, contactez Sarielle directement.';
 }
 
 export function resolveBookingPolicy(custom: string | null | undefined): string {

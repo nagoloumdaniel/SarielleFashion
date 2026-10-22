@@ -75,34 +75,34 @@ describe('renderNotification', () => {
 
 describe('renderNotification : contexte du salon', () => {
   const context = {
-    signature: 'Patricia <3>\nDakar',
+    signature: 'Sarielle <3>\nClausthal-Zellerfeld',
     cancellationPolicy: 'Annulation gratuite jusqu’à 48 heures avant.',
-    bookingPolicy: 'Acompte de 5 000 FCFA à la réservation.',
+    bookingPolicy: 'Acompte de 5 000 EUR à la réservation.',
   };
 
   it('should append the escaped signature to html and text of any email', () => {
     const rendered = renderNotification('booking_confirmed', appointment, context);
-    expect(rendered?.html).toContain('Patricia &lt;3&gt;<br />Dakar');
-    expect(rendered?.html).not.toContain('Patricia <3>');
-    expect(rendered?.text.trimEnd().endsWith('Patricia <3>\nDakar')).toBe(true);
+    expect(rendered?.html).toContain('Sarielle &lt;3&gt;<br />Clausthal-Zellerfeld');
+    expect(rendered?.html).not.toContain('Sarielle <3>');
+    expect(rendered?.text.trimEnd().endsWith('Sarielle <3>\nClausthal-Zellerfeld')).toBe(true);
   });
 
   it('should sign admin and conversation emails too', () => {
     const admin = renderNotification('admin_new_booking', appointment, context);
-    expect(admin?.html).toContain('Dakar');
+    expect(admin?.html).toContain('Clausthal-Zellerfeld');
     const reply = renderNotification(
       'conversation_reply',
       { kind: 'conversation', customerName: 'A', subject: 'S', message: 'M' },
       context,
     );
-    expect(reply?.text).toContain('Dakar');
+    expect(reply?.text).toContain('Clausthal-Zellerfeld');
   });
 
   it('should show both policies in the confirmation email', () => {
     const rendered = renderNotification('booking_confirmed', appointment, context);
     expect(rendered?.html).toContain('Annulation gratuite jusqu’à 48 heures avant.');
-    expect(rendered?.html).toContain('Acompte de 5 000 FCFA');
-    expect(rendered?.text).toContain('Acompte de 5 000 FCFA');
+    expect(rendered?.html).toContain('Acompte de 5 000 EUR');
+    expect(rendered?.text).toContain('Acompte de 5 000 EUR');
     expect(rendered?.text).toContain('48 heures');
   });
 
@@ -123,7 +123,7 @@ describe('renderNotification : contexte du salon', () => {
   it('should still render without context', () => {
     const rendered = renderNotification('booking_confirmed', appointment);
     expect(rendered?.html).toContain('Tresses BOX');
-    expect(rendered?.html).not.toContain('Dakar');
+    expect(rendered?.html).not.toContain('Clausthal-Zellerfeld');
   });
 });
 

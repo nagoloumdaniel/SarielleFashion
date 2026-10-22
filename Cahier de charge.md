@@ -1,9 +1,9 @@
 # CAHIER DES CHARGES COMPLET
-# Hairstyle by Patricia
+# Sarielle Fashion
 
 **Version :** 1.0  
 **Type de projet :** Application web de présentation, gestion de coiffures et réservation de rendez-vous  
-**Entreprise :** Hairstyle by Patricia  
+**Entreprise :** Sarielle Fashion  
 **Utilisateurs principaux :** Clients et administratrice du salon  
 **Langue initiale :** Français, avec possibilité d'ajouter l'anglais ultérieurement  
 **Paiement :** Sur place, après la réalisation de la prestation  
@@ -15,7 +15,7 @@
 
 ### 1.1. Contexte
 
-Hairstyle by Patricia est une entreprise spécialisée dans la coiffure. Elle souhaite disposer de son propre site web professionnel permettant aux visiteurs de découvrir les prestations proposées, de consulter les modèles de coiffures, de vérifier leur compatibilité avec leurs cheveux et de réserver un rendez-vous en ligne.
+Sarielle Fashion est une entreprise spécialisée dans la coiffure. Elle souhaite disposer de son propre site web professionnel permettant aux visiteurs de découvrir les prestations proposées, de consulter les modèles de coiffures, de vérifier leur compatibilité avec leurs cheveux et de réserver un rendez-vous en ligne.
 
 L'application doit également offrir à la propriétaire un espace d'administration complet lui permettant de gérer les coiffures, les photos, les tarifs, les disponibilités, les rendez-vous, les demandes de renseignements et les messages des clients.
 
@@ -49,7 +49,7 @@ L'objectif est de centraliser l'ensemble de l'activité du salon sur une seule p
 
 ### 2.1. Positionnement visuel
 
-L'identité de Hairstyle by Patricia doit évoquer la beauté, la féminité, la confiance, le soin et le professionnalisme.
+L'identité de Sarielle Fashion doit évoquer la beauté, la féminité, la confiance, le soin et le professionnalisme.
 
 Le design doit être moderne, élégant et chaleureux, avec une présentation visuelle forte des coiffures. Le site ne doit pas ressembler à un simple formulaire de réservation ni à un template générique.
 
@@ -146,7 +146,7 @@ L'architecture doit permettre l'ajout ultérieur d'autres fonctionnalités sans 
 
 ### 4.1. Page d'accueil
 
-La page d'accueil doit présenter immédiatement l'identité de Hairstyle by Patricia.
+La page d'accueil doit présenter immédiatement l'identité de Sarielle Fashion.
 
 Elle comprend :
 
@@ -158,7 +158,7 @@ Elle comprend :
 - Une sélection des coiffures populaires.
 - Une présentation des prestations principales.
 - Une section expliquant comment prendre rendez-vous.
-- Une section de présentation de Patricia.
+- Une section de présentation de Sarielle.
 - Des témoignages clients, si cette fonctionnalité est activée.
 - Les coordonnées et informations pratiques.
 - Un pied de page avec les liens légaux et les réseaux sociaux.
@@ -276,7 +276,7 @@ Ces paramètres doivent être stockés dans la base de données.
 
 ### 5.3. Exemple : coiffure incompatible avec les cheveux courts
 
-Supposons que Patricia configure une coiffure tressée comme incompatible avec les cheveux courts.
+Supposons que Sarielle configure une coiffure tressée comme incompatible avec les cheveux courts.
 
 Le système applique la logique suivante :
 
@@ -289,7 +289,7 @@ Le système applique la logique suivante :
 
 Message proposé :
 
-« Cette coiffure nécessite une longueur de cheveux suffisante pour permettre sa réalisation. D'après votre réponse, elle pourrait ne pas être adaptée. Vous pouvez envoyer une photo de vos cheveux afin que Patricia vérifie si la prestation est réalisable. »
+« Cette coiffure nécessite une longueur de cheveux suffisante pour permettre sa réalisation. D'après votre réponse, elle pourrait ne pas être adaptée. Vous pouvez envoyer une photo de vos cheveux afin que Sarielle vérifie si la prestation est réalisable. »
 
 Le système ne doit pas affirmer que toutes les coiffures sont impossibles avec des cheveux courts. Chaque restriction dépend de la configuration de la prestation.
 
@@ -301,7 +301,7 @@ L'application lui propose alors :
 
 - D'envoyer une photo.
 - D'ajouter un commentaire.
-- De transmettre sa demande à Patricia.
+- De transmettre sa demande à Sarielle.
 
 La demande reçoit le statut « En attente d'évaluation ».
 
@@ -351,7 +351,7 @@ L'administratrice peut préciser si une longueur minimale est nécessaire, quell
 
 ### 6.2. Vanilles
 
-Les vanilles disposent de règles spécifiques configurables. Le système doit pouvoir refuser une demande lorsque les caractéristiques renseignées ne correspondent pas aux exigences définies par Patricia.
+Les vanilles disposent de règles spécifiques configurables. Le système doit pouvoir refuser une demande lorsque les caractéristiques renseignées ne correspondent pas aux exigences définies par Sarielle.
 
 ### 6.3. Coupes et autres prestations
 
@@ -363,7 +363,7 @@ Les questions doivent donc être configurables par prestation, et pas imposées 
 
 ### 6.4. Évolution du catalogue
 
-Patricia doit pouvoir créer une nouvelle coiffure sans intervention d'un développeur.
+Sarielle doit pouvoir créer une nouvelle coiffure sans intervention d'un développeur.
 
 La création d'une prestation comprend :
 
@@ -437,19 +437,19 @@ Après validation, la réservation est enregistrée, le créneau est protégé c
 
 ### 7.2. Réservation avec validation manuelle
 
-Certaines prestations ou situations capillaires peuvent nécessiter l'approbation de Patricia.
+Certaines prestations ou situations capillaires peuvent nécessiter l'approbation de Sarielle.
 
 Dans ce cas :
 
 - La demande est enregistrée comme « En attente de confirmation ».
 - Le créneau peut être placé en attente pendant une durée configurable, si la politique du salon le permet.
-- Patricia reçoit une notification.
+- Sarielle reçoit une notification.
 - Elle accepte, refuse ou propose un autre créneau.
 - Le client reçoit le résultat par e-mail et sur la plateforme.
 
 Une demande en attente ne doit pas bloquer indéfiniment un créneau.
 
-Le système doit définir une durée maximale d'attente et une règle de libération automatique, sauf si Patricia a déjà confirmé la réservation.
+Le système doit définir une durée maximale d'attente et une règle de libération automatique, sauf si Sarielle a déjà confirmé la réservation.
 
 ### 7.3. Protection contre les doubles réservations
 
@@ -509,7 +509,7 @@ Le dashboard doit comporter un calendrier avec les vues suivantes :
 
 Chaque rendez-vous doit afficher les informations essentielles : client, coiffure, heure, statut et durée.
 
-En cliquant sur un rendez-vous, Patricia peut consulter les détails, modifier le statut, annuler ou reprogrammer le rendez-vous.
+En cliquant sur un rendez-vous, Sarielle peut consulter les détails, modifier le statut, annuler ou reprogrammer le rendez-vous.
 
 Les couleurs peuvent différencier les statuts, sans se reposer uniquement sur la couleur pour communiquer une information.
 
@@ -520,7 +520,7 @@ L'application doit empêcher :
 - La réservation pendant une fermeture.
 - La réservation sur un créneau déjà pris.
 - Les chevauchements entre deux prestations.
-- Les réservations sur des indisponibilités bloquées par Patricia.
+- Les réservations sur des indisponibilités bloquées par Sarielle.
 
 Si un rendez-vous est déplacé, l'ancien créneau est libéré et le nouveau est vérifié avant la modification définitive.
 
@@ -550,7 +550,7 @@ Les transitions de statut doivent être contrôlées côté serveur.
 
 ### 9.2. Annulation par l'administratrice
 
-Patricia peut annuler un rendez-vous depuis le calendrier ou sa fiche détaillée.
+Sarielle peut annuler un rendez-vous depuis le calendrier ou sa fiche détaillée.
 
 Lors de l'annulation :
 
@@ -561,7 +561,7 @@ Lors de l'annulation :
 5. Une notification est créée dans son espace de suivi ou via un lien de réservation sécurisé.
 6. L'annulation est enregistrée dans l'historique.
 
-Le message doit préciser la date, l'heure, la prestation et le motif communiqué, si Patricia choisit d'en fournir un.
+Le message doit préciser la date, l'heure, la prestation et le motif communiqué, si Sarielle choisit d'en fournir un.
 
 ### 9.3. Annulation par le client
 
@@ -574,7 +574,7 @@ Les conditions d'annulation doivent être configurables :
 - Possibilité de demander un motif.
 - Traitement des rendez-vous en attente.
 
-Une annulation autorisée libère le créneau et déclenche une notification à Patricia.
+Une annulation autorisée libère le créneau et déclenche une notification à Sarielle.
 
 Si l'annulation intervient hors délai, l'application explique la règle et propose, si nécessaire, de contacter le salon.
 
@@ -584,7 +584,7 @@ Une fonctionnalité de reprogrammation doit permettre de déplacer un rendez-vou
 
 La modification doit être validée sans créer de doublon ni perdre l'ancien rendez-vous en cas d'échec.
 
-Le client et Patricia reçoivent une confirmation du nouvel horaire.
+Le client et Sarielle reçoivent une confirmation du nouvel horaire.
 
 ---
 
@@ -601,7 +601,7 @@ L'application doit envoyer des e-mails automatiques pour les événements suivan
 - Nouvelle photo reçue.
 - Demande de coiffure personnalisée.
 - Annulation par le client.
-- Annulation par Patricia.
+- Annulation par Sarielle.
 - Reprogrammation.
 - Demande d'informations supplémentaires.
 - Acceptation ou refus d'une demande.
@@ -611,9 +611,9 @@ Les modèles d'e-mail doivent être personnalisables dans la mesure du possible.
 
 Chaque message doit contenir les informations utiles à son destinataire.
 
-### 10.2. Notifications à Patricia
+### 10.2. Notifications à Sarielle
 
-Pour toute nouvelle réservation ou demande importante, Patricia reçoit :
+Pour toute nouvelle réservation ou demande importante, Sarielle reçoit :
 
 - Un e-mail à son adresse professionnelle configurée.
 - Une notification dans son dashboard.
@@ -644,7 +644,7 @@ Chaque conversation ou demande doit avoir un statut :
 - Traité.
 - Archivé.
 
-Patricia peut consulter le message, répondre par e-mail si la fonctionnalité est activée, ajouter une note interne et marquer la demande comme traitée.
+Sarielle peut consulter le message, répondre par e-mail si la fonctionnalité est activée, ajouter une note interne et marquer la demande comme traitée.
 
 Les notes internes ne doivent jamais être envoyées au client.
 
@@ -690,11 +690,11 @@ Le formulaire comprend :
 À la soumission :
 
 - La demande est enregistrée.
-- Patricia reçoit une notification dans le dashboard.
+- Sarielle reçoit une notification dans le dashboard.
 - Un e-mail lui est envoyé.
 - Le client reçoit un accusé de réception.
 
-Patricia peut ensuite :
+Sarielle peut ensuite :
 
 - Accepter la demande.
 - Refuser la demande.
@@ -707,7 +707,7 @@ Une demande personnalisée ne devient pas automatiquement un rendez-vous confirm
 
 ### 11.3. Historique
 
-Toutes les décisions doivent être conservées afin que Patricia puisse retrouver les demandes précédentes et leur état d'avancement.
+Toutes les décisions doivent être conservées afin que Sarielle puisse retrouver les demandes précédentes et leur état d'avancement.
 
 ---
 
@@ -731,7 +731,7 @@ Les données doivent être actualisées après chaque action importante.
 
 ### 12.2. Gestion du catalogue
 
-Patricia peut :
+Sarielle peut :
 
 - Ajouter une coiffure.
 - Modifier une coiffure.
@@ -749,7 +749,7 @@ Une prestation déjà utilisée dans des réservations historiques devrait être
 
 ### 12.3. Gestion des disponibilités
 
-Patricia peut définir ses horaires habituels, ajouter des exceptions et bloquer des créneaux.
+Sarielle peut définir ses horaires habituels, ajouter des exceptions et bloquer des créneaux.
 
 Une modification d'horaires ne doit pas annuler silencieusement les rendez-vous déjà confirmés. En cas de conflit, le dashboard doit l'avertir et lui proposer une action explicite.
 
@@ -790,7 +790,7 @@ Ces informations peuvent alimenter des statistiques internes sans automatiquemen
 
 Lorsqu'aucun créneau n'est disponible, le client peut demander à être prévenu si un créneau se libère.
 
-Patricia peut également gérer manuellement une liste d'attente.
+Sarielle peut également gérer manuellement une liste d'attente.
 
 Toute proposition de nouveau créneau doit être confirmée par le client et vérifiée à nouveau au moment de la réservation.
 
@@ -798,7 +798,7 @@ Toute proposition de nouveau créneau doit être confirmée par le client et vé
 
 Le catalogue peut proposer des coiffures compatibles avec les informations fournies par le client.
 
-Les suggestions doivent reposer sur les règles définies par Patricia. Une recommandation automatique ne doit jamais contourner une restriction.
+Les suggestions doivent reposer sur les règles définies par Sarielle. Une recommandation automatique ne doit jamais contourner une restriction.
 
 ### 13.4. Avis clients
 
@@ -810,7 +810,7 @@ Seuls les avis vérifiés ou correctement encadrés doivent être présentés co
 
 ### 13.5. Gestion des promotions
 
-Patricia peut créer des offres temporaires ou des réductions affichées dans le catalogue.
+Sarielle peut créer des offres temporaires ou des réductions affichées dans le catalogue.
 
 Les conditions, dates de validité et prestations concernées doivent être configurables.
 
@@ -957,7 +957,7 @@ Les principales entités sont :
 - Description.
 - Photos de référence.
 - Statut.
-- Réponse de Patricia.
+- Réponse de Sarielle.
 - Prix estimatif éventuel.
 - Dates de suivi.
 
@@ -1109,7 +1109,7 @@ Les données capillaires et les photos ne doivent être collectées que dans la 
 L'application ne sera considérée comme prête que lorsque les scénarios suivants auront été vérifiés.
 
 ### Catalogue
-- Patricia peut créer une nouvelle coiffure.
+- Sarielle peut créer une nouvelle coiffure.
 - Elle peut ajouter plusieurs photos.
 - Elle peut modifier le tarif et la durée.
 - Elle peut configurer les règles de compatibilité.
@@ -1120,7 +1120,7 @@ L'application ne sera considérée comme prête que lorsque les scénarios suiva
 - Le message explicatif configuré est affiché.
 - Le client peut demander une évaluation par photo lorsque cette option est activée.
 - La demande arrive dans le dashboard.
-- Patricia peut accepter ou refuser la demande.
+- Sarielle peut accepter ou refuser la demande.
 - Une décision ne crée pas de réservation sans contrôle du créneau.
 
 ### Réservation
@@ -1131,7 +1131,7 @@ L'application ne sera considérée comme prête que lorsque les scénarios suiva
 - Le client reçoit l'e-mail correspondant au statut réel.
 
 ### Annulation
-- Patricia peut annuler une réservation.
+- Sarielle peut annuler une réservation.
 - Le client reçoit une notification d'annulation.
 - Le créneau est libéré.
 - Le client peut annuler à l'aide d'un lien sécurisé dans les conditions autorisées.
@@ -1140,7 +1140,7 @@ L'application ne sera considérée comme prête que lorsque les scénarios suiva
 
 ### Messagerie et notifications
 - Un message de contact est enregistré.
-- Patricia reçoit une notification dans le dashboard.
+- Sarielle reçoit une notification dans le dashboard.
 - Les e-mails sont envoyés ou signalés en échec.
 - Les rappels ne sont pas envoyés en double.
 - Les notes internes ne sont pas accessibles au client.
@@ -1213,7 +1213,7 @@ L'application ne sera considérée comme prête que lorsque les scénarios suiva
 - Vérification des e-mails.
 - Sauvegardes.
 - Configuration du domaine et du déploiement.
-- Documentation et transfert à Patricia.
+- Documentation et transfert à Sarielle.
 
 ---
 
@@ -1241,12 +1241,12 @@ Les avis clients, la liste d'attente, les promotions et les statistiques plus av
 
 ## 20. Résultat attendu
 
-À la livraison, Hairstyle by Patricia doit disposer d'une application web complète permettant aux clients de découvrir les coiffures, de comprendre les conditions de réalisation, de demander une évaluation si nécessaire et de réserver un rendez-vous.
+À la livraison, Sarielle Fashion doit disposer d'une application web complète permettant aux clients de découvrir les coiffures, de comprendre les conditions de réalisation, de demander une évaluation si nécessaire et de réserver un rendez-vous.
 
-Patricia doit pouvoir administrer elle-même son activité : ajouter des coiffures, publier des photos, définir les prix et les durées, préciser les caractéristiques capillaires acceptées, gérer les disponibilités, traiter les demandes et recevoir les notifications.
+Sarielle doit pouvoir administrer elle-même son activité : ajouter des coiffures, publier des photos, définir les prix et les durées, préciser les caractéristiques capillaires acceptées, gérer les disponibilités, traiter les demandes et recevoir les notifications.
 
 Le système doit être suffisamment flexible pour accueillir de nouvelles prestations sans modification du code métier.
 
-L'expérience doit rester simple pour les clients, efficace pour Patricia et fiable sur le plan technique.
+L'expérience doit rester simple pour les clients, efficace pour Sarielle et fiable sur le plan technique.
 
 **Principe final :** aucune réservation ne doit être confirmée sur un créneau indisponible, aucune règle de compatibilité ne doit être contournée et aucune notification ne doit annoncer un statut différent de celui réellement enregistré dans le système.

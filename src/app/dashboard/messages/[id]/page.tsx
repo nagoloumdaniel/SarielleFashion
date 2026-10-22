@@ -86,7 +86,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
             : isCustomer
               ? conversation.customerName
               : message.author === 'ADMIN'
-                ? 'Patricia'
+                ? 'Sarielle'
                 : 'Système';
           const side = message.isInternal
             ? 'w-full border border-dashed border-alert/50 bg-alert-soft'

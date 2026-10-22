@@ -1,5 +1,5 @@
 import type { EmailContext } from '@/modules/parametres/policies';
-import { formatFcfa } from '@/modules/reservations/format';
+import { formatEuro } from '@/modules/reservations/format';
 
 /* ============================================================
  * P7.3 : modèles d'e-mails transactionnels.
@@ -114,7 +114,7 @@ export interface RenderedEmail {
 }
 
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
-const SALON_NAME = 'Hairstyle by Patricia';
+const SALON_NAME = 'Sarielle Fashion';
 
 function escapeHtml(value: unknown): string {
   return String(value ?? '')
@@ -132,7 +132,7 @@ function formatDate(iso: string | undefined): string {
   return new Intl.DateTimeFormat('fr-FR', {
     dateStyle: 'full',
     timeStyle: 'short',
-    timeZone: 'Africa/Dakar',
+    timeZone: 'Europe/Berlin',
   }).format(date);
 }
 
@@ -173,15 +173,15 @@ function renderWaitlist(payload: WaitlistEmailPayload, ctx: EmailContext): Rende
 
 function renderReview(payload: ReviewEmailPayload, ctx: EmailContext): RenderedEmail {
   return {
-    subject: 'Votre avis compte pour Patricia',
+    subject: 'Votre avis compte pour Sarielle',
     html: layout(ctx, {
       title: 'Comment s’est passé votre rendez-vous ?',
-      intro: `Bonjour ${payload.customerName}, Patricia espère que votre prestation « ${payload.serviceName} » vous a plu. Votre avis aide d’autres clientes à faire leur choix.`,
+      intro: `Bonjour ${payload.customerName}, Sarielle espère que votre prestation « ${payload.serviceName} » vous a plu. Votre avis aide d’autres clientes à faire leur choix.`,
       ctaLabel: 'Laisser un avis',
       ctaUrl: payload.reviewUrl,
-      note: 'Votre avis est relu par Patricia avant toute publication.',
+      note: 'Votre avis est relu par Sarielle avant toute publication.',
     }),
-    text: `Bonjour ${payload.customerName},\n\nVotre avis sur ${payload.serviceName} compte pour Patricia.\nLaisser un avis : ${payload.reviewUrl}\n\n${SALON_NAME}`,
+    text: `Bonjour ${payload.customerName},\n\nVotre avis sur ${payload.serviceName} compte pour Sarielle.\nLaisser un avis : ${payload.reviewUrl}\n\n${SALON_NAME}`,
   };
 }
 
@@ -264,7 +264,7 @@ function layout(ctx: EmailContext, input: LayoutInput): string {
 }
 
 function travelFeeLabel(cents: number | null | undefined): string {
-  return cents ? formatFcfa(cents) : 'Offerts';
+  return cents ? formatEuro(cents) : 'Offerts';
 }
 
 /** Lignes texte « coiffure à domicile » (version texte brut des e-mails), vide sinon. */
@@ -335,7 +335,7 @@ function renderAppointment(
         subject: 'Votre demande de rendez-vous est enregistrée',
         html: layout(ctx, {
           title: 'Votre rendez-vous est enregistré',
-          intro: `Bonjour ${customer}, votre réservation pour ${service} a bien été enregistrée. Patricia confirmera votre créneau si nécessaire.`,
+          intro: `Bonjour ${customer}, votre réservation pour ${service} a bien été enregistrée. Sarielle confirmera votre créneau si nécessaire.`,
           rows,
           note: 'Paiement sur place. Vous recevrez une confirmation dès que le rendez-vous sera validé.',
         }),
@@ -361,7 +361,7 @@ function renderAppointment(
         subject: 'Votre rendez-vous est annulé',
         html: layout(ctx, {
           title: 'Votre rendez-vous est annulé',
-          intro: `Bonjour ${customer}, votre rendez-vous pour ${service} a été annulé${key === 'booking_cancelled_admin' ? ' par Patricia' : ''}.`,
+          intro: `Bonjour ${customer}, votre rendez-vous pour ${service} a été annulé${key === 'booking_cancelled_admin' ? ' par Sarielle' : ''}.`,
           rows,
           paragraphs: [
             'Le créneau a été libéré. Vous pouvez réserver un nouveau rendez-vous depuis le site.',
@@ -468,18 +468,18 @@ function renderConversation(
       subject: 'Votre message a bien été reçu',
       html: layout(ctx, {
         title: 'Message bien reçu',
-        intro: `Bonjour ${payload.customerName}, Patricia a bien reçu votre message et vous répondra personnellement.`,
+        intro: `Bonjour ${payload.customerName}, Sarielle a bien reçu votre message et vous répondra personnellement.`,
         rows: [['Sujet', payload.subject]],
         note: 'Vous pouvez répondre directement à cet e-mail.',
       }),
-      text: `Bonjour ${payload.customerName},\n\nVotre message « ${payload.subject} » a bien été reçu. Patricia vous répondra personnellement.\n\n${SALON_NAME}`,
+      text: `Bonjour ${payload.customerName},\n\nVotre message « ${payload.subject} » a bien été reçu. Sarielle vous répondra personnellement.\n\n${SALON_NAME}`,
     };
   }
   // conversation_reply
   return {
     subject: `Réponse à votre message : ${payload.subject}`,
     html: layout(ctx, {
-      title: 'Réponse de Patricia',
+      title: 'Réponse de Sarielle',
       intro: `Bonjour ${payload.customerName}, voici la réponse à votre message.`,
       paragraphs: payload.message ? [payload.message] : [],
       note: 'Vous pouvez répondre directement à cet e-mail.',
@@ -502,12 +502,12 @@ function renderCustomRequest(
       subject: 'Votre demande de coiffure personnalisée a bien été reçue',
       html: layout(ctx, {
         title: 'Demande bien reçue',
-        intro: `Bonjour ${payload.requesterName}, Patricia a bien reçu votre demande de coiffure personnalisée et vous répondra personnellement.`,
+        intro: `Bonjour ${payload.requesterName}, Sarielle a bien reçu votre demande de coiffure personnalisée et vous répondra personnellement.`,
         rows: [['Date souhaitée', desired ?? 'Non précisée']],
         paragraphs: [payload.description],
-        note: 'Cette demande ne réserve pas encore de créneau. Patricia vous proposera une prestation ou un rendez-vous adapté.',
+        note: 'Cette demande ne réserve pas encore de créneau. Sarielle vous proposera une prestation ou un rendez-vous adapté.',
       }),
-      text: `Bonjour ${payload.requesterName},\n\nVotre demande de coiffure personnalisée a bien été reçue. Patricia vous répondra personnellement.\n\n${SALON_NAME}`,
+      text: `Bonjour ${payload.requesterName},\n\nVotre demande de coiffure personnalisée a bien été reçue. Sarielle vous répondra personnellement.\n\n${SALON_NAME}`,
     };
   }
   if (key === 'admin_custom_request') {
@@ -534,7 +534,7 @@ function renderCustomRequest(
       ? null
       : new Intl.NumberFormat('fr-FR', {
           style: 'currency',
-          currency: 'XOF',
+          currency: 'EUR',
           maximumFractionDigits: 2,
         }).format(payload.estimatedPriceCents / 100);
   const rows: Array<[string, string]> = [];
@@ -544,7 +544,7 @@ function renderCustomRequest(
   return {
     subject: 'Réponse à votre demande de coiffure personnalisée',
     html: layout(ctx, {
-      title: 'Réponse de Patricia',
+      title: 'Réponse de Sarielle',
       intro: `Bonjour ${payload.requesterName}, voici la réponse à votre demande de coiffure personnalisée.`,
       rows,
       paragraphs: payload.adminReply ? [payload.adminReply] : [],
@@ -563,7 +563,7 @@ const ASSESSMENT_DECISIONS: AssessmentDecisionKind[] = [
   'INFO_REQUESTED',
 ];
 
-/* Décision de Patricia sur une évaluation capillaire : jamais de réservation
+/* Décision de Sarielle sur une évaluation capillaire : jamais de réservation
    créée, le lien renvoie simplement vers le catalogue quand c'est accepté. */
 function renderAdminAssessmentReceived(
   payload: AssessmentEmailPayload,
@@ -606,22 +606,22 @@ function renderAssessmentDecision(
     ACCEPTED: {
       subject: `Évaluation acceptée : ${service}`,
       title: 'Votre évaluation est acceptée',
-      intro: `Bonjour ${name}, Patricia a étudié votre évaluation pour « ${service} » : votre chevelure est compatible.`,
+      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » : votre chevelure est compatible.`,
     },
     CONDITIONAL: {
       subject: `Évaluation acceptée sous conditions : ${service}`,
       title: 'Évaluation acceptée sous conditions',
-      intro: `Bonjour ${name}, Patricia a étudié votre évaluation pour « ${service} » : la prestation est possible sous conditions, détaillées ci-dessous.`,
+      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » : la prestation est possible sous conditions, détaillées ci-dessous.`,
     },
     REFUSED: {
       subject: `Réponse à votre évaluation : ${service}`,
       title: 'Réponse à votre évaluation',
-      intro: `Bonjour ${name}, Patricia a étudié votre évaluation pour « ${service} ». Cette prestation ne peut malheureusement pas être réalisée dans votre situation.`,
+      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} ». Cette prestation ne peut malheureusement pas être réalisée dans votre situation.`,
     },
     INFO_REQUESTED: {
       subject: `Précisions demandées : ${service}`,
-      title: 'Patricia a besoin de précisions',
-      intro: `Bonjour ${name}, Patricia a étudié votre évaluation pour « ${service} » et souhaite quelques précisions avant de se prononcer.`,
+      title: 'Sarielle a besoin de précisions',
+      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » et souhaite quelques précisions avant de se prononcer.`,
     },
   };
   const { subject, title, intro } = copy[payload.decision];
@@ -629,7 +629,7 @@ function renderAssessmentDecision(
   const note = canBook
     ? 'Cette réponse ne réserve aucun rendez-vous : choisissez votre coiffure et votre créneau depuis le catalogue.'
     : payload.decision === 'INFO_REQUESTED'
-      ? 'Aucun rendez-vous n’est réservé. Répondez à cet e-mail ou contactez Patricia depuis le site.'
+      ? 'Aucun rendez-vous n’est réservé. Répondez à cet e-mail ou contactez Sarielle depuis le site.'
       : undefined;
   return {
     subject,

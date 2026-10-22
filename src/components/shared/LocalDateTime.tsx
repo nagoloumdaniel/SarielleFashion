@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-/* Rendu serveur en Africa/Dakar (UTC+0, sans heure d'été), puis fuseau de l'appareil après
+/* Rendu serveur en Europe/Berlin (heure d'été gérée par Intl), puis fuseau de l'appareil après
    montage : évite tout écart d'hydratation quand le serveur n'est pas dans le fuseau du navigateur. */
 function useDeviceZone(): string {
-  const [zone, setZone] = useState('Africa/Dakar');
+  const [zone, setZone] = useState('Europe/Berlin');
   useEffect(() => {
-    setZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar');
+    setZone(Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin');
   }, []);
   return zone;
 }

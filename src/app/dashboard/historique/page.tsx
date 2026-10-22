@@ -15,11 +15,11 @@ import { HISTORY_GROUPS, HISTORY_GROUP_KEYS, listHistory, type HistoryGroup } fr
 
 export const metadata: Metadata = { title: 'Historique - Tableau de bord' };
 
-/* Heure de Dakar fixée côté serveur (UTC+0, pas d'heure d'été). */
+/* Heure de Berlin fixée côté serveur (heure d'été gérée par Intl). */
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'medium',
   timeStyle: 'short',
-  timeZone: 'Africa/Dakar',
+  timeZone: 'Europe/Berlin',
 });
 
 function first(value: string | string[] | undefined): string {

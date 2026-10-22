@@ -133,13 +133,13 @@ export function CustomRequestForm() {
             required
             minLength={2}
             maxLength={120}
-            hint="Exemples : naturels, défrisés, locs, cheveux fins."
+            hint="Exemples : naturels, défrisés, cheveux fins, cheveux longs."
           />
           <Input
             label="Coiffure actuelle (facultatif)"
             name="currentStyle"
             maxLength={200}
-            hint="Exemple : vanilles depuis 3 semaines."
+            hint="Exemple : lace posée depuis 3 semaines."
           />
           <Input
             label="Date souhaitée (facultatif)"

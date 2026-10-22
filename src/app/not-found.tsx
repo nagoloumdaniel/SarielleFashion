@@ -24,7 +24,7 @@ export default function NotFound() {
       </Title>
       <p className="mt-4 max-w-md text-lg text-muted">
         Cette page n’existe pas ou n’est plus disponible. Le catalogue reste accessible pour
-        découvrir les prestations de Patricia.
+        découvrir les prestations de Sarielle.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <ButtonLink href="/coiffures" className="sm:w-48">

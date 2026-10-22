@@ -51,7 +51,7 @@ export const fieldBox = (error?: string) =>
 export function autoPlaceholder(label: string, type?: string, name?: string): string {
   const n = name ?? '';
   if (type === 'email' || /mail/i.test(n)) return 'vous@exemple.com';
-  if (type === 'tel' || /phone|tel/i.test(n)) return '+221 77 123 45 67';
+  if (type === 'tel' || /phone|tel/i.test(n)) return '+49 151 23456789';
   if (type === 'password') return 'Votre mot de passe';
   if (type === 'search') return 'Rechercher…';
   if (type === 'url') return 'https://';

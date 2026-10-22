@@ -148,7 +148,7 @@ model CompatibilityRule {
   incompatibleLocs    Boolean      @default(false)
   photoPolicy         PhotoPolicy  @default(OPTIONAL)
   autoApprove         Boolean      @default(false)
-  // Conditions particulières affichées à la cliente et à Patricia (§5.2)
+  // Conditions particulières affichées à la cliente et à Sarielle (§5.2)
   conditionsNote      String?
   // Messages configurables par situation (§5.2)
   incompatibleMessage String?
@@ -388,7 +388,7 @@ model HairAssessment {
   answers         Json
   photoKeys       String[]         @default([]) // PRIVÉ — jamais en galerie publique
   status          AssessmentStatus @default(RECEIVED)
-  // Note interne de Patricia et message transmis à la cliente
+  // Note interne de Sarielle et message transmis à la cliente
   decisionNote    String?
   decisionMessage String?
   decidedById     String?
@@ -597,7 +597,7 @@ model GalleryPhoto {
   alt              String   @default("")
   serviceId        String?
   service          Service? @relation(fields: [serviceId], references: [id])
-  // Confirmation explicite par Patricia que la cliente autorise l'usage public
+  // Confirmation explicite par Sarielle que la cliente autorise l'usage public
   consentConfirmed Boolean  @default(false)
   published        Boolean  @default(false)
   order            Int      @default(0)
@@ -651,7 +651,7 @@ model PromotionService {
 
 model SalonSettings {
   id                   Int      @id @default(1)
-  name                 String   @default("Hairstyle by Patricia")
+  name                 String   @default("Sarielle Fashion")
   contactEmail         String?
   phone                String?
   address              String?

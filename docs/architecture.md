@@ -6,7 +6,7 @@
 ## 1. Arborescence du dépôt
 
 ```
-HairStyleByPati/
+SarielleFashion/
 ├── .github/workflows/ci.yml      # lint + typecheck + tests + build
 ├── .husky/                       # hooks git (P0.7)
 ├── docs/                         # acceptation, plan, stack, architecture, git

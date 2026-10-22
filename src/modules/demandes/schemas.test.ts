@@ -10,7 +10,7 @@ const validRequest = {
   hairType: 'Cheveux naturels épais',
   currentStyle: 'Tresses depuis deux semaines',
   desiredDate: '2026-11-20',
-  comment: 'Budget autour de 15 000 FCFA.',
+  comment: 'Budget autour de 15 000 EUR.',
   consent: 'on',
   website: '',
 };
@@ -28,7 +28,7 @@ describe('customRequestSchema', () => {
 
   it('should accept a Senegalese international number and an empty phone', () => {
     expect(
-      customRequestSchema.safeParse({ ...validRequest, phone: '+221 77 123 45 67' }).success,
+      customRequestSchema.safeParse({ ...validRequest, phone: '+49 151 23456789' }).success,
     ).toBe(true);
     expect(customRequestSchema.safeParse({ ...validRequest, phone: '' }).success).toBe(true);
   });
@@ -53,18 +53,18 @@ describe('customRequestSchema', () => {
 });
 
 describe('customRequestDecisionSchema', () => {
-  it('should convert an estimated price in FCFA into cents', () => {
+  it('should convert an estimated price in EUR into cents', () => {
     const result = customRequestDecisionSchema.safeParse({
       requestId: 'request-1',
       action: 'QUOTED',
       message: 'Voici une proposition adaptée.',
-      estimatedPriceFcfa: '150',
+      estimatedPriceEur: '150',
       serviceId: '',
       proposedSlotLocal: '',
       timeZone: 'Europe/Paris',
     });
     expect(result.success).toBe(true);
-    if (result.success) expect(result.data.estimatedPriceFcfa).toBe(15_000);
+    if (result.success) expect(result.data.estimatedPriceEur).toBe(15_000);
   });
 
   it('should accept an empty price and reject a negative one', () => {
@@ -74,16 +74,16 @@ describe('customRequestDecisionSchema', () => {
       message: 'Pouvez-vous préciser la longueur ?',
       timeZone: 'Europe/Paris',
     };
-    const empty = customRequestDecisionSchema.safeParse({ ...base, estimatedPriceFcfa: '' });
+    const empty = customRequestDecisionSchema.safeParse({ ...base, estimatedPriceEur: '' });
     expect(empty.success).toBe(true);
-    if (empty.success) expect(empty.data.estimatedPriceFcfa).toBeNull();
+    if (empty.success) expect(empty.data.estimatedPriceEur).toBeNull();
     expect(
-      customRequestDecisionSchema.safeParse({ ...base, estimatedPriceFcfa: '-10' }).success,
+      customRequestDecisionSchema.safeParse({ ...base, estimatedPriceEur: '-10' }).success,
     ).toBe(false);
   });
 
   it('should accept a take-over without message but require one for other decisions', () => {
-    const base = { requestId: 'request-1', estimatedPriceFcfa: '', timeZone: 'Africa/Dakar' };
+    const base = { requestId: 'request-1', estimatedPriceEur: '', timeZone: 'Europe/Berlin' };
     expect(
       customRequestDecisionSchema.safeParse({ ...base, action: 'IN_REVIEW', message: '' }).success,
     ).toBe(true);
@@ -92,18 +92,18 @@ describe('customRequestDecisionSchema', () => {
     ).toBe(false);
   });
 
-  it('should reject decimal FCFA amounts and accept large ones', () => {
+  it('should reject decimal EUR amounts and accept large ones', () => {
     const base = {
       requestId: 'request-1',
       action: 'QUOTED',
       message: 'Devis pour votre demande.',
-      timeZone: 'Africa/Dakar',
+      timeZone: 'Europe/Berlin',
     };
     expect(
-      customRequestDecisionSchema.safeParse({ ...base, estimatedPriceFcfa: '15000.5' }).success,
+      customRequestDecisionSchema.safeParse({ ...base, estimatedPriceEur: '15000.5' }).success,
     ).toBe(false);
-    const big = customRequestDecisionSchema.safeParse({ ...base, estimatedPriceFcfa: '250000' });
+    const big = customRequestDecisionSchema.safeParse({ ...base, estimatedPriceEur: '2500' });
     expect(big.success).toBe(true);
-    if (big.success) expect(big.data.estimatedPriceFcfa).toBe(25_000_000);
+    if (big.success) expect(big.data.estimatedPriceEur).toBe(250_000);
   });
 });

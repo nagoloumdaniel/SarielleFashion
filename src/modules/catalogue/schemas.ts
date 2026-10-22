@@ -33,7 +33,7 @@ function preprocessCheckbox(value: unknown): boolean {
 /** Case à cocher : absente du FormData signifie décochée. */
 export const checkbox = z.preprocess(preprocessCheckbox, z.boolean().default(false));
 
-/** Montant saisi en FCFA (le nom « Euros » est historique), converti en 1/100 FCFA côté serveur. */
+/** Montant saisi en euros , converti en centimes côté serveur. */
 export const priceEuros = z.preprocess(
   preprocessDecimal,
   z

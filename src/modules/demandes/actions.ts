@@ -154,7 +154,7 @@ export async function submitCustomRequest(
     revalidatePath('/dashboard', 'layout');
     flushEmailsSoon();
     return {
-      success: 'Votre demande a bien été envoyée. Patricia vous répondra personnellement.',
+      success: 'Votre demande a bien été envoyée. Sarielle vous répondra personnellement.',
       requestId: request.id,
     };
   } catch (error) {
@@ -220,7 +220,7 @@ export async function decideCustomRequest(
           userId: user.id,
           action: input.action,
           message,
-          priceCents: input.estimatedPriceFcfa,
+          priceCents: input.estimatedPriceEur,
           proposedServiceName: serviceName,
           proposedSlot,
         },
@@ -232,7 +232,7 @@ export async function decideCustomRequest(
           ...(message ? { adminReply: message } : {}),
           ...(input.action !== 'IN_REVIEW'
             ? {
-                estimatedPriceCents: input.estimatedPriceFcfa,
+                estimatedPriceCents: input.estimatedPriceEur,
                 proposedServiceId: input.serviceId || null,
                 proposedSlot,
               }
@@ -249,7 +249,7 @@ export async function decideCustomRequest(
               templateKey: 'custom_request_decision',
               payload: customPayload(request, {
                 adminReply: message,
-                estimatedPriceCents: input.estimatedPriceFcfa,
+                estimatedPriceCents: input.estimatedPriceEur,
                 proposedServiceName: serviceName,
                 proposedSlot: proposedSlot?.toISOString() ?? null,
               }),

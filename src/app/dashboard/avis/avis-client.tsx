@@ -23,7 +23,7 @@ export type ReviewRow = {
 
 const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
   dateStyle: 'medium',
-  timeZone: 'Africa/Dakar',
+  timeZone: 'Europe/Berlin',
 });
 
 function Stars({ rating }: { rating: number | null }) {

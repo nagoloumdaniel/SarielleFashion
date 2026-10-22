@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, CardLink } from '@/components/ui/Card';
 import { requireAdmin } from '@/modules/auth/guards';
 import { APPOINTMENT_STATUS_LABELS } from '@/modules/reservations/status';
-import { formatFcfa, formatFcfaCompact } from '@/modules/stats/format';
+import { formatEuro, formatEuroCompact } from '@/modules/stats/format';
 import { getPeriodStatistics, parseStatsPeriod, STATS_PERIODS } from '@/modules/stats/overview';
 import { BarChart, RankBars } from './bar-chart';
 
@@ -78,7 +78,7 @@ export default async function StatisticsPage({
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card>
-          <Kpi icon={Wallet} label="Revenus estimés" value={formatFcfa(stats.revenueCents)} />
+          <Kpi icon={Wallet} label="Revenus estimés" value={formatEuro(stats.revenueCents)} />
         </Card>
         <CardLink href="/dashboard/reservations">
           <Kpi icon={ChartNoAxesColumn} label="Rendez-vous" value={stats.totalAppointments} />
@@ -87,7 +87,7 @@ export default async function StatisticsPage({
           <Kpi icon={CircleCheck} label="Terminés" value={stats.completedCount} />
         </Card>
         <Card>
-          <Kpi icon={Receipt} label="Ticket moyen" value={formatFcfa(stats.averageTicketCents)} />
+          <Kpi icon={Receipt} label="Ticket moyen" value={formatEuro(stats.averageTicketCents)} />
         </Card>
         <Card>
           <Kpi icon={Ban} label="Annulés" value={stats.cancelledCount} />
@@ -121,8 +121,8 @@ export default async function StatisticsPage({
               tip: b.tip,
               value: b.revenueCents,
             }))}
-            format={formatFcfa}
-            formatAxis={formatFcfaCompact}
+            format={formatEuro}
+            formatAxis={formatEuroCompact}
           />
         </Card>
 

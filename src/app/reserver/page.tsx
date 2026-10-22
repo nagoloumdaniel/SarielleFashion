@@ -10,7 +10,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Réserver un rendez-vous',
   description:
-    'Réservez votre rendez-vous chez Hairstyle by Patricia : choix de la prestation, vérification capillaire, options, créneau et confirmation. Paiement sur place.',
+    'Réservez votre rendez-vous chez Sarielle Fashion : choix de la prestation, vérification capillaire, options, créneau et confirmation. Paiement sur place.',
   alternates: { canonical: '/reserver' },
 };
 

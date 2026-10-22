@@ -43,11 +43,11 @@ describe('evaluateCompatibility', () => {
     const result = evaluateCompatibility({
       rule: rule({
         acceptedLengths: ['LONG'],
-        incompatibleMessage: 'Message personnalisé de Patricia.',
+        incompatibleMessage: 'Message personnalisé de Sarielle.',
       }),
       answers: { hairLength: 'SHORT' },
     });
-    expect(result.message).toBe('Message personnalisé de Patricia.');
+    expect(result.message).toBe('Message personnalisé de Sarielle.');
   });
 
   it('should allow booking for an accepted length with auto approval', () => {

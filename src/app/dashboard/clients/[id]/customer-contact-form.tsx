@@ -62,7 +62,7 @@ export function CustomerContactForm({
         type="tel"
         defaultValue={phone}
         maxLength={30}
-        placeholder="+221 77 123 45 67"
+        placeholder="+49 151 23456789"
       />
       {state.error ? (
         <p role="alert" className="text-sm font-medium text-alert">

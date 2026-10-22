@@ -1,16 +1,16 @@
-/* Formats FCFA (XOF) : les colonnes *Cents sont en 1/100 de FCFA, sans décimales à l'affichage. */
-const fcfa = new Intl.NumberFormat('fr-FR', {
+/* Formats euro (EUR) : les colonnes *Cents sont en centimes, sans décimales à l'affichage. */
+const euro = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
-  currency: 'XOF',
+  currency: 'EUR',
   maximumFractionDigits: 0,
 });
 
-export function formatFcfa(cents: number): string {
-  return fcfa.format(Math.round(cents / 100));
+export function formatEuro(cents: number): string {
+  return euro.format(Math.round(cents / 100));
 }
 
-export function formatFcfaOrPending(cents: number | null): string {
-  return cents == null ? 'Prix à confirmer' : formatFcfa(cents);
+export function formatEuroOrPending(cents: number | null): string {
+  return cents == null ? 'Prix à confirmer' : formatEuro(cents);
 }
 
 /** « 1 h 30 » / « 45 min ». */

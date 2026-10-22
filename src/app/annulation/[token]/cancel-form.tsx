@@ -53,7 +53,7 @@ export function CancelForm({ token, reasonRequired }: { token: string; reasonReq
           Confirmer l’annulation
         </Button>
         <ButtonLink href="/contact" variant="secondary" icon={Mail}>
-          Contacter Patricia
+          Contacter Sarielle
         </ButtonLink>
       </div>
     </form>

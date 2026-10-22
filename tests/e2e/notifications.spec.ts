@@ -174,7 +174,7 @@ test.describe('Notifications et messagerie', () => {
     await page.getByLabel('Sujet').fill(subject);
     await page
       .getByLabel('Message')
-      .fill('Bonjour Patricia, je souhaite des renseignements sur les tresses collées.');
+      .fill('Bonjour Sarielle, je souhaite des renseignements sur les tresses collées.');
     await page.getByRole('button', { name: 'Envoyer le message' }).click();
     await expect(page.getByText(/Message envoyé/)).toBeVisible({ timeout: 20_000 });
 

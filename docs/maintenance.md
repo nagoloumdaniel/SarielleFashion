@@ -43,7 +43,7 @@ Aucun service externe n'est branché à ce jour (limite documentée dans `docs/s
 | Besoin                             | Référence                                                  |
 | ---------------------------------- | ---------------------------------------------------------- |
 | Installation et commandes          | [README.md](../README.md)                                  |
-| Guide d'utilisation pour Patricia  | [docs/guide-admin.md](guide-admin.md)                      |
+| Guide d'utilisation pour Sarielle  | [docs/guide-admin.md](guide-admin.md)                      |
 | Variables d'environnement          | [.env.example](../.env.example)                            |
 | Runbook de sauvegarde/restauration | [docs/security.md](security.md#sauvegarde-et-restauration) |
 
@@ -61,12 +61,12 @@ Aucun service externe n'est branché à ce jour (limite documentée dans `docs/s
 
 ## E-mails (Resend)
 
-- L'expéditeur par défaut `onboarding@resend.dev` est un bac à sable : Resend ne livre qu'à l'adresse du propriétaire du compte. Les e-mails vers Patricia et vers les clientes échouent (statut FAILED, visible dans Dashboard > Notifications) tant qu'un domaine n'est pas vérifié sur resend.com/domains.
+- L'expéditeur par défaut `onboarding@resend.dev` est un bac à sable : Resend ne livre qu'à l'adresse du propriétaire du compte. Les e-mails vers Sarielle et vers les clientes échouent (statut FAILED, visible dans Dashboard > Notifications) tant qu'un domaine n'est pas vérifié sur resend.com/domains.
 - Mise en production des e-mails : vérifier un domaine, définir `EMAIL_FROM` avec une adresse de ce domaine, puis relancer les envois échoués depuis le dashboard.
 
 ### Gmail SMTP (sans domaine)
 
-1. Compte Google de Patricia : activer la validation en deux étapes, puis créer un « mot de passe d'application ».
+1. Compte Google de Sarielle : activer la validation en deux étapes, puis créer un « mot de passe d'application ».
 2. Variables Vercel (Production) : `EMAIL_MODE=smtp`, `SMTP_USER=<adresse Gmail>`, `SMTP_PASSWORD=<mot de passe d'application>`. Redéployer.
 3. Limite Gmail : environ 500 e-mails par jour. Les messages partent de l'adresse Gmail ; les réponses y arrivent.
 4. Relancer les envois échoués depuis Dashboard > Notifications.

@@ -25,11 +25,11 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Card, CardLink } from '@/components/ui/Card';
 import { requireAdmin } from '@/modules/auth/guards';
 import { APPOINTMENT_STATUS_LABELS, APPOINTMENT_STATUS_TONES } from '@/modules/reservations/status';
-import { formatFcfa } from '@/modules/stats/format';
+import { formatEuro } from '@/modules/stats/format';
 import { getDashboardOverview, getSummaryStatistics } from '@/modules/stats/overview';
 
 export const metadata: Metadata = {
-  title: 'Tableau de bord - Hairstyle by Patricia',
+  title: 'Tableau de bord - Sarielle Fashion',
 };
 
 /* Ligne de liste entièrement cliquable (aucun bouton « Voir »). */
@@ -179,7 +179,7 @@ async function HomeContent() {
               ['Rendez-vous au total', summary.totalAppointments],
               ['Annulations (7 jours)', overview.recentCancellations],
               ['Prestations terminées', summary.completedCount],
-              ['Revenus estimés', formatFcfa(summary.completedRevenueCents)],
+              ['Revenus estimés', formatEuro(summary.completedRevenueCents)],
             ].map(([label, value]) => (
               <div key={label} className="border-l-2 border-accent-soft pl-3">
                 <dt className="text-muted">{label}</dt>

@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { formatDuration, formatFcfa, formatFcfaOrPending } from './format';
+import { formatDuration, formatEuro, formatEuroOrPending } from './format';
 
-describe('format FCFA', () => {
-  it('should convert hundredths of FCFA without decimals', () => {
-    expect(formatFcfa(2_500_000).replace(/\s/g, ' ')).toMatch(/25 000/);
-    expect(formatFcfa(2_500_000)).not.toMatch(/[,.]\d{2}\b/);
+describe('format EUR', () => {
+  it('should convert hundredths of EUR without decimals', () => {
+    expect(formatEuro(2_500_000).replace(/\s/g, ' ')).toMatch(/25 000/);
+    expect(formatEuro(2_500_000)).not.toMatch(/[,.]\d{2}\b/);
   });
 
   it('should flag a missing price', () => {
-    expect(formatFcfaOrPending(null)).toBe('Prix à confirmer');
+    expect(formatEuroOrPending(null)).toBe('Prix à confirmer');
   });
 });
 

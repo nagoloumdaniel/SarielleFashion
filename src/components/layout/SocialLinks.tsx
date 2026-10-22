@@ -1,15 +1,13 @@
-import { FaTiktok } from 'react-icons/fa6';
+import type { IconType } from 'react-icons';
 
-/* Réseaux sociaux (icônes). Remplacer les URL par les comptes réels de Patricia. */
-export const SOCIALS = [
-  {
-    href: 'https://www.tiktok.com/@hairstyle.by.pati?_r=1&_t=ZS-9AhxNxbeson',
-    label: 'TikTok',
-    Icon: FaTiktok,
-  },
-] as const;
+/* Réseaux sociaux (icônes). Remplacer les URL par les comptes réels de Sarielle. */
+export type Social = { href: string; label: string; Icon: IconType };
+
+/* Aucun compte renseigné pour l'instant : ajouter { href, label, Icon } ici. */
+export const SOCIALS: readonly Social[] = [];
 
 export function SocialLinks({ className = '' }: { className?: string }) {
+  if (SOCIALS.length === 0) return null;
   return (
     <ul className={`flex items-center gap-1 ${className}`} aria-label="Réseaux sociaux">
       {SOCIALS.map(({ href, label, Icon }) => (
