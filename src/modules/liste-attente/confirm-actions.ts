@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { AppError } from '@/lib/errors';
 import { getClientIp } from '@/lib/client-ip';
 import { rateLimit } from '@/lib/rate-limit';
+import { getLocale } from '@/i18n/server';
 import { createBooking } from '@/modules/reservations/service';
 import { bookingReference } from '@/modules/reservations/schemas';
 
@@ -59,6 +60,7 @@ export async function confirmWaitlistBookingAction(
       answers: {},
       optionIds: [],
       waitlistToken,
+      locale: await getLocale(),
     });
     return {
       success: 'Votre rendez-vous est confirmé.',

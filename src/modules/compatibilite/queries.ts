@@ -7,6 +7,7 @@ import {
   buildPublicQuestions,
 } from './questions';
 import type { CompatibilityAnswers, CompatibilityRuleData } from './engine';
+import { withoutAssessmentLocale } from './assessment-locale';
 import { verifyBookingCompatibility, type BookingGuardResult } from './booking-guard';
 
 /* ============================================================
@@ -19,6 +20,7 @@ export interface CompatibilityService {
   slug: string;
   categoryId: string;
   categoryName: string;
+  categorySlug: string;
   durationMinutes: number | null;
   rule: CompatibilityRuleData | null;
   questions: ConfiguredQuestion[];
@@ -62,7 +64,7 @@ export async function getCompatibilityServiceBySlug(
       slug: true,
       durationMinutes: true,
       categoryId: true,
-      category: { select: { name: true } },
+      category: { select: { name: true, slug: true } },
       compatibility: true,
       questions: {
         where: { active: true },
@@ -88,6 +90,7 @@ export async function getCompatibilityServiceBySlug(
     slug: service.slug,
     categoryId: service.categoryId,
     categoryName: service.category.name,
+    categorySlug: service.category.slug,
     durationMinutes: service.durationMinutes,
     rule: mapCompatibilityRule(service.compatibility),
     questions: service.questions,
@@ -95,13 +98,18 @@ export async function getCompatibilityServiceBySlug(
 }
 
 export async function listPublishedServicesForCompatibility(): Promise<
-  Array<{ id: string; name: string; slug: string; categoryName: string }>
+  Array<{ id: string; name: string; slug: string; categoryName: string; categorySlug: string }>
 > {
   return db.service
     .findMany({
       where: { status: 'PUBLISHED', category: { active: true } },
       orderBy: [{ order: 'asc' }, { name: 'asc' }],
-      select: { id: true, name: true, slug: true, category: { select: { name: true } } },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        category: { select: { name: true, slug: true } },
+      },
     })
     .then((rows) =>
       rows.map((row) => ({
@@ -109,6 +117,7 @@ export async function listPublishedServicesForCompatibility(): Promise<
         name: row.name,
         slug: row.slug,
         categoryName: row.category.name,
+        categorySlug: row.category.slug,
       })),
     );
 }
@@ -280,7 +289,7 @@ export async function getAssessmentDetail(id: string): Promise<AssessmentDetail 
     assessment.answers &&
     typeof assessment.answers === 'object' &&
     !Array.isArray(assessment.answers)
-      ? (assessment.answers as Record<string, unknown>)
+      ? withoutAssessmentLocale(assessment.answers as Record<string, unknown>)
       : {};
   const rule = mapCompatibilityRule(assessment.service.compatibility);
   const questions = buildPublicQuestions({

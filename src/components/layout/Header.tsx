@@ -1,28 +1,30 @@
 'use client';
 
 import { CalendarDays, Menu, X } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useI18n } from '@/i18n/client';
+import { Link, usePathname } from '@/i18n/link';
 import { useEffect, useState } from 'react';
 import { Logo } from '@/components/shared/Logo';
 import { Button, ButtonLink } from '@/components/ui/Button';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { SocialLinks } from './SocialLinks';
 import { ThemeToggle } from './ThemeToggle';
 
 /* Barre de navigation pleine largeur en verre (web + mobile), bordure basse,
    menu mobile déployé dessous. Règles : DESIGN-RULES.md. */
 const LINKS = [
-  { href: '/', label: 'Accueil' },
-  { href: '/coiffures', label: 'Catalogue' },
-  { href: '/galerie', label: 'Réalisations' },
-  { href: '/faq', label: 'FAQ' },
-  { href: '/demandes-personnalisees', label: 'Demande spéciale' },
-  { href: '/contact', label: 'Contact' },
-];
+  { href: '/', key: 'home' },
+  { href: '/coiffures', key: 'catalogue' },
+  { href: '/galerie', key: 'gallery' },
+  { href: '/faq', key: 'faq' },
+  { href: '/demandes-personnalisees', key: 'custom' },
+  { href: '/contact', key: 'contact' },
+] as const;
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { t } = useI18n();
 
   useEffect(() => {
     setOpen(false);
@@ -36,10 +38,10 @@ export function Header() {
       <div aria-hidden="true" className="h-16 md:h-[4.5rem]" />
       <header className="nav-floating glass-strong" data-open={open}>
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
-          <Link href="/" className="shrink-0" aria-label="Sarielle Fashion, accueil">
+          <Link href="/" className="shrink-0" aria-label={t('nav.homeAria')}>
             <Logo markClassName="h-8 w-auto text-fg" wordmarkClassName="hidden sm:inline" />
           </Link>
-          <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
+          <nav aria-label={t('nav.main')} className="hidden items-center gap-1 md:flex">
             {LINKS.map((l) => {
               const active =
                 l.href === '/'
@@ -54,16 +56,17 @@ export function Header() {
                     active ? 'bg-accent-soft text-fg' : 'text-fg hover:bg-accent-soft'
                   }`}
                 >
-                  {l.label}
+                  {t(`nav.${l.key}`)}
                 </Link>
               );
             })}
           </nav>
           <div className="flex items-center gap-1 sm:gap-2">
             <SocialLinks />
+            <LanguageSwitcher className="hidden sm:block" />
             <ThemeToggle />
             <ButtonLink href="/coiffures" size="sm" icon={CalendarDays}>
-              Réserver
+              {t('nav.reserve')}
             </ButtonLink>
             <Button
               type="button"
@@ -73,18 +76,18 @@ export function Header() {
               icon={open ? X : Menu}
               aria-expanded={open}
               aria-controls="menu-mobile"
-              title={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+              title={open ? t('nav.closeMenu') : t('nav.openMenu')}
               onClick={() => setOpen((v) => !v)}
               className="md:hidden"
             >
-              {open ? 'Fermer le menu' : 'Ouvrir le menu'}
+              {open ? t('nav.closeMenu') : t('nav.openMenu')}
             </Button>
           </div>
         </div>
         {open ? (
           <nav
             id="menu-mobile"
-            aria-label="Navigation mobile"
+            aria-label={t('nav.mobile')}
             className="border-t border-line px-3 pb-3 pt-2 md:hidden"
           >
             <ul className="flex flex-col gap-1">
@@ -95,11 +98,12 @@ export function Header() {
                     aria-current={pathname === l.href ? 'page' : undefined}
                     className="block rounded-[var(--radius-md)] px-4 py-3 font-bold text-fg hover:bg-accent-soft aria-[current=page]:bg-accent-soft"
                   >
-                    {l.label}
+                    {t(`nav.${l.key}`)}
                   </Link>
                 </li>
               ))}
             </ul>
+            <LanguageSwitcher className="mt-3 px-1 sm:hidden" />
           </nav>
         ) : null}
       </header>

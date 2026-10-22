@@ -1,4 +1,7 @@
+'use client';
+
 import { Star } from 'lucide-react';
+import { useI18n } from '@/i18n/client';
 import { formatAverage, formatReviewCount } from '@/modules/avis/engine';
 
 /* Étoiles en lecture seule (pleines = accent). Une seule étiquette accessible pour l'ensemble. */
@@ -11,12 +14,13 @@ export function Stars({
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }) {
+  const { t, locale } = useI18n();
   const dimension = size === 'lg' ? 'size-6' : size === 'sm' ? 'size-3.5' : 'size-4';
   const rounded = Math.round(value);
   return (
     <span
       role="img"
-      aria-label={`Note : ${formatAverage(value)} sur 5`}
+      aria-label={t('common.ui.stars.label', { value: formatAverage(value, locale) })}
       className={`inline-flex gap-0.5 ${className}`}
     >
       {[1, 2, 3, 4, 5].map((n) => (
@@ -40,14 +44,15 @@ export function RatingLine({
   count: number;
   className?: string;
 }) {
+  const { t, locale } = useI18n();
   if (count <= 0) return null;
   return (
     <p className={`inline-flex items-center gap-1.5 text-sm ${className}`}>
       <Star aria-hidden="true" className="size-4 fill-current" />
-      <span className="font-bold">{formatAverage(average)}</span>
+      <span className="font-bold">{formatAverage(average, locale)}</span>
       <span aria-hidden="true">·</span>
-      <span>{formatReviewCount(count)}</span>
-      <span className="sr-only">, note moyenne sur 5</span>
+      <span>{formatReviewCount(count, locale)}</span>
+      <span className="sr-only">{t('common.ui.stars.averageSr')}</span>
     </p>
   );
 }

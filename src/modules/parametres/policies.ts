@@ -13,6 +13,12 @@ export interface EmailContext {
   cancellationPolicy?: string | null;
   /** Conditions de réservation déjà résolues (valeur saisie ou défaut). */
   bookingPolicy?: string | null;
+  /** Valeurs saisies brutes : permettent de produire le texte par défaut dans la langue du client. */
+  raw?: {
+    cancellationPolicy: string | null;
+    bookingPolicy: string | null;
+    minCancelNoticeMinutes: number;
+  };
 }
 
 export function resolveCancellationPolicy(
@@ -54,5 +60,10 @@ export function emailContextFromSettings(settings: {
       settings.minCancelNoticeMinutes,
     ),
     bookingPolicy: resolveBookingPolicy(settings.bookingPolicy),
+    raw: {
+      cancellationPolicy: settings.cancellationPolicy,
+      bookingPolicy: settings.bookingPolicy,
+      minCancelNoticeMinutes: settings.minCancelNoticeMinutes,
+    },
   };
 }

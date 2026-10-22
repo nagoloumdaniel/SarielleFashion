@@ -2,36 +2,42 @@ import type { Metadata } from 'next';
 import { GalleryGrid } from '@/components/galerie/GalleryGrid';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Title } from '@/components/ui/Title';
+import { pageMetadata } from '@/i18n/metadata';
+import { getI18n } from '@/i18n/server';
 import { listPublishedGalleryPhotos } from '@/modules/galerie/queries';
 
-export const metadata: Metadata = {
-  title: 'Mes réalisations',
-  description:
-    'Un aperçu de mes dernières réalisations : coiffures, make-up, pose de lace et cils.',
-  alternates: { canonical: '/galerie' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, messages } = await getI18n();
+  return pageMetadata({
+    locale,
+    path: '/galerie',
+    title: messages.gallery.meta.title,
+    description: messages.gallery.meta.description,
+  });
+}
 
 // URLs signées valables 1 h : la page est régénérée bien avant leur expiration.
 export const revalidate = 300;
 
 export default async function GaleriePage() {
+  const { t } = await getI18n();
   const photos = await listPublishedGalleryPhotos().catch(() => []);
 
   return (
     <main className="page-main space-y-8">
       <header className="max-w-3xl space-y-3">
         <Title as="h1" size="display">
-          Mes réalisations
+          {t('gallery.title')}
         </Title>
         <p className="max-w-prose text-base leading-relaxed text-muted md:text-lg">
-          Quelques-unes de mes dernières coiffures. Clique sur une photo pour l’agrandir.
+          {t('gallery.intro')}
         </p>
       </header>
       {photos.length === 0 ? (
         <EmptyState
-          title="Les réalisations arrivent bientôt"
-          message="Je publie mes photos très prochainement. En attendant, découvre mes prestations."
-          actionLabel="Voir le catalogue"
+          title={t('gallery.empty.title')}
+          message={t('gallery.empty.message')}
+          actionLabel={t('gallery.empty.action')}
           actionHref="/coiffures"
         />
       ) : (

@@ -1,7 +1,6 @@
 'use client';
 
-import { PAYMENT_SHORT } from '@/modules/parametres/payment';
-import { formatNoticeDelay } from '@/modules/reservations/policy';
+import { formatNoticeDelayLocalized } from '@/modules/reservations/policy';
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,11 +17,13 @@ import {
   UserRound,
   X,
 } from 'lucide-react';
-import Link from 'next/link';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import type { BookableService } from '@/modules/reservations/queries';
 import type { PublicQuestion } from '@/modules/compatibilite/questions';
-import { travelFeeFromLabel } from '@/modules/parametres/home-service';
+import { INTL_LOCALE } from '@/i18n/config';
+import { useI18n } from '@/i18n/client';
+import { formatDuration, formatEuro } from '@/i18n/format';
+import { Link } from '@/i18n/link';
 import { addTravelFee } from '@/modules/reservations/pricing';
 import { HOME_ADDRESS_MAX, HOME_ADDRESS_MIN } from '@/modules/reservations/schemas';
 import { isQuestionAnswered, isQuestionVisible } from '@/modules/compatibilite/questions';
@@ -55,37 +56,6 @@ import { Title } from '@/components/ui/Title';
 
 type Phase = 'questions' | 'blocked' | 'options' | 'slot' | 'contact' | 'summary' | 'done';
 
-const STEPS = [
-  'Coiffure',
-  'Infos capillaires',
-  'Vérification',
-  'Options',
-  'Créneau',
-  'Coordonnées',
-  'Récapitulatif',
-  'Confirmation',
-];
-
-const euroFormatter = new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
-
-function formatCents(cents: number | null): string {
-  return cents == null ? 'Prix à confirmer' : euroFormatter.format(cents / 100);
-}
-
-function formatMinutes(minutes: number): string {
-  if (minutes <= 0) return 'Durée à confirmer';
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  if (hours > 0 && rest > 0) return `${hours} h ${String(rest).padStart(2, '0')}`;
-  if (hours > 0) return `${hours} h`;
-  return `${rest} min`;
-}
-
 function timeLabel(startMinute: number): string {
   const hours = Math.floor(startMinute / 60);
   const minutes = startMinute % 60;
@@ -115,6 +85,11 @@ export function BookingWizard({
   service: BookableService;
   settings: BookingSettings;
 }) {
+  const { t, locale, messages, msg } = useI18n();
+  const formatCents = (cents: number | null): string =>
+    cents == null ? t('booking.priceToConfirm') : formatEuro(locale, cents);
+  const formatMinutes = (minutes: number): string =>
+    minutes <= 0 ? t('booking.durationToConfirm') : formatDuration(locale, minutes);
   const questions: PublicQuestion[] = service.publicQuestions;
   const [phase, setPhase] = useState<Phase>(questions.length > 0 ? 'questions' : 'options');
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -281,15 +256,15 @@ export function BookingWizard({
     if (missing.length > 0) {
       event.preventDefault();
       setClientError(
-        `Complétez les questions suivantes : ${missing
-          .map((question) => question.label)
-          .join(', ')}.`,
+        t('booking.questions.missing', {
+          list: missing.map((question) => question.label).join(', '),
+        }),
       );
     }
   };
 
   const formattedSlot = selectedSlot
-    ? new Intl.DateTimeFormat('fr-FR', {
+    ? new Intl.DateTimeFormat(INTL_LOCALE[locale], {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -302,8 +277,8 @@ export function BookingWizard({
 
   return (
     <div className="space-y-5">
-      <ol className="flex flex-wrap gap-2 text-xs sm:text-sm" aria-label="Étapes de réservation">
-        {STEPS.map((label, index) => {
+      <ol className="flex flex-wrap gap-2 text-xs sm:text-sm" aria-label={t('booking.stepsAria')}>
+        {messages.booking.steps.map((label, index) => {
           const number = index + 1;
           return (
             <li
@@ -335,7 +310,7 @@ export function BookingWizard({
 
             className="outline-none"
           >
-            Vos informations capillaires
+            {t('booking.questions.title')}
           </Title>
           <form
             action={previewAction}
@@ -372,10 +347,10 @@ export function BookingWizard({
             ) : null}
             <div className="flex flex-wrap gap-3">
               <Button type="submit" icon={ShieldCheck} loading={previewPending}>
-                Vérifier et continuer
+                {t('booking.questions.submit')}
               </Button>
               <ButtonLink href={`/coiffures/${service.slug}`} variant="ghost" icon={ArrowLeft}>
-                Retour à la prestation
+                {t('booking.questions.backToService')}
               </ButtonLink>
             </div>
           </form>
@@ -386,7 +361,9 @@ export function BookingWizard({
         <Card>
           <div className="flex flex-wrap items-center gap-3">
             <Badge tone={previewState.preview.verdict === 'INCOMPATIBLE' ? 'alert' : 'accent'}>
-              {previewState.preview.verdict === 'INCOMPATIBLE' ? 'Incompatible' : 'À vérifier'}
+              {previewState.preview.verdict === 'INCOMPATIBLE'
+                ? t('booking.blocked.incompatible')
+                : t('booking.blocked.toCheck')}
             </Badge>
             <Title
               as="h2"
@@ -395,16 +372,18 @@ export function BookingWizard({
 
               className="outline-none"
             >
-              La réservation en ligne ne peut pas continuer
+              {t('booking.blocked.title')}
             </Title>
           </div>
-          <p className="mt-4 whitespace-pre-line text-lg text-fg">{previewState.preview.message}</p>
+          <p className="mt-4 whitespace-pre-line text-lg text-fg">
+            {msg(previewState.preview.message)}
+          </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <ButtonLink
               href={`/compatibilite?service=${encodeURIComponent(service.slug)}`}
               icon={ClipboardList}
             >
-              Demander une évaluation à Sarielle
+              {t('booking.blocked.askAssessment')}
             </ButtonLink>
             <Button
               type="button"
@@ -415,10 +394,10 @@ export function BookingWizard({
                 setClientError('');
               }}
             >
-              Modifier mes réponses
+              {t('booking.blocked.editAnswers')}
             </Button>
           </div>
-          <p className="mt-4 text-sm text-muted">Aucun créneau n’est réservé.</p>
+          <p className="mt-4 text-sm text-muted">{t('booking.blocked.noSlot')}</p>
         </Card>
       ) : null}
 
@@ -431,16 +410,16 @@ export function BookingWizard({
 
             className="outline-none"
           >
-            Options et précisions
+            {t('booking.options.title')}
           </Title>
           {verificationMessage ? (
             <p className="mt-2 rounded-[var(--radius-md)] bg-success-soft px-4 py-3 text-sm text-success">
-              {verificationMessage}
+              {msg(verificationMessage)}
             </p>
           ) : null}
           <div className="mt-5 flex flex-col gap-3">
             {service.options.length === 0 ? (
-              <p className="text-muted">Cette prestation n’a pas d’option supplémentaire.</p>
+              <p className="text-muted">{t('booking.options.none')}</p>
             ) : (
               service.options.map((option) => (
                 <label
@@ -494,21 +473,22 @@ export function BookingWizard({
                   <span>
                     <span className="flex items-center gap-2 font-semibold text-fg">
                       <House aria-hidden="true" className="size-4 text-accent" />
-                      Coiffure à domicile
+                      {t('booking.options.homeTitle')}
                     </span>
                     <span className="text-sm text-muted">
-                      Option payante : Sarielle vient à ton adresse. Frais de déplacement à ta
-                      charge.
+                      {t('booking.options.homeDescription')}
                     </span>
                   </span>
                 </span>
                 <span className="whitespace-nowrap font-semibold text-cacao">
-                  {travelFeeFromLabel(settings.travelFeeCents)}
+                  {t('booking.options.travelFrom', {
+                    amount: formatEuro(locale, settings.travelFeeCents),
+                  })}
                 </span>
               </label>
               {homeService ? (
                 <Textarea
-                  label="Adresse ou quartier"
+                  label={t('booking.options.addressLabel')}
                   icon={MapPin}
                   value={homeAddress}
                   onChange={(event) => setHomeAddress(event.target.value)}
@@ -516,18 +496,20 @@ export function BookingWizard({
                   maxLength={HOME_ADDRESS_MAX}
                   required
                   autoComplete="street-address"
-                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à ta charge."
+                  hint={t('booking.options.addressHint')}
                 />
               ) : null}
             </div>
           ) : null}
           <div className="mt-5 rounded-[var(--radius-md)] bg-line px-4 py-3 text-sm text-fg">
-            Durée estimée : <strong>{formatMinutes(durationMinutes)}</strong> · Prix :{' '}
+            {t('booking.options.estimatedDuration')} :{' '}
+            <strong>{formatMinutes(durationMinutes)}</strong> · {t('booking.options.price')} :{' '}
             <strong>{formatCents(priceCents)}</strong>
             {travelFeeCents != null ? (
               <>
                 {' '}
-                + déplacement <strong>{formatCents(travelFeeCents)}</strong> · Total :{' '}
+                {t('booking.options.travelPlus')} <strong>{formatCents(travelFeeCents)}</strong> ·{' '}
+                {t('booking.options.total')} :{' '}
                 <strong>{formatCents(addTravelFee(priceCents, travelFeeCents))}</strong>
               </>
             ) : null}
@@ -546,16 +528,14 @@ export function BookingWizard({
               icon={CalendarClock}
               onClick={() => {
                 if (!homeAddressValid) {
-                  setClientError(
-                    'Indiquez votre adresse ou votre quartier pour la coiffure à domicile.',
-                  );
+                  setClientError(t('booking.options.addressRequired'));
                   return;
                 }
                 setClientError('');
                 setPhase('slot');
               }}
             >
-              Choisir un créneau
+              {t('booking.options.chooseSlot')}
             </Button>
             <Button
               type="button"
@@ -563,7 +543,7 @@ export function BookingWizard({
               icon={ArrowLeft}
               onClick={() => setPhase('questions')}
             >
-              Retour
+              {t('booking.options.back')}
             </Button>
           </div>
         </Card>
@@ -578,11 +558,11 @@ export function BookingWizard({
 
             className="outline-none"
           >
-            Choisissez votre créneau
+            {t('booking.slot.title')}
           </Title>
           <div className="mt-4 max-w-xs">
             <Input
-              label="Date souhaitée"
+              label={t('booking.slot.dateLabel')}
               type="date"
               value={dateISO}
               min={localDateISO(new Date())}
@@ -603,24 +583,23 @@ export function BookingWizard({
 
           <div className="mt-5" aria-live="polite">
             {slotPending ? (
-              <p className="text-muted">Recherche des créneaux…</p>
+              <p className="text-muted">{t('booking.slot.searching')}</p>
             ) : slotState.error ? (
               <p
                 role="alert"
                 className="rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm text-alert"
               >
-                {slotState.error}
+                {msg(slotState.error)}
               </p>
             ) : !slotState.slots || slotState.slots.length === 0 ? (
               <div className="rounded-[var(--radius-md)] border border-dashed border-line p-6 text-center text-muted">
-                <p className="font-semibold text-fg">Aucun créneau ce jour</p>
-                <p className="mt-1 text-sm">Essayez une autre date.</p>
+                <p className="font-semibold text-fg">{t('booking.slot.noneTitle')}</p>
+                <p className="mt-1 text-sm">{t('booking.slot.noneHint')}</p>
               </div>
             ) : (
               <div>
                 <p className="mb-3 text-sm text-muted">
-                  {slotState.slots.length} créneau{slotState.slots.length > 1 ? 'x' : ''} disponible
-                  {slotState.slots.length > 1 ? 's' : ''}
+                  {t('booking.slot.available', { count: slotState.slots.length })}
                 </p>
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
                   {slotState.slots.map((slot) => (
@@ -654,7 +633,7 @@ export function BookingWizard({
               disabled={!selectedSlot}
               onClick={() => setPhase('contact')}
             >
-              Continuer
+              {t('booking.slot.next')}
             </Button>
             <Button
               type="button"
@@ -662,7 +641,7 @@ export function BookingWizard({
               icon={ArrowLeft}
               onClick={() => setPhase('options')}
             >
-              Retour
+              {t('booking.options.back')}
             </Button>
           </div>
         </Card>
@@ -677,18 +656,18 @@ export function BookingWizard({
 
             className="outline-none"
           >
-            Vos coordonnées
+            {t('booking.contact.title')}
           </Title>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <Input
-              label="Nom et prénom"
+              label={t('booking.contact.name')}
               value={contactName}
               onChange={(event) => setContactName(event.target.value)}
               required
               autoComplete="name"
             />
             <Input
-              label="E-mail"
+              label={t('booking.contact.email')}
               type="email"
               value={contactEmail}
               onChange={(event) => setContactEmail(event.target.value)}
@@ -696,7 +675,7 @@ export function BookingWizard({
               autoComplete="email"
             />
             <Input
-              label="Téléphone"
+              label={t('booking.contact.phone')}
               type="tel"
               value={contactPhone}
               onChange={(event) => setContactPhone(event.target.value)}
@@ -706,7 +685,7 @@ export function BookingWizard({
           </div>
           <div className="mt-4">
             <Textarea
-              label="Commentaire (facultatif)"
+              label={t('booking.contact.comment')}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               rows={3}
@@ -720,13 +699,12 @@ export function BookingWizard({
               className="mt-0.5 size-4"
             />
             <span>
-              J’accepte les conditions de réservation et le traitement de mes données pour ce
-              rendez-vous. Voir la{' '}
+              {t('booking.contact.consentBefore')}{' '}
               <Link
                 href="/confidentialite"
                 className="font-semibold text-cacao underline underline-offset-4"
               >
-                politique de confidentialité
+                {t('booking.contact.privacyLink')}
               </Link>
               .
             </span>
@@ -745,21 +723,21 @@ export function BookingWizard({
               icon={UserRound}
               onClick={() => {
                 if (!contactName.trim() || !contactEmail.trim() || !contactPhone.trim()) {
-                  setClientError('Renseignez votre nom, votre e-mail et votre téléphone.');
+                  setClientError(t('booking.contact.missingFields'));
                   return;
                 }
                 if (!consent) {
-                  setClientError('Vous devez accepter les conditions de réservation.');
+                  setClientError(t('booking.contact.consentRequired'));
                   return;
                 }
                 setClientError('');
                 setPhase('summary');
               }}
             >
-              Voir le récapitulatif
+              {t('booking.contact.toSummary')}
             </Button>
             <Button type="button" variant="ghost" icon={ArrowLeft} onClick={() => setPhase('slot')}>
-              Retour
+              {t('booking.options.back')}
             </Button>
           </div>
         </Card>
@@ -774,31 +752,31 @@ export function BookingWizard({
 
             className="outline-none"
           >
-            Récapitulatif
+            {t('booking.summary.title')}
           </Title>
           <dl className="mt-4 divide-y divide-line">
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Prestation</dt>
+              <dt className="text-muted">{t('booking.summary.service')}</dt>
               <dd className="text-right font-semibold text-fg">{service.name}</dd>
             </div>
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Date et heure</dt>
+              <dt className="text-muted">{t('booking.summary.dateTime')}</dt>
               <dd className="text-right font-semibold text-fg">{formattedSlot}</dd>
             </div>
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Durée estimée</dt>
+              <dt className="text-muted">{t('booking.summary.duration')}</dt>
               <dd className="text-right font-semibold text-fg">{formatMinutes(durationMinutes)}</dd>
             </div>
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Options</dt>
+              <dt className="text-muted">{t('booking.summary.options')}</dt>
               <dd className="text-right font-semibold text-fg">
                 {selectedOptions.length > 0
                   ? selectedOptions.map((option) => option.name).join(', ')
-                  : 'Aucune'}
+                  : t('booking.summary.noOptions')}
               </dd>
             </div>
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Prix</dt>
+              <dt className="text-muted">{t('booking.summary.price')}</dt>
               <dd className="text-right font-semibold text-fg">
                 {promoApplied && promoApplied.discountCents > 0 ? (
                   <>
@@ -814,7 +792,7 @@ export function BookingWizard({
                     </s>{' '}
                     {formatCents(autoPromo.finalPriceCents)}
                     <span className="block text-xs font-normal text-success">
-                      Offre en cours : {autoPromo.promotionName}
+                      {t('booking.summary.currentOffer', { name: autoPromo.promotionName })}
                     </span>
                   </>
                 ) : (
@@ -825,28 +803,28 @@ export function BookingWizard({
             {travelFeeCents != null ? (
               <>
                 <div className="flex justify-between gap-4 py-2">
-                  <dt className="text-muted">Lieu</dt>
+                  <dt className="text-muted">{t('booking.summary.place')}</dt>
                   <dd className="text-right font-semibold text-fg">
-                    À domicile
+                    {t('booking.summary.atHome')}
                     <span className="block whitespace-pre-line font-normal text-muted">
                       {homeAddress.trim()}
                     </span>
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 py-2">
-                  <dt className="text-muted">Frais de déplacement</dt>
+                  <dt className="text-muted">{t('booking.summary.travelFee')}</dt>
                   <dd className="text-right font-semibold text-fg">
                     {formatCents(travelFeeCents)}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 py-2">
-                  <dt className="text-muted">Total</dt>
+                  <dt className="text-muted">{t('booking.summary.total')}</dt>
                   <dd className="text-right font-semibold text-fg">{formatCents(totalCents)}</dd>
                 </div>
               </>
             ) : null}
             <div className="flex justify-between gap-4 py-2">
-              <dt className="text-muted">Coordonnées</dt>
+              <dt className="text-muted">{t('booking.summary.contact')}</dt>
               <dd className="text-right font-semibold text-fg">
                 {contactName}
                 <span className="block font-normal text-muted">{contactEmail}</span>
@@ -863,16 +841,16 @@ export function BookingWizard({
                     <Ticket aria-hidden="true" className="mr-1.5 inline size-4 align-text-bottom" />
                     {promoApplied.codeApplied ? (
                       <>
-                        Code <strong>{promoApplied.code}</strong> appliqué :{' '}
-                        {promoApplied.promotionName}
+                        {t('booking.summary.promoApplied', {
+                          code: promoApplied.code,
+                          name: promoApplied.promotionName,
+                        })}
                         {promoApplied.discountCents > 0
                           ? ` (-${formatCents(promoApplied.discountCents)})`
                           : ''}
                       </>
                     ) : (
-                      <>
-                        Une offre plus avantageuse est déjà appliquée : {promoApplied.promotionName}
-                      </>
+                      <>{t('booking.summary.promoBetter', { name: promoApplied.promotionName })}</>
                     )}
                   </p>
                   <Button
@@ -886,7 +864,7 @@ export function BookingWizard({
                       setPromoInput('');
                     }}
                   >
-                    Retirer le code promo
+                    {t('booking.summary.promoRemove')}
                   </Button>
                 </div>
               ) : (
@@ -895,7 +873,7 @@ export function BookingWizard({
                   <input type="hidden" name="optionIds" value={JSON.stringify(optionIds)} />
                   <div className="min-w-0 flex-1">
                     <Input
-                      label="Code promo (facultatif)"
+                      label={t('booking.summary.promoLabel')}
                       name="code"
                       icon={Ticket}
                       value={promoInput}
@@ -904,8 +882,8 @@ export function BookingWizard({
                       autoComplete="off"
                       autoCapitalize="characters"
                       spellCheck={false}
-                      placeholder="Ex. RENTREE20"
-                      error={promoState.error}
+                      placeholder={t('booking.summary.promoPlaceholder')}
+                      error={promoState.error ? msg(promoState.error) : undefined}
                     />
                   </div>
                   <Button
@@ -915,7 +893,7 @@ export function BookingWizard({
                     loading={promoPending}
                     disabled={!promoInput.trim()}
                   >
-                    Appliquer
+                    {t('booking.summary.promoApply')}
                   </Button>
                 </form>
               )}
@@ -923,11 +901,12 @@ export function BookingWizard({
           ) : null}
 
           <div className="mt-4 rounded-[var(--radius-md)] bg-accent-soft px-4 py-3 text-sm text-fg">
-            <p className="font-semibold">Paiement sur place</p>
-            <p className="mt-1">Tu règles toujours sur place, en espèces ou par virement.</p>
+            <p className="font-semibold">{t('booking.summary.paymentTitle')}</p>
+            <p className="mt-1">{t('booking.summary.paymentText')}</p>
             <p className="mt-1">
-              Annulation en ligne possible jusqu’à{' '}
-              {formatNoticeDelay(settings.minCancelNoticeMinutes)} avant le rendez-vous.
+              {t('booking.summary.cancelNotice', {
+                delay: formatNoticeDelayLocalized(t, settings.minCancelNoticeMinutes),
+              })}
             </p>
           </div>
 
@@ -947,7 +926,7 @@ export function BookingWizard({
             <input type="hidden" name="homeService" value={homeService ? 'on' : ''} />
             <input type="hidden" name="homeAddress" value={homeService ? homeAddress.trim() : ''} />
             <div className="absolute -left-[9999px]" aria-hidden="true">
-              <label htmlFor="booking-website">Site web</label>
+              <label htmlFor="booking-website">{t('booking.summary.honeypotLabel')}</label>
               <input id="booking-website" name="website" tabIndex={-1} autoComplete="off" />
             </div>
             {bookingState.error ? (
@@ -955,12 +934,12 @@ export function BookingWizard({
                 role="alert"
                 className="mb-4 rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
               >
-                {bookingState.error}
+                {msg(bookingState.error)}
               </p>
             ) : null}
             <div className="flex flex-wrap gap-3">
               <Button type="submit" icon={CalendarCheck} loading={bookingPending}>
-                Confirmer ma réservation
+                {t('booking.summary.confirm')}
               </Button>
               <Button
                 type="button"
@@ -968,7 +947,7 @@ export function BookingWizard({
                 icon={ArrowLeft}
                 onClick={() => setPhase('contact')}
               >
-                Retour
+                {t('booking.options.back')}
               </Button>
             </div>
           </form>
@@ -985,27 +964,27 @@ export function BookingWizard({
             className="outline-none"
           >
             {bookingState.success.status === 'CONFIRMED'
-              ? 'Votre rendez-vous est confirmé'
-              : 'Votre demande est enregistrée'}
+              ? t('booking.done.confirmedTitle')
+              : t('booking.done.pendingTitle')}
           </Title>
           <p className="mt-3 text-lg text-fg">
             {bookingState.success.status === 'CONFIRMED'
-              ? 'Votre créneau est réservé.'
-              : 'Créneau réservé temporairement, en attente de confirmation par Sarielle.'}
+              ? t('booking.done.confirmedText')
+              : t('booking.done.pendingText')}
           </p>
           <dl className="mt-4 space-y-2 rounded-[var(--radius-md)] bg-line px-4 py-3 text-sm text-fg">
             <div className="flex justify-between gap-4">
-              <dt>Référence</dt>
+              <dt>{t('booking.done.reference')}</dt>
               <dd className="font-semibold">{bookingState.success.reference}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt>Prestation</dt>
+              <dt>{t('booking.done.service')}</dt>
               <dd className="font-semibold">{bookingState.success.serviceName}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt>Date et heure</dt>
+              <dt>{t('booking.done.dateTime')}</dt>
               <dd className="font-semibold">
-                {new Intl.DateTimeFormat('fr-FR', {
+                {new Intl.DateTimeFormat(INTL_LOCALE[locale], {
                   dateStyle: 'full',
                   timeStyle: 'short',
                 }).format(new Date(bookingState.success.startsAt))}
@@ -1013,24 +992,28 @@ export function BookingWizard({
             </div>
             {bookingState.success.homeService ? (
               <div className="flex justify-between gap-4">
-                <dt>Coiffure à domicile (déplacement)</dt>
+                <dt>{t('booking.done.homeTravel')}</dt>
                 <dd className="font-semibold">
                   {formatCents(bookingState.success.travelFeeCents ?? 0)}
                 </dd>
               </div>
             ) : null}
             <div className="flex justify-between gap-4">
-              <dt>{bookingState.success.homeService ? 'Total' : 'Prix'}</dt>
+              <dt>
+                {bookingState.success.homeService
+                  ? t('booking.done.total')
+                  : t('booking.done.price')}
+              </dt>
               <dd className="font-semibold">{formatCents(bookingState.success.priceCents)}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-sm text-muted">{PAYMENT_SHORT}</p>
+          <p className="mt-4 text-sm text-muted">{t('booking.done.paymentShort')}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href={bookingState.success.cancelUrl} variant="secondary" icon={Pencil}>
-              Gérer ou annuler mon rendez-vous
+              {t('booking.done.manage')}
             </ButtonLink>
             <ButtonLink href="/coiffures" icon={Scissors}>
-              Retour au catalogue
+              {t('booking.done.backToCatalogue')}
             </ButtonLink>
           </div>
         </Card>

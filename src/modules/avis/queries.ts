@@ -3,6 +3,9 @@ import type { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import { paginate } from '@/lib/pagination';
 import { getImageSignedUrl } from '@/modules/fichiers/storage';
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/config';
+import { createTranslator } from '@/i18n/translate';
+import { getMessagesFor } from '@/i18n/messages';
 import { publicAuthorName, type RatingSummary } from './engine';
 
 export const REVIEWS_TAG = 'reviews';
@@ -35,12 +38,16 @@ const PUBLIC_REVIEW_SELECT = {
 
 type PublicReviewRow = Prisma.ReviewGetPayload<{ select: typeof PUBLIC_REVIEW_SELECT }>;
 
-async function toPublicReview(row: PublicReviewRow): Promise<PublicReview> {
-  const author = publicAuthorName(row.authorName);
+async function toPublicReview(
+  row: PublicReviewRow,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<PublicReview> {
+  const t = createTranslator(locale, getMessagesFor(locale));
+  const author = publicAuthorName(row.authorName, locale);
   const photos = await Promise.all(
     row.photos.map(async (photo, index) => ({
       src: await getImageSignedUrl(photo.key, 3600).catch(() => null),
-      alt: `Photo ${index + 1} jointe à l’avis de ${author}`,
+      alt: t('reviews.photoAlt', { n: index + 1, author }),
     })),
   );
   return {
@@ -58,7 +65,11 @@ async function toPublicReview(row: PublicReviewRow): Promise<PublicReview> {
 /** Avis d'une prestation, du plus récent au plus ancien (+ photos en URL signée). */
 export async function listServiceReviews(
   serviceId: string,
-  { offset = 0, limit = 6 }: { offset?: number; limit?: number } = {},
+  {
+    offset = 0,
+    limit = 6,
+    locale = DEFAULT_LOCALE,
+  }: { offset?: number; limit?: number; locale?: Locale } = {},
 ): Promise<{ items: PublicReview[]; hasMore: boolean }> {
   const rows = await db.review.findMany({
     where: { serviceId, ...PUBLISHED },
@@ -68,20 +79,23 @@ export async function listServiceReviews(
     select: PUBLIC_REVIEW_SELECT,
   });
   return {
-    items: await Promise.all(rows.slice(0, limit).map(toPublicReview)),
+    items: await Promise.all(rows.slice(0, limit).map((row) => toPublicReview(row, locale))),
     hasMore: rows.length > limit,
   };
 }
 
 /** Derniers avis commentés, toutes prestations confondues (landing). */
-export async function listLatestReviews(limit = 3): Promise<PublicReview[]> {
+export async function listLatestReviews(
+  limit = 3,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<PublicReview[]> {
   const rows = await db.review.findMany({
     where: { ...PUBLISHED, comment: { not: null } },
     orderBy: [{ submittedAt: 'desc' }, { id: 'desc' }],
     take: limit,
     select: PUBLIC_REVIEW_SELECT,
   });
-  return Promise.all(rows.map(toPublicReview));
+  return Promise.all(rows.map((row) => toPublicReview(row, locale)));
 }
 
 async function loadServiceSummaries(serviceIds: string[]): Promise<Record<string, RatingSummary>> {

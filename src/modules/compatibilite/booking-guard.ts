@@ -13,6 +13,14 @@ import {
  * La disponibilité du créneau reste vérifiée séparément en phase 6.
  * ============================================================ */
 
+/** Messages (français à la source, traduits à l'affichage via le catalogue src/i18n/messages/de/server). */
+export const BOOKING_GUARD_MESSAGES = {
+  accepted: 'Évaluation capillaire acceptée par Sarielle.',
+  refused: 'Cette évaluation capillaire a été refusée.',
+  infoRequested: 'Des informations complémentaires sont attendues avant la réservation.',
+  awaiting: 'L’évaluation capillaire est en attente de la décision de Sarielle.',
+} as const;
+
 export type BookingBlockReason =
   | 'RULES_OK'
   | 'ASSESSMENT_ACCEPTED'
@@ -56,7 +64,7 @@ export function verifyBookingCompatibility(input: {
         allowed: true,
         reason: 'ASSESSMENT_ACCEPTED',
         verdict: evaluation.verdict,
-        message: 'Évaluation capillaire acceptée par Sarielle.',
+        message: BOOKING_GUARD_MESSAGES.accepted,
       };
     }
     if (assessment.status === 'REFUSED') {
@@ -64,7 +72,7 @@ export function verifyBookingCompatibility(input: {
         allowed: false,
         reason: 'ASSESSMENT_REFUSED',
         verdict: evaluation.verdict,
-        message: 'Cette évaluation capillaire a été refusée.',
+        message: BOOKING_GUARD_MESSAGES.refused,
       };
     }
     if (assessment.status === 'INFO_REQUESTED') {
@@ -72,7 +80,7 @@ export function verifyBookingCompatibility(input: {
         allowed: false,
         reason: 'AWAITING_INFORMATION',
         verdict: evaluation.verdict,
-        message: 'Des informations complémentaires sont attendues avant la réservation.',
+        message: BOOKING_GUARD_MESSAGES.infoRequested,
       };
     }
     if (assessment.status === 'RECEIVED' || assessment.status === 'IN_PROGRESS') {
@@ -80,7 +88,7 @@ export function verifyBookingCompatibility(input: {
         allowed: false,
         reason: 'AWAITING_DECISION',
         verdict: evaluation.verdict,
-        message: 'L’évaluation capillaire est en attente de la décision de Sarielle.',
+        message: BOOKING_GUARD_MESSAGES.awaiting,
       };
     }
   }

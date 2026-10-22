@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useT } from '@/i18n/client';
 import { useScrollLock } from './useScrollLock';
 
 export type LightboxImage = { src: string; alt: string; caption?: string | null };
@@ -21,6 +22,7 @@ export function Lightbox({
   onClose: () => void;
   onIndexChange: (next: number) => void;
 }) {
+  const t = useT();
   const open = index !== null && images.length > 0;
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
@@ -99,12 +101,12 @@ export function Lightbox({
         className="relative flex h-full w-full flex-col items-center justify-center gap-3 p-3 outline-none sm:p-8"
       >
         <h2 id={titleId} className="sr-only">
-          Photo {position + 1} sur {images.length}
+          {t('common.ui.lightbox.title', { n: position + 1, total: images.length })}
         </h2>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fermer la visionneuse"
+          aria-label={t('common.ui.lightbox.close')}
           className="absolute right-3 top-3 z-10 inline-flex size-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:right-6 sm:top-6"
         >
           <X aria-hidden="true" className="size-6" />
@@ -137,7 +139,7 @@ export function Lightbox({
             <button
               type="button"
               onClick={() => onIndexChange((position - 1 + images.length) % images.length)}
-              aria-label="Photo précédente"
+              aria-label={t('common.ui.lightbox.prev')}
               className="absolute left-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:left-6"
             >
               <ChevronLeft aria-hidden="true" className="size-6" />
@@ -145,7 +147,7 @@ export function Lightbox({
             <button
               type="button"
               onClick={() => onIndexChange((position + 1) % images.length)}
-              aria-label="Photo suivante"
+              aria-label={t('common.ui.lightbox.next')}
               className="absolute right-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:right-6"
             >
               <ChevronRight aria-hidden="true" className="size-6" />

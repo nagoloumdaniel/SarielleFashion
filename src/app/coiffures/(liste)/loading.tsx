@@ -1,10 +1,12 @@
 import { Skeleton } from '@/components/shared/Skeleton';
+import { getI18n } from '@/i18n/server';
 
 /** Squelette du catalogue : mêmes proportions que la page chargée (cartes 4/5, grille 1/2/3). */
-export default function CatalogueLoading() {
+export default async function CatalogueLoading() {
+  const { t } = await getI18n();
   return (
     <main aria-busy="true" aria-live="polite" className="page-main space-y-8 md:space-y-10">
-      <p className="sr-only">Chargement du catalogue…</p>
+      <p className="sr-only">{t('catalogue.list.loading')}</p>
       <Skeleton className="h-4 w-44" />
       <div className="space-y-3">
         <Skeleton className="h-12 w-2/3 max-w-xl" />

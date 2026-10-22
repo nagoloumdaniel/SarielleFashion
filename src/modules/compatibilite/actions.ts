@@ -11,6 +11,8 @@ import { rateLimit } from '@/lib/rate-limit';
 import { flushEmailsSoon } from '@/modules/notifications/flush';
 import { adminNotificationRecipient } from '@/modules/notifications/service';
 import { logAudit } from '@/modules/stats/audit';
+import { getLocale } from '@/i18n/server';
+import { readAssessmentLocale, withAssessmentLocale } from './assessment-locale';
 import { deletePrivateImages, storePrivateImages } from '@/modules/fichiers/private-images';
 import {
   evaluateCompatibility,
@@ -178,6 +180,7 @@ export async function submitAssessment(
   formData: FormData,
 ): Promise<CompatibilitySubmitState> {
   const ip = await getClientIp();
+  const locale = await getLocale();
   const limit = await rateLimit(`compat:submit:${ip}`, { max: 6, windowMs: 10 * 60_000 });
   if (!limit.allowed) {
     return { error: 'Trop de demandes envoyées. Réessayez dans quelques minutes.' };
@@ -282,7 +285,7 @@ export async function submitAssessment(
       data: {
         serviceId: service.id,
         customerId: customer.id,
-        answers: storedAnswers as Prisma.InputJsonValue,
+        answers: withAssessmentLocale(storedAnswers, locale) as Prisma.InputJsonValue,
         photoKeys,
         status: 'RECEIVED',
         decisionNote: parsed.data.comment ? `Commentaire cliente : ${parsed.data.comment}` : null,
@@ -388,6 +391,7 @@ export async function decideAssessment(
       status: true,
       serviceId: true,
       service: { select: { name: true } },
+      answers: true,
       customer: { select: { name: true, email: true } },
       customRequest: { select: { requesterName: true, requesterEmail: true } },
     },
@@ -407,6 +411,7 @@ export async function decideAssessment(
   // La cliente est prévenue par e-mail (file d'envoi, jamais bloquant). Sans e-mail
   // exploitable, on journalise et la décision reste enregistrée.
   const notification = buildAssessmentDecisionNotification({
+    locale: readAssessmentLocale(assessment.answers),
     assessmentId: assessment.id,
     decision: parsed.data.decision,
     serviceName: assessment.service.name,

@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/link';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dangerGhost' | 'onDark';

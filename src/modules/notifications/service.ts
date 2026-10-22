@@ -5,6 +5,7 @@ import { getEmailProvider, type EmailProvider } from './provider';
 import { MAX_EMAIL_ATTEMPTS, retryDelayMinutes } from './retry';
 import { emailContextFromSettings, type EmailContext } from '@/modules/parametres/policies';
 import { renderNotification } from './templates';
+import { absoluteUrl, isLocale } from '@/i18n/config';
 
 /* ============================================================
  * P7.2 / P7.4 / P7.7 / P7.8 : file d'envoi, reprise et rappels.
@@ -194,6 +195,7 @@ export async function queueDueReminders(options?: { now?: Date }): Promise<Remin
     templateKey: 'booking_reminder',
     payload: {
       kind: 'appointment',
+      locale: isLocale(appointment.locale) ? appointment.locale : 'fr',
       appointmentId: appointment.id,
       customerName: appointment.customer.name,
       customerEmail: appointment.customer.email,
@@ -206,7 +208,10 @@ export async function queueDueReminders(options?: { now?: Date }): Promise<Remin
       homeAddress: appointment.homeService ? appointment.homeAddress : null,
       travelFeeCents: appointment.homeService ? (appointment.travelFeeCents ?? 0) : null,
       cancelUrl: appointment.cancelToken
-        ? `${(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')}/annulation/${appointment.cancelToken}`
+        ? absoluteUrl(
+            isLocale(appointment.locale) ? appointment.locale : 'fr',
+            `/annulation/${appointment.cancelToken}`,
+          )
         : null,
     } satisfies Prisma.InputJsonValue,
   }));

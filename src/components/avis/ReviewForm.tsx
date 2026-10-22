@@ -11,6 +11,7 @@ import {
   useState,
   type FormEvent,
 } from 'react';
+import { useI18n } from '@/i18n/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { StarRatingInput } from '@/components/ui/StarRatingInput';
@@ -33,6 +34,7 @@ type Props =
    (mode token, client vérifié). Étoiles + commentaire facultatif + jusqu'à 3 photos.
    Piège à robots (champ « website ») et états chargement / erreur / succès. */
 export function ReviewForm(props: Props) {
+  const { t, msg } = useI18n();
   const action = props.mode === 'token' ? submitReviewAction : submitPublicReviewAction;
   const [state, formAction, pending] = useActionState<ReviewActionState, FormData>(action, {});
   const [files, setFiles] = useState<File[]>([]);
@@ -60,15 +62,15 @@ export function ReviewForm(props: Props) {
     let problem: string | null = null;
     for (const file of incoming) {
       if (next.length >= MAX_REVIEW_PHOTOS) {
-        problem = `${MAX_REVIEW_PHOTOS} photos maximum.`;
+        problem = t('reviews.form.tooMany', { max: MAX_REVIEW_PHOTOS });
         break;
       }
       if (!ACCEPTED.includes(file.type)) {
-        problem = 'Utilise des photos JPEG, PNG ou WebP.';
+        problem = t('reviews.form.badType');
         continue;
       }
       if (file.size > MAX_BYTES) {
-        problem = 'Chaque photo doit peser 5 Mo au maximum.';
+        problem = t('reviews.form.tooBig');
         continue;
       }
       next.push(file);
@@ -96,7 +98,7 @@ export function ReviewForm(props: Props) {
         className="flex items-start gap-3 rounded-[var(--radius-md)] border border-success bg-success-soft p-5 text-success outline-none"
       >
         <CheckCircle2 aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
-        <p className="font-medium">{state.success}</p>
+        <p className="font-medium">{msg(state.success)}</p>
       </div>
     );
   }
@@ -109,13 +111,13 @@ export function ReviewForm(props: Props) {
         <>
           <input type="hidden" name="serviceId" value={props.serviceId} />
           <Input
-            label="Ton prénom"
+            label={t('reviews.form.firstName')}
             name="authorName"
             required
             minLength={2}
             maxLength={60}
             autoComplete="given-name"
-            hint="Seuls ton prénom et l’initiale de ton nom sont affichés."
+            hint={t('reviews.form.firstNameHint')}
           />
         </>
       )}
@@ -124,13 +126,13 @@ export function ReviewForm(props: Props) {
 
       <div>
         <Textarea
-          label="Ton commentaire (facultatif)"
+          label={t('reviews.form.comment')}
           name="comment"
           maxLength={MAX_REVIEW_COMMENT_LENGTH}
           rows={4}
           value={comment}
           onChange={(event) => setComment(event.target.value)}
-          placeholder="Raconte comment s’est passé ton rendez-vous"
+          placeholder={t('reviews.form.commentPlaceholder')}
         />
         <p className="mt-1 text-right text-xs text-muted" aria-hidden="true">
           {comment.length} / {MAX_REVIEW_COMMENT_LENGTH}
@@ -140,7 +142,7 @@ export function ReviewForm(props: Props) {
       {props.photosEnabled ? (
         <div className="flex flex-col gap-2">
           <p className="text-sm font-semibold text-fg">
-            Photos (facultatif, {MAX_REVIEW_PHOTOS} maximum)
+            {t('reviews.form.photos', { max: MAX_REVIEW_PHOTOS })}
           </p>
           <input
             ref={inputRef}
@@ -150,7 +152,7 @@ export function ReviewForm(props: Props) {
             multiple
             tabIndex={-1}
             className="sr-only"
-            aria-label="Choisir des photos"
+            aria-label={t('reviews.form.pickPhotos')}
             onChange={(event) => onPick(event.target.files)}
           />
           <div>
@@ -161,10 +163,10 @@ export function ReviewForm(props: Props) {
               disabled={files.length >= MAX_REVIEW_PHOTOS}
               onClick={() => inputRef.current?.click()}
             >
-              Ajouter des photos
+              {t('reviews.form.addPhotos')}
             </Button>
           </div>
-          <p className="text-sm text-muted">JPEG, PNG ou WebP, 5 Mo maximum chacune.</p>
+          <p className="text-sm text-muted">{t('reviews.form.photoRules')}</p>
           {fileError ? (
             <p role="alert" className="text-sm font-medium text-alert">
               {fileError}
@@ -179,7 +181,7 @@ export function ReviewForm(props: Props) {
                 >
                   <Image
                     src={preview.url}
-                    alt={`Aperçu de la photo ${index + 1}`}
+                    alt={t('reviews.form.preview', { n: index + 1 })}
                     fill
                     unoptimized
                     sizes="120px"
@@ -188,7 +190,7 @@ export function ReviewForm(props: Props) {
                   <button
                     type="button"
                     onClick={() => setFiles(files.filter((_, i) => i !== index))}
-                    aria-label={`Retirer la photo ${index + 1}`}
+                    aria-label={t('reviews.form.remove', { n: index + 1 })}
                     className="absolute right-1 top-1 inline-flex size-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
                   >
                     <X aria-hidden="true" className="size-4" />
@@ -203,7 +205,7 @@ export function ReviewForm(props: Props) {
       {/* Piège à robots : invisible et hors parcours clavier, doit rester vide. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
         <label>
-          Ne pas remplir
+          {t('reviews.form.honeypot')}
           <input type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
         </label>
       </div>
@@ -213,13 +215,13 @@ export function ReviewForm(props: Props) {
           role="alert"
           className="rounded-[var(--radius-md)] border border-alert bg-alert-soft p-3 text-sm font-medium text-alert"
         >
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
 
       <div>
         <Button type="submit" icon={Send} loading={pending}>
-          Publier mon avis
+          {t('reviews.form.submit')}
         </Button>
       </div>
     </form>

@@ -80,3 +80,22 @@ describe('queueAppointmentNotifications', () => {
     vi.unstubAllEnvs();
   });
 });
+
+describe('queueAppointmentNotifications locale', () => {
+  it('should carry the customer locale and a localized cancel link in the payload', async () => {
+    const { tx, rows } = fakeTransaction();
+    await queueAppointmentNotifications(tx, 'created', { ...context, locale: 'de' });
+    const client = rows.find((row) => row.templateKey === 'booking_received');
+    const payload = client?.payload as { locale: string; cancelUrl: string };
+    expect(payload.locale).toBe('de');
+    expect(payload.cancelUrl).toBe(`http://localhost:3000/de/annulation/${'a'.repeat(64)}`);
+  });
+
+  it('should default to French without a prefix', async () => {
+    const { tx, rows } = fakeTransaction();
+    await queueAppointmentNotifications(tx, 'created', context);
+    const payload = rows[0]?.payload as { locale: string; cancelUrl: string };
+    expect(payload.locale).toBe('fr');
+    expect(payload.cancelUrl).toBe(`http://localhost:3000/annulation/${'a'.repeat(64)}`);
+  });
+});

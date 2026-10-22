@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown, type LucideIcon } from 'lucide-react';
 import { useId, useState, type ChangeEvent, type KeyboardEvent } from 'react';
+import { useT } from '@/i18n/client';
 import { Field, fieldBox } from './Field';
 import { fakeChange, usePopover } from './usePopover';
 
@@ -39,6 +40,7 @@ export function Select({
   className,
   onChange,
 }: SelectProps) {
+  const t = useT();
   const auto = useId();
   const inputId = id ?? `select-${auto}`;
   const { open, setOpen, ref } = usePopover();
@@ -97,7 +99,7 @@ export function Select({
           <span
             className={`min-w-0 flex-1 truncate ${selected && selected.label ? '' : 'text-muted'}`}
           >
-            {selected?.label || 'Sélectionner…'}
+            {selected?.label || t('common.ui.select')}
           </span>
           <ChevronDown
             aria-hidden="true"
