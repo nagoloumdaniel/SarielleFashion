@@ -88,7 +88,7 @@ export async function submitReviewAction(
 
   try {
     await submitReview(parsed.data);
-    return { success: 'Merci pour votre avis ! Il sera publié après relecture par Patricia.' };
+    return { success: 'Merci pour votre avis ! Il sera publié après relecture par Sarielle.' };
   } catch (error) {
     return handleError(error);
   }

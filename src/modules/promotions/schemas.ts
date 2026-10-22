@@ -29,7 +29,7 @@ export const promotionSchema = z
     name: z.string().trim().min(2, 'Nom requis (2 caractères minimum).').max(120),
     code: promoCodeSchema,
     kind: z.enum(['PERCENT', 'FIXED']),
-    // Pourcentage entier 1-100, ou montant fixe en FCFA entier (converti en 1/100 FCFA).
+    // Pourcentage entier 1-100, ou montant fixe en euros entier (converti en centimes).
     value: z
       .string()
       .trim()
@@ -56,7 +56,7 @@ export const promotionSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['value'],
-        message: 'Le montant doit être un nombre entier de FCFA.',
+        message: 'Le montant doit être un nombre entier d’euros.',
       });
     }
   });

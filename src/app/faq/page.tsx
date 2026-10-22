@@ -10,7 +10,7 @@ import { homeServiceSentence } from '@/modules/parametres/home-service';
 export const metadata: Metadata = {
   title: 'FAQ',
   description:
-    "Questions fréquentes sur les prestations, la réservation, l'annulation et les cheveux avec Hairstyle by Patricia.",
+    "Questions fréquentes sur les prestations, la réservation, l'annulation et les cheveux avec Sarielle Fashion.",
   alternates: { canonical: '/faq' },
 };
 
@@ -19,31 +19,31 @@ const faqItems = [
     id: 'reservation',
     title: 'Comment réserver un rendez-vous ?',
     content:
-      'Parcourez le catalogue, sélectionnez la prestation qui vous convient, répondez aux questions de compatibilité capillaire, puis choisissez votre date et votre heure. Vous recevez un e-mail de confirmation avec un lien de suivi sécurisé.',
+      'Parcours le catalogue, sélectionne la prestation qui te convient, réponds aux éventuelles questions de compatibilité, puis choisis ta date et ton heure. Tu reçois un e-mail de confirmation avec un lien de suivi sécurisé.',
   },
   {
     id: 'delai',
     title: 'Combien de temps à l’avance faut-il réserver ?',
     content:
-      'Nous recommandons de réserver au moins une semaine à l’avance, surtout pour les tresses et les coiffures longues. Des créneaux de dernière minute restent parfois disponibles : contactez-nous pour vérifier.',
+      'Je te recommande de réserver au moins une semaine à l’avance, surtout pour les coiffures longues et les événements. Des créneaux de dernière minute restent parfois disponibles : contacte-moi pour vérifier.',
   },
   {
     id: 'cheveux',
-    title: 'Quels types de cheveux accueillez-vous ?',
+    title: 'Quels types de cheveux coiffes-tu ?',
     content:
-      'Patricia est spécialisée dans les cheveux texturés : tresses, vanilles, locs, départ de locs, coiffures protectrices et coupes. Chaque prestation est adaptée à votre nature de cheveux après un diagnostic capillaire.',
+      'Je coiffe les femmes, les hommes et les enfants, et je réalise aussi du make-up, de la pose de lace et de cils. Chaque prestation est adaptée à ta nature de cheveux.',
   },
   {
     id: 'preparation',
     title: 'Comment préparer mes cheveux avant le rendez-vous ?',
     content:
-      'Venez avec des cheveux propres, démêlés et séchés. Si vous avez une coiffure existante (locs, tresses), ne la défaites pas la veille : nous nous en occupons au début du rendez-vous.',
+      'Viens avec des cheveux propres, démêlés et séchés. Si tu as une coiffure existante, ne la défais pas la veille : je m’en occupe au début du rendez-vous.',
   },
   {
     id: 'duree',
     title: 'Combien de temps dure une prestation ?',
     content:
-      'La durée dépend de la coiffure et de votre longueur de cheveux. Chaque fiche du catalogue indique une durée indicative ; la durée réelle est confirmée lors du diagnostic de vos cheveux.',
+      'La durée dépend de la prestation et de ta longueur de cheveux. Chaque fiche du catalogue indique une durée indicative ; la durée réelle est confirmée avant de commencer.',
   },
   {
     id: 'prix',
@@ -55,17 +55,17 @@ const faqItems = [
     id: 'annulation',
     title: 'Quelle est la politique d’annulation ?',
     content:
-      'Vous pouvez annuler ou déplacer votre rendez-vous gratuitement jusqu’à 24 heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai ou en cas d’absence, Patricia applique les conditions détaillées dans les informations pratiques.',
+      'Tu peux annuler ou déplacer ton rendez-vous gratuitement jusqu’à 24 heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai ou en cas d’absence, les conditions détaillées dans les informations pratiques s’appliquent.',
   },
   {
     id: 'options',
     title: 'Puis-je ajouter des options à ma prestation ?',
     content:
-      'Oui, la plupart des prestations proposent des options (soins, longueurs supplémentaires, motifs personnalisés). Elles sont sélectionnables lors de la réservation et influencent le prix et la durée.',
+      'Oui, la plupart des prestations proposent des options (soins, longueurs supplémentaires, motifs personnalisés). Tu les sélectionnes lors de la réservation ; elles influencent le prix et la durée.',
   },
 ];
 
-/* L'option à domicile n'apparaît que si Patricia l'a activée (paramètres du dashboard). */
+/* L'option à domicile n'apparaît que si Sarielle l'a activée (paramètres du dashboard). */
 async function loadHomeServiceItem() {
   try {
     const settings = await getCachedSalonSettings();
@@ -73,8 +73,8 @@ async function loadHomeServiceItem() {
     return [
       {
         id: 'domicile',
-        title: 'Proposez-vous la coiffure à domicile ?',
-        content: `${homeServiceSentence(settings.travelFeeCents)} Sans cette option, Patricia reçoit sur rendez-vous à Dakar.`,
+        title: 'Te déplaces-tu à domicile ?',
+        content: `${homeServiceSentence(settings.travelFeeCents)} Sinon, je te reçois sur rendez-vous à Clausthal-Zellerfeld.`,
       },
     ];
   } catch (error) {

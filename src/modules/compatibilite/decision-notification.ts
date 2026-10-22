@@ -2,7 +2,7 @@ import type { Prisma } from '@prisma/client';
 import type { AssessmentDecision } from './schemas';
 
 /* ============================================================
- * Notification e-mail de la décision de Patricia sur une évaluation.
+ * Notification e-mail de la décision de Sarielle sur une évaluation.
  * Fonction pure : construit la ligne de file d'envoi, ou null si la
  * cliente n'a pas d'e-mail exploitable. Ne crée jamais de réservation.
  * ============================================================ */

@@ -10,7 +10,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Contactez Patricia Hairstyle by Patricia : questions, réservation, informations pratiques. Réponse rapide.',
+    'Contactez Sarielle Sarielle Fashion : questions, réservation, informations pratiques. Réponse rapide.',
   alternates: { canonical: '/contact' },
 };
 
@@ -23,12 +23,12 @@ const INFOS = [
   {
     Icon: MapPin,
     title: 'Coiffure sur rendez-vous',
-    text: 'Patricia vous reçoit à Dakar.',
+    text: 'Sarielle vous reçoit à Clausthal-Zellerfeld.',
   },
   {
     Icon: Clock,
-    title: 'Lundi - Dimanche, 5h - 22h',
-    text: 'Horaires de rendez-vous.',
+    title: 'Sur rendez-vous',
+    text: 'Selon les créneaux disponibles.',
   },
 ] as const;
 
@@ -100,7 +100,7 @@ export default function ContactPage() {
           </div>
 
           <div className="flex items-center justify-between gap-3 border-t border-line pt-4">
-            <p className="text-sm text-muted">Suivre Patricia</p>
+            <p className="text-sm text-muted">Suivre Sarielle</p>
             <SocialLinks />
           </div>
         </aside>

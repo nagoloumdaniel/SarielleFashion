@@ -53,11 +53,11 @@ export function DashboardTopbar({
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-2 border-b border-line/70 bg-page/85 px-3 backdrop-blur sm:px-5 lg:justify-end lg:px-8">
       <Link
         href="/dashboard"
-        aria-label="Hairstyle by Patricia - accueil administration"
+        aria-label="Sarielle Fashion - accueil administration"
         className="flex items-center gap-2 lg:invisible"
       >
         <Logo markClassName="h-7 w-auto text-fg" showWordmark={false} />
-        <span className="font-heading text-sm font-bold sm:hidden">Hairstyle by Patricia</span>
+        <span className="font-heading text-sm font-bold sm:hidden">Sarielle Fashion</span>
       </Link>
       <nav aria-label="Actions rapides" className="flex items-center gap-1">
         <IconLink

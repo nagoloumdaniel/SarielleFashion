@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 const euroFormatter = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
-  currency: 'XOF',
+  currency: 'EUR',
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
@@ -43,7 +43,7 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
           </Title>
           <p className="mt-3 text-fg">Ce lien ne correspond à aucun rendez-vous.</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-6">
-            Contacter Patricia
+            Contacter Sarielle
           </ButtonLink>
         </div>
       </main>
@@ -144,7 +144,7 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
           </Title>
           <p className="mt-2 text-fg">Ce lien n’est plus valide.</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-5">
-            Contacter Patricia
+            Contacter Sarielle
           </ButtonLink>
         </section>
       ) : !active ? (
@@ -164,7 +164,7 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
           </Title>
           <p className="mt-2 text-fg">{policy.message}</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-5">
-            Contacter Patricia
+            Contacter Sarielle
           </ButtonLink>
         </section>
       ) : (

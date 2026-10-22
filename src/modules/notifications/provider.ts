@@ -18,7 +18,7 @@ export interface EmailProvider {
   send(message: EmailMessage): Promise<{ id: string }>;
 }
 
-const FROM = process.env.EMAIL_FROM?.trim() || 'Hairstyle by Patricia <onboarding@resend.dev>';
+const FROM = process.env.EMAIL_FROM?.trim() || 'Sarielle Fashion <onboarding@resend.dev>';
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
 
 class ResendEmailProvider implements EmailProvider {
@@ -80,7 +80,7 @@ class SmtpEmailProvider implements EmailProvider {
     });
     try {
       const info = await transporter.sendMail({
-        from: `Hairstyle by Patricia <${user}>`,
+        from: `Sarielle Fashion <${user}>`,
         to: message.to,
         subject: message.subject,
         html: message.html,

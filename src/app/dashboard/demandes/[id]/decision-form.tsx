@@ -45,9 +45,9 @@ const CONFIRM_TEXT: Partial<
 
 function deviceTimeZone(): string {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar';
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin';
   } catch {
-    return 'Africa/Dakar';
+    return 'Europe/Berlin';
   }
 }
 
@@ -127,8 +127,8 @@ export function CustomRequestDecisionForm({
       {withProposal ? (
         <div className="grid gap-3 sm:grid-cols-2">
           <Input
-            label="Prix estimatif (FCFA, facultatif)"
-            name="estimatedPriceFcfa"
+            label="Prix estimatif (€, facultatif)"
+            name="estimatedPriceEur"
             type="number"
             inputMode="numeric"
             min={0}

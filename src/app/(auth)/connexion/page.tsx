@@ -3,7 +3,7 @@ import { Title } from '@/components/ui/Title';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = {
-  title: 'Connexion | Hairstyle by Patricia',
+  title: 'Connexion | Sarielle Fashion',
   robots: { index: false, follow: false },
 };
 

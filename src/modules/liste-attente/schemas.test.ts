@@ -6,7 +6,7 @@ const valid = {
   startsAtISO: '2026-11-20T10:00:00.000Z',
   name: 'Amina Test',
   email: 'amina@example.com',
-  phone: '+221 77 123 45 67',
+  phone: '+49 151 23456789',
   website: '',
 };
 

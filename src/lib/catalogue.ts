@@ -222,7 +222,7 @@ const pexels = (id: number) =>
 
 /**
  * Photos de démonstration par catégorie, tant que les uploads S3 (P4.4)
- * n'existent pas. Elles seront remplacées par les vraies photos de Patricia.
+ * n'existent pas. Elles seront remplacées par les vraies photos de Sarielle.
  * Source : Pexels (utilisation libre, crédit non obligatoire).
  */
 const CATEGORY_PLACEHOLDERS: Record<string, Placeholder[]> = {
@@ -296,7 +296,7 @@ const CATEGORY_PLACEHOLDERS: Record<string, Placeholder[]> = {
   ],
 };
 
-const DEFAULT_PLACEHOLDERS = CATEGORY_PLACEHOLDERS.tresses ?? [];
+const DEFAULT_PLACEHOLDERS = CATEGORY_PLACEHOLDERS.coupes ?? [];
 
 /** Une clé d'image est exploitable directement si c'est déjà une URL. */
 function isDisplayableImageKey(key: string): boolean {
@@ -337,16 +337,16 @@ const amountFormatter = new Intl.NumberFormat('fr-FR', {
   maximumFractionDigits: 0,
 });
 
-const CURRENCY_UNIT = 'FCFA';
+const CURRENCY_UNIT = '€';
 
-/** Montant en FCFA sans décimale (valeur interne en 1/100 FCFA). */
+/** Montant en euros sans décimale (valeur interne en centimes). */
 function formatEuros(cents: number): string {
   return `${amountFormatter.format(cents / 100)} ${CURRENCY_UNIT}`;
 }
 
 /**
- * Fourchette de prix : « 50 - 75 FCFA » (demi-cadratin entouré d'espaces fines,
- * unité affichée une seule fois). Valeurs en 1/100 FCFA (colonnes *Cents).
+ * Fourchette de prix : « 50 - 75 € » (demi-cadratin entouré d'espaces fines,
+ * unité affichée une seule fois). Valeurs en centimes (colonnes *Cents).
  */
 export function formatPriceRange(fromCents: number, toCents: number): string {
   return `${amountFormatter.format(fromCents / 100)} - ${formatEuros(toCents)}`;

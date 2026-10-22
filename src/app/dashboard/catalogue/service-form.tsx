@@ -15,7 +15,7 @@ import { FormError, useFormAction } from './catalogue-ui';
 /* ============================================================
  * P4.3 - Formulaire prestation : identité, catégorie, prix
  * (fixe, départ, fourchette, à confirmer), durée et statut.
- * Prix saisis en FCFA, sans décimales.
+ * Prix saisis en euros, sans décimales.
  * ============================================================ */
 
 interface CategoryOption {
@@ -90,7 +90,7 @@ export function ServiceForm({
             setSlugTouched(true);
             setSlug(event.target.value);
           }}
-          hint="Utilisé dans l'URL publique, par exemple /coiffures/tresses-collees."
+          hint="Utilisé dans l'URL publique, par exemple /coiffures/pose-de-lace."
         />
       </div>
 
@@ -145,7 +145,7 @@ export function ServiceForm({
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           <Input
-            label={priceMode === 'RANGE' ? 'Prix minimum (FCFA)' : 'Prix (FCFA)'}
+            label={priceMode === 'RANGE' ? 'Prix minimum (€)' : 'Prix (€)'}
             name="priceFromEuros"
             type="number"
             inputMode="numeric"
@@ -157,7 +157,7 @@ export function ServiceForm({
           />
           {priceMode === 'RANGE' ? (
             <Input
-              label="Prix maximum (FCFA)"
+              label="Prix maximum (€)"
               name="priceToEuros"
               type="number"
               inputMode="numeric"

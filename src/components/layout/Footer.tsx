@@ -10,9 +10,11 @@ export function Footer() {
         <div>
           <p className="flex items-center gap-2 font-heading text-lg font-bold">
             <LogoMark className="h-8 w-auto text-panel-fg" />
-            Hairstyle by Patricia
+            Sarielle Fashion
           </p>
-          <p className="mt-2 text-sm opacity-80">Locs, nattes collées et vanilles à Dakar.</p>
+          <p className="mt-2 text-sm opacity-80">
+            Coiffure, make-up, lace et cils à Clausthal-Zellerfeld.
+          </p>
         </div>
         <nav aria-label="Liens pratiques">
           <p className="font-semibold">Pratique</p>
@@ -58,27 +60,29 @@ export function Footer() {
             </li>
           </ul>
         </nav>
-        <div>
-          <p className="font-semibold">Nous suivre</p>
-          <ul className="mt-3 flex gap-2" aria-label="Réseaux sociaux">
-            {SOCIALS.map(({ href, label, Icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label={`${label} (nouvel onglet)`}
-                  className="flex size-10 items-center justify-center rounded-full bg-panel-fg/10 transition hover:bg-panel-fg/20"
-                >
-                  <Icon aria-hidden="true" className="size-[1.1rem]" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {SOCIALS.length > 0 ? (
+          <div>
+            <p className="font-semibold">Me suivre</p>
+            <ul className="mt-3 flex gap-2" aria-label="Réseaux sociaux">
+              {SOCIALS.map(({ href, label, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${label} (nouvel onglet)`}
+                    className="flex size-10 items-center justify-center rounded-full bg-panel-fg/10 transition hover:bg-panel-fg/20"
+                  >
+                    <Icon aria-hidden="true" className="size-[1.1rem]" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
       <p className="border-t border-panel-fg/20 py-4 text-center text-xs opacity-70">
-        © {new Date().getFullYear()} Hairstyle by Patricia. Tous droits réservés.
+        © {new Date().getFullYear()} Sarielle Fashion. Tous droits réservés.
       </p>
     </footer>
   );

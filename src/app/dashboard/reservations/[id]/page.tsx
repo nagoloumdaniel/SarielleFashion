@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { requireAdmin } from '@/modules/auth/guards';
 import { getAppointmentDetail } from '@/modules/reservations/queries';
-import { formatDuration, formatFcfa, formatFcfaOrPending } from '@/modules/reservations/format';
+import { formatDuration, formatEuro, formatEuroOrPending } from '@/modules/reservations/format';
 import { APPOINTMENT_STATUS_LABELS, APPOINTMENT_STATUS_TONES } from '@/modules/reservations/status';
 import { bookingReference } from '@/modules/reservations/schemas';
 import { listAuditLogsForEntity } from '@/modules/stats/audit';
@@ -23,7 +23,7 @@ const ACTION_LABELS: Record<string, string> = {
   'appointment.confirmed': 'Rendez-vous confirmé',
   'appointment.completed': 'Rendez-vous terminé',
   'appointment.no_show': 'Cliente absente',
-  'appointment.cancel_admin': 'Annulation par Patricia',
+  'appointment.cancel_admin': 'Annulation par Sarielle',
   'appointment.cancel_customer': 'Annulation par la cliente',
   'appointment.reschedule': 'Reprogrammation',
   'appointment.auto_expire': 'Libération automatique du créneau',
@@ -162,7 +162,7 @@ export default async function AppointmentDetailPage({
                   </div>
                   <div className="flex flex-wrap justify-between gap-2">
                     <dt className="font-semibold">Frais de déplacement</dt>
-                    <dd className="text-muted">{formatFcfa(appointment.travelFeeCents ?? 0)}</dd>
+                    <dd className="text-muted">{formatEuro(appointment.travelFeeCents ?? 0)}</dd>
                   </div>
                 </>
               ) : null}
@@ -170,7 +170,7 @@ export default async function AppointmentDetailPage({
                 <dt className="font-semibold">
                   {appointment.homeService ? 'Total figé (frais inclus)' : 'Prix figé'}
                 </dt>
-                <dd className="text-muted">{formatFcfaOrPending(appointment.priceCents)}</dd>
+                <dd className="text-muted">{formatEuroOrPending(appointment.priceCents)}</dd>
               </div>
               <div className="flex flex-wrap justify-between gap-2">
                 <dt className="font-semibold">Durée figée</dt>
@@ -182,7 +182,7 @@ export default async function AppointmentDetailPage({
                   <dd className="mt-1 space-y-1 text-muted">
                     {appointment.selectedOptions.map((option) => (
                       <p key={option.optionId}>
-                        {option.name} (+{formatFcfa(option.priceCents)})
+                        {option.name} (+{formatEuro(option.priceCents)})
                       </p>
                     ))}
                   </dd>

@@ -265,7 +265,7 @@ test.describe('Demandes personnalisées, clientes et pilotage', () => {
     await expect(page.getByText(subjectDescription)).toBeVisible();
 
     await selectOption(page, 'Décision', 'ACCEPTED');
-    await page.getByLabel('Prix estimatif (FCFA, facultatif)').fill('150');
+    await page.getByLabel('Prix estimatif (€, facultatif)').fill('150');
     await selectOption(page, 'Prestation du catalogue à proposer (facultatif)', serviceId);
     await pickDateTime(page, 'proposedSlotLocal', `${desiredDateISO()}T10:00`);
     await page
@@ -342,10 +342,10 @@ test.describe('Demandes personnalisées, clientes et pilotage', () => {
     await page.goto('/dashboard/parametres');
     await page.getByLabel('Nom professionnel').fill(`Salon E2E ${stamp}`);
     await page.getByLabel('E-mail public').fill(`${prefix}-salon@example.com`);
-    await page.getByLabel('Adresse ou quartier').fill('12 rue de Test, Dakar');
+    await page.getByLabel('Adresse ou quartier').fill('12 rue de Test, Clausthal-Zellerfeld');
     await page.getByLabel('Règles d’annulation').fill('Annulation au moins 24 h avant.');
     await page.getByLabel('Règles de réservation').fill('Paiement sur place.');
-    await page.getByLabel('Signature des e-mails').fill('À bientôt, Patricia');
+    await page.getByLabel('Signature des e-mails').fill('À bientôt, Sarielle');
     await page.getByRole('button', { name: 'Enregistrer', exact: true }).click();
     await expect(page.getByText('Paramètres enregistrés.').first()).toBeVisible();
 
@@ -353,7 +353,7 @@ test.describe('Demandes personnalisées, clientes et pilotage', () => {
     expect(settings.name).toBe(`Salon E2E ${stamp}`);
     expect(settings.contactEmail).toBe(`${prefix}-salon@example.com`);
     expect(settings.cancellationPolicy).toContain('24 h');
-    expect(settings.emailSignature).toContain('Patricia');
+    expect(settings.emailSignature).toContain('Sarielle');
   });
 
   test('should show the overview and defined statistics', async ({ page }) => {
@@ -371,7 +371,7 @@ test.describe('Demandes personnalisées, clientes et pilotage', () => {
     await page.goto('/dashboard/statistiques');
     await expect(page.getByRole('heading', { name: 'Statistiques' })).toBeVisible();
     await expect(page.getByText(/prix figés/)).toBeVisible();
-    await expect(page.getByText(/50[\s  ]*F[\s  ]*CFA/).first()).toBeVisible();
+    await expect(page.getByText(/50[\s  ]*€/).first()).toBeVisible();
     await page.screenshot({
       path: 'tests/e2e/screenshots/statistiques-desktop.png',
       fullPage: true,

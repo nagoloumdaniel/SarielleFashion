@@ -36,7 +36,7 @@ import {
   type PromotionActionState,
 } from '@/modules/promotions/actions';
 import { applyPromotion } from '@/modules/promotions/pricing';
-import { formatFcfa } from '@/modules/stats/format';
+import { formatEuro } from '@/modules/stats/format';
 
 type Kind = 'PERCENT' | 'FIXED';
 type Phase = 'active' | 'upcoming' | 'ended' | 'off';
@@ -47,7 +47,7 @@ export type PromotionRow = {
   /** Code promo saisi par la cliente ; null = promotion automatique. */
   code: string | null;
   kind: Kind;
-  /** Pourcentage, ou montant en 1/100 FCFA. */
+  /** Pourcentage, ou montant en centimes. */
   value: number;
   /** Jours civils `YYYY-MM-DD`. */
   startsAt: string;
@@ -71,7 +71,7 @@ const dayFmt = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeZone:
 const formatDay = (day: string) => dayFmt.format(new Date(`${day}T00:00:00.000Z`));
 
 const formatValue = (kind: Kind, value: number) =>
-  kind === 'PERCENT' ? `-${value} %` : `-${formatFcfa(value)}`;
+  kind === 'PERCENT' ? `-${value} %` : `-${formatEuro(value)}`;
 
 /* ---------- Formulaire création / édition (dans une Modal) ---------- */
 
@@ -177,7 +177,7 @@ function PromotionForm({
           ]}
         />
         <Input
-          label={kind === 'PERCENT' ? 'Réduction (%)' : 'Réduction (FCFA)'}
+          label={kind === 'PERCENT' ? 'Réduction (%)' : 'Réduction (€)'}
           name="value"
           type="number"
           inputMode="numeric"
@@ -243,7 +243,7 @@ function PromotionForm({
                 <span className="min-w-0 flex-1 truncate">{service.name}</span>
                 {service.priceFromCents != null ? (
                   <span className="shrink-0 text-xs text-muted">
-                    {formatFcfa(service.priceFromCents)}
+                    {formatEuro(service.priceFromCents)}
                   </span>
                 ) : null}
               </label>
@@ -260,8 +260,8 @@ function PromotionForm({
               <li key={row.id} className="flex justify-between gap-2">
                 <span className="min-w-0 truncate">{row.name}</span>
                 <span className="shrink-0">
-                  <s className="text-muted">{formatFcfa(row.from)}</s>{' '}
-                  <strong>{formatFcfa(row.to)}</strong>
+                  <s className="text-muted">{formatEuro(row.from)}</s>{' '}
+                  <strong>{formatEuro(row.to)}</strong>
                 </span>
               </li>
             ))}

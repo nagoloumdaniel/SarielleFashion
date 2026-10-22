@@ -1,39 +1,39 @@
 import { describe, expect, it } from 'vitest';
 import {
-  MAX_TRAVEL_FEE_FCFA,
-  fcfaToCents,
+  MAX_TRAVEL_FEE_EUR,
+  eurosToCents,
   homeServiceSentence,
   homeServiceSettingsSchema,
 } from './home-service';
 
 describe('homeServiceSettingsSchema', () => {
-  it('should accept an enabled option with a whole FCFA fee', () => {
+  it('should accept an enabled option with a whole EUR fee', () => {
     const result = homeServiceSettingsSchema.safeParse({
       homeServiceEnabled: 'on',
-      travelFeeFcfa: '5000',
+      travelFeeEur: '50',
     });
     expect(result.success && result.data).toEqual({
       homeServiceEnabled: true,
-      travelFeeFcfa: 5000,
+      travelFeeEur: 50,
     });
   });
 
   it('should treat a missing checkbox as disabled and a blank fee as zero', () => {
     const result = homeServiceSettingsSchema.safeParse({
       homeServiceEnabled: '',
-      travelFeeFcfa: '',
+      travelFeeEur: '',
     });
     expect(result.success && result.data).toEqual({
       homeServiceEnabled: false,
-      travelFeeFcfa: 0,
+      travelFeeEur: 0,
     });
   });
 
-  it.each(['-1', '12.5', 'abc', '1e3', String(MAX_TRAVEL_FEE_FCFA + 1)])(
+  it.each(['-1', '12.5', 'abc', '1e3', String(MAX_TRAVEL_FEE_EUR + 1)])(
     'should reject the fee %s',
     (fee) => {
       expect(
-        homeServiceSettingsSchema.safeParse({ homeServiceEnabled: 'on', travelFeeFcfa: fee })
+        homeServiceSettingsSchema.safeParse({ homeServiceEnabled: 'on', travelFeeEur: fee })
           .success,
       ).toBe(false);
     },
@@ -43,16 +43,16 @@ describe('homeServiceSettingsSchema', () => {
     expect(
       homeServiceSettingsSchema.safeParse({
         homeServiceEnabled: 'on',
-        travelFeeFcfa: String(MAX_TRAVEL_FEE_FCFA),
+        travelFeeEur: String(MAX_TRAVEL_FEE_EUR),
       }).success,
     ).toBe(true);
   });
 });
 
-describe('fcfaToCents', () => {
-  it('should convert whole FCFA to the internal 1/100 unit', () => {
-    expect(fcfaToCents(5000)).toBe(500000);
-    expect(fcfaToCents(0)).toBe(0);
+describe('eurosToCents', () => {
+  it('should convert whole EUR to the internal 1/100 unit', () => {
+    expect(eurosToCents(50)).toBe(5000);
+    expect(eurosToCents(0)).toBe(0);
   });
 });
 
@@ -70,7 +70,7 @@ describe('homeServiceSentence', () => {
     expect(sentence).not.toContain('en supplément');
   });
 
-  it('should never state that Patricia travels as a general rule', () => {
+  it('should never state that Sarielle travels as a general rule', () => {
     expect(homeServiceSentence(500000)).not.toMatch(/se déplace chez vous/i);
   });
 });

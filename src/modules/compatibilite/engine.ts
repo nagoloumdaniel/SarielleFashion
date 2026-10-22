@@ -57,20 +57,20 @@ export interface CompatibilityResult {
 export const COMPATIBILITY_MESSAGES = {
   compatible: 'Vos informations capillaires sont compatibles avec cette prestation.',
   length:
-    "Cette coiffure nécessite une longueur de cheveux suffisante pour permettre sa réalisation. D'après votre réponse, elle pourrait ne pas être adaptée. Vous pouvez envoyer une photo de vos cheveux afin que Patricia vérifie si la prestation est réalisable.",
+    "Cette coiffure nécessite une longueur de cheveux suffisante pour permettre sa réalisation. D'après votre réponse, elle pourrait ne pas être adaptée. Vous pouvez envoyer une photo de vos cheveux afin que Sarielle vérifie si la prestation est réalisable.",
   locsRequired:
     'Cette prestation nécessite des locs déjà posées. Si ce n’est pas votre cas, elle ne peut pas être réalisée.',
   locsIncompatible: 'Cette prestation n’est pas réalisable sur des cheveux portés en locs.',
   shortCut:
-    'Une coupe très courte ou une zone rasée peut empêcher la réalisation de cette prestation. Envoyez une photo pour que Patricia vérifie.',
-  hairType: 'Votre type de cheveux nécessite une vérification par Patricia avant la réservation.',
+    'Une coupe très courte ou une zone rasée peut empêcher la réalisation de cette prestation. Envoyez une photo pour que Sarielle vérifie.',
+  hairType: 'Votre type de cheveux nécessite une vérification par Sarielle avant la réservation.',
   unsureLength:
-    'Vous avez indiqué ne pas être sûr(e) de la longueur de vos cheveux. Envoyez une photo afin que Patricia évalue la compatibilité.',
+    'Vous avez indiqué ne pas être sûr(e) de la longueur de vos cheveux. Envoyez une photo afin que Sarielle évalue la compatibilité.',
   unsureLocs:
-    'Vous avez indiqué ne pas être sûr(e) de la présence de locs. Envoyez une photo afin que Patricia vérifie.',
+    'Vous avez indiqué ne pas être sûr(e) de la présence de locs. Envoyez une photo afin que Sarielle vérifie.',
   missing: 'Complétez les informations capillaires demandées pour évaluer la compatibilité.',
   manualReview:
-    'Vos réponses sont compatibles avec cette prestation. Patricia doit valider les informations avant la réservation.',
+    'Vos réponses sont compatibles avec cette prestation. Sarielle doit valider les informations avant la réservation.',
   photoRequired: 'Une photo de vos cheveux est nécessaire avant la réservation.',
 } as const;
 

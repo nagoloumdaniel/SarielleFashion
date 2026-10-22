@@ -40,9 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <aside className="hidden min-w-0 border-r border-panel-fg/10 bg-ink px-3 pt-3 text-panel-fg lg:sticky lg:top-0 lg:block lg:h-dvh lg:self-start lg:overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/dashboard" className="mb-2 flex h-12 items-center gap-2 px-3">
             <Logo markClassName="h-7 w-auto text-panel-fg" showWordmark={false} />
-            <span className="font-heading text-sm font-bold text-panel-fg">
-              Hairstyle by Patricia
-            </span>
+            <span className="font-heading text-sm font-bold text-panel-fg">Sarielle Fashion</span>
           </Link>
           <Sidebar />
         </aside>

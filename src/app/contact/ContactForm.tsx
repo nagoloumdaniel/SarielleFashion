@@ -31,7 +31,7 @@ export function ContactForm() {
         <div className="space-y-2">
           <h2 className="font-heading text-2xl font-bold text-fg">Merci, c’est bien reçu</h2>
           <p className="font-medium text-fg">
-            Message envoyé. Patricia vous répond par e-mail sous 24 heures ouvrées (pensez à
+            Message envoyé. Sarielle vous répond par e-mail sous 24 heures ouvrées (pensez à
             vérifier vos courriers indésirables).
           </p>
         </div>
@@ -89,7 +89,7 @@ export function ContactForm() {
             label="Téléphone (facultatif)"
             name="phone"
             type="tel"
-            placeholder="+221 77 123 45 67"
+            placeholder="+49 151 23456789"
             maxLength={30}
             autoComplete="tel"
           />

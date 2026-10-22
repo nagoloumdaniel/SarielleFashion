@@ -9,7 +9,7 @@
  *   npm run db:seed:demo
  *
  * Idempotent : les prestations sont identifiées par leur `slug` et mises à jour.
- * En production, le catalogue réel doit être saisi par Patricia depuis le
+ * En production, le catalogue réel doit être saisi par Sarielle depuis le
  * dashboard (Phase 4) ; ne pas lancer ce script sur la base de production.
  */
 import { PrismaClient } from '@prisma/client';
@@ -29,213 +29,95 @@ type DemoService = {
   options?: { name: string; priceCents: number; durationMinutes: number }[];
 };
 
+// Données de DÉMONSTRATION : prix et durées fictifs, à remplacer par les vrais tarifs de Sarielle.
 const DEMO_SERVICES: DemoService[] = [
   {
-    name: 'Tresses BOX',
-    slug: 'tresses-box',
-    categorySlug: 'tresses',
+    name: 'Coiffure femme',
+    slug: 'coiffure-femme',
+    categorySlug: 'coiffure-femme',
     description:
-      'Tresses collées au cuir chevelu, réalisées mèche par mèche. Tenue longue durée et finition soignée, adaptée à toutes les occasions.',
-    priceFromCents: 2000000,
-    priceToCents: 3500000,
-    durationMinutes: 180,
+      'Coiffure adaptée à ta nature de cheveux et à tes envies : tresses, coiffures protectrices, brushing ou coupe.',
+    priceFromCents: 4000,
+    priceToCents: 9000,
+    durationMinutes: 120,
     order: 1,
-    options: [
-      { name: 'Soin profond avant pose', priceCents: 250000, durationMinutes: 15 },
-      { name: 'Perles et accessoires', priceCents: 125000, durationMinutes: 10 },
-    ],
+    options: [{ name: 'Soin avant coiffure', priceCents: 1000, durationMinutes: 15 }],
   },
   {
-    name: 'Tresses collées',
-    slug: 'tresses-collees',
-    categorySlug: 'tresses',
-    description:
-      'Tresses plaquées près du crâne, idéales pour un rendu net et durable. Plusieurs épaisseurs disponibles selon votre envie.',
-    priceFromCents: 1125000,
-    priceToCents: 1625000,
-    durationMinutes: 120,
+    name: 'Coiffure homme',
+    slug: 'coiffure-homme',
+    categorySlug: 'coiffure-homme',
+    description: 'Coupe, tresses ou coiffure soignée pour hommes, avec une finition nette.',
+    priceFromCents: 1500,
+    priceToCents: 4000,
+    durationMinutes: 60,
     order: 2,
   },
   {
-    name: 'Tresses avec mèches',
-    slug: 'tresses-avec-meches',
-    categorySlug: 'tresses',
-    description:
-      'Tresses longues réalisées avec des mèches pour un volume et une longueur sur mesure. Prévoir une photo de référence.',
-    priceFromCents: 2250000,
-    priceToCents: null,
-    durationMinutes: 210,
+    name: 'Coiffure enfant',
+    slug: 'coiffure-enfant',
+    categorySlug: 'coiffure-enfant',
+    description: 'Coiffure douce et confortable pour les enfants, réalisée sans les brusquer.',
+    priceFromCents: 1500,
+    priceToCents: 4000,
+    durationMinutes: 60,
     order: 3,
-    options: [{ name: 'Mèches fournies', priceCents: 875000, durationMinutes: 0 }],
   },
   {
-    name: 'Vanilles légères',
-    slug: 'vanilles-legeres',
-    categorySlug: 'vanilles',
-    description:
-      'Vanilles souples et régulières, réalisées sur cheveux propres et démêlés. Un classique protecteur qui convient au quotidien.',
-    priceFromCents: 1500000,
-    priceToCents: 1500000,
-    durationMinutes: 150,
+    name: 'Make-up',
+    slug: 'make-up',
+    categorySlug: 'make-up',
+    description: 'Maquillage naturel ou glamour, pensé pour révéler tes traits.',
+    priceFromCents: 3500,
+    priceToCents: 7000,
+    durationMinutes: 60,
     order: 4,
   },
   {
-    name: 'Vanilles sur cheveux naturels',
-    slug: 'vanilles-sur-cheveux-naturels',
-    categorySlug: 'vanilles',
-    description:
-      'Vanilles réalisées sur cheveux naturels, sans extension. Le tarif dépend de la longueur et de la densité de votre chevelure.',
-    priceFromCents: 1250000,
-    priceToCents: 1875000,
-    durationMinutes: 120,
+    name: 'Pose de lace',
+    slug: 'pose-de-lace',
+    categorySlug: 'pose-de-lace',
+    description: 'Pose de lace soignée, discrète et naturelle, avec une tenue qui dure.',
+    priceFromCents: 6000,
+    priceToCents: 12000,
+    durationMinutes: 150,
     order: 5,
   },
   {
-    name: 'Twists moyens',
-    slug: 'twists-moyens',
-    categorySlug: 'vanilles',
-    description:
-      'Twists deux mèches au rendu volumineux et souple, parfaits pour laisser respirer le cuir chevelu.',
-    priceFromCents: 1750000,
-    priceToCents: null,
-    durationMinutes: 180,
+    name: 'Pose de cils',
+    slug: 'pose-de-cils',
+    categorySlug: 'cils',
+    description: 'Pose de cils précise et confortable pour un regard sublimé.',
+    priceFromCents: 4000,
+    priceToCents: 8000,
+    durationMinutes: 90,
     order: 6,
   },
   {
-    name: 'Rétissage de locs',
-    slug: 'retissage-de-locs',
-    categorySlug: 'locs',
+    name: 'Événement (coiffure et make-up)',
+    slug: 'evenement',
+    categorySlug: 'evenements',
     description:
-      'Entretien et reprise des racines de vos locs, avec nettoyage du cuir chevelu et finition soignée.',
-    priceFromCents: 2500000,
-    priceToCents: null,
-    durationMinutes: 120,
-    order: 7,
-    options: [
-      { name: 'Soin hydratant locs', priceCents: 375000, durationMinutes: 20 },
-      { name: 'Mise en forme finale', priceCents: 250000, durationMinutes: 15 },
-    ],
-  },
-  {
-    name: 'Entretien de locs',
-    slug: 'entretien-de-locs',
-    categorySlug: 'locs',
-    description:
-      'Nettoyage, resserrage et hydratation de vos locs pour préserver leur santé entre deux rétissages.',
-    priceFromCents: 1125000,
-    priceToCents: 1125000,
-    durationMinutes: 90,
-    order: 8,
-  },
-  {
-    name: 'Départ de locs',
-    slug: 'depart-de-locs',
-    categorySlug: 'depart-de-locs',
-    description:
-      'Création des premières locs, avec choix de la taille et de la méthode. Une évaluation préalable est nécessaire pour confirmer la faisabilité et le tarif.',
+      'Coiffure et make-up pour ton événement : mariage, soirée, shooting. Déplacement possible.',
     priceFromCents: null,
     priceToCents: null,
     priceOnRequest: true,
-    durationMinutes: 90,
-    order: 9,
-    options: [{ name: 'Kit de démarrage locs', priceCents: 625000, durationMinutes: 0 }],
-  },
-  {
-    name: 'Coiffure protectrice complète',
-    slug: 'coiffure-protectrice-complete',
-    categorySlug: 'protectrices',
-    description:
-      'Pose protectrice complète avec préparation du cheveu, soin et finition. Convient aux cheveux fragilisés ou en transition.',
-    priceFromCents: 3000000,
-    priceToCents: null,
-    durationMinutes: 240,
-    order: 10,
-    options: [{ name: 'Soin réparateur', priceCents: 450000, durationMinutes: 20 }],
-  },
-  {
-    name: 'Coupe et brushing',
-    slug: 'coupe-et-brushing',
-    categorySlug: 'coupes',
-    description:
-      'Coupe personnalisée suivie d’un brushing soigné, avec conseils d’entretien adaptés à votre chevelure.',
-    priceFromCents: 875000,
-    priceToCents: 875000,
-    durationMinutes: 60,
-    order: 11,
-  },
-  {
-    name: 'Coupe enfant',
-    slug: 'coupe-enfant',
-    categorySlug: 'coupes',
-    description:
-      'Coupe douce et rapide pour les enfants, dans une ambiance rassurante et adaptée à leur âge.',
-    priceFromCents: 500000,
-    priceToCents: 500000,
-    durationMinutes: 45,
-    order: 12,
+    durationMinutes: 180,
+    order: 7,
   },
 ];
 
 const pexels = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
 
-/**
- * Galerie de démonstration par catégorie. Les `key` contiennent ici des URLs
- * publiques (photos libres Pexels) : en production, `ServiceImage.key` contient
- * une clé S3 privée et l'URL signée est résolue côté serveur (P4.4).
- */
-const DEMO_GALLERY: Record<string, { key: string; alt: string }[]> = {
-  tresses: [
-    {
-      key: pexels(36441633),
-      alt: 'Tresses africaines réalisées en salon (photo de démonstration)',
-    },
-    {
-      key: pexels(33664383),
-      alt: 'Coiffure tressée élégante vue de profil (photo de démonstration)',
-    },
-    {
-      key: pexels(31801412),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
-    },
-  ],
-  vanilles: [
-    {
-      key: pexels(37547660),
-      alt: 'Femmes aux cheveux tressés en vanilles (photo de démonstration)',
-    },
-    {
-      key: pexels(33475847),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
-    },
-  ],
-  locs: [
-    { key: pexels(30152002), alt: 'Femme portant des locs (photo de démonstration)' },
-    { key: pexels(14778613), alt: 'Cheveux naturels bouclés en close-up (photo de démonstration)' },
-  ],
-  'depart-de-locs': [
-    {
-      key: pexels(31801412),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
-    },
-    { key: pexels(30152002), alt: 'Femme portant des locs (photo de démonstration)' },
-  ],
-  protectrices: [
-    {
-      key: pexels(16563139),
-      alt: 'Mains d’une coiffeuse réalisant une coiffure (photo de démonstration)',
-    },
-    { key: pexels(11269055), alt: 'Femme aux cheveux courts et soignés (photo de démonstration)' },
-  ],
-  coupes: [
-    { key: pexels(11269055), alt: 'Femme aux cheveux courts et soignés (photo de démonstration)' },
-    {
-      key: pexels(10825829),
-      alt: 'Portrait de démonstration d’une femme coiffée (photo de démonstration)',
-    },
-    { key: pexels(10810251), alt: 'Cheveux courts colorés et coiffés (photo de démonstration)' },
-  ],
-};
+// Photos de démonstration génériques (à remplacer par les vraies photos de Sarielle).
+const DEMO_PHOTOS = [
+  { key: pexels(10825829), alt: 'Portrait d’une femme coiffée (photo de démonstration)' },
+  { key: pexels(11269055), alt: 'Femme aux cheveux courts et soignés (photo de démonstration)' },
+];
+const DEMO_GALLERY: Record<string, typeof DEMO_PHOTOS> = Object.fromEntries(
+  DEMO_SERVICES.map((service) => [service.categorySlug, DEMO_PHOTOS]),
+);
 
 async function main(): Promise<void> {
   const categories = await db.category.findMany({ select: { slug: true } });

@@ -16,7 +16,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Compatibilité capillaire',
   description:
-    'Vérifiez en quelques questions si votre longueur de cheveux et votre situation capillaire permettent la prestation choisie. Patricia peut aussi évaluer une photo.',
+    'Vérifiez en quelques questions si votre longueur de cheveux et votre situation capillaire permettent la prestation choisie. Sarielle peut aussi évaluer une photo.',
   alternates: { canonical: '/compatibilite' },
 };
 

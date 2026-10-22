@@ -1,4 +1,4 @@
-# Guide d'administration — Hairstyle by Patricia
+# Guide d'administration — Sarielle Fashion
 
 Guide pratique pour utiliser le tableau de bord, sans connaissances techniques. Pour toute question technique (panne, modification de code), contacter le développeur.
 
@@ -12,7 +12,7 @@ Vue d'ensemble : rendez-vous du jour, prochains rendez-vous, demandes en attente
 
 ## Catalogue des coiffures
 
-1. **Catégories** (Tresses, Vanilles, Locs, Départ de locs, Protectrices, Coupes) : créer, modifier, réordonner. Une catégorie ne peut être supprimée que si elle est vide.
+1. **Catégories** (Coiffure femme, Coiffure homme, Coiffure enfant, Make-up, Pose de lace, Cils, Événements) : créer, modifier, réordonner. Une catégorie ne peut être supprimée que si elle est vide.
 2. **Coiffures** : créer une fiche (nom, description, catégorie, prix ou fourchette de prix, durée, options payantes). Statuts :
    - **Brouillon** : non visible sur le site public.
    - **Publiée** : visible et réservable.
@@ -56,7 +56,7 @@ Identité du salon, e-mail et téléphone de contact, adresse, horaires affiché
 
 ## Notifications
 
-La cliente reçoit un e-mail à chaque étape importante (réservation, confirmation, annulation, reprogrammation, rappel 24h avant). Patricia reçoit une notification dans le dashboard (avec lien direct) et par e-mail pour les nouvelles réservations, demandes et messages. Un envoi en échec reste visible dans le dashboard — il ne bloque jamais l'enregistrement de la réservation elle-même.
+La cliente reçoit un e-mail à chaque étape importante (réservation, confirmation, annulation, reprogrammation, rappel 24h avant). Sarielle reçoit une notification dans le dashboard (avec lien direct) et par e-mail pour les nouvelles réservations, demandes et messages. Un envoi en échec reste visible dans le dashboard — il ne bloque jamais l'enregistrement de la réservation elle-même.
 
 ## Hors version 1 (pas encore disponibles)
 

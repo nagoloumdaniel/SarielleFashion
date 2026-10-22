@@ -39,7 +39,7 @@ function revalidate() {
   revalidatePath('/coiffures');
 }
 
-/* Lit et valide le formulaire création / édition (dates en jours civils Dakar = UTC). */
+/* Lit et valide le formulaire création / édition (dates en jours civils Clausthal-Zellerfeld = UTC). */
 async function readPromotionForm(formData: FormData) {
   const parsed = parseForm(promotionSchema, {
     name: String(formData.get('name') ?? ''),
@@ -63,7 +63,7 @@ async function readPromotionForm(formData: FormData) {
   const found = await db.service.count({ where: { id: { in: serviceIds } } });
   if (found !== serviceIds.length) return { error: 'Une prestation sélectionnée est introuvable.' };
 
-  // Pourcentage : entier 1-100 ; montant fixe : FCFA → 1/100 FCFA (unité interne).
+  // Pourcentage : entier 1-100 ; montant fixe : euros → centimes (unité interne).
   const value = input.kind === 'PERCENT' ? input.value : input.value * 100;
   return {
     data: {

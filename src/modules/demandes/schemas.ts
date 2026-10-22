@@ -36,8 +36,8 @@ export const customRequestSchema = z.object({
 
 export type CustomRequestInput = z.infer<typeof customRequestSchema>;
 
-/* Prix saisi en FCFA entiers ; stocké en centièmes de FCFA (unité interne *Cents). */
-export const MAX_ESTIMATED_PRICE_FCFA = 10_000_000;
+/* Prix saisi en euros entiers ; stocké en centimes (unité interne *Cents). */
+export const MAX_ESTIMATED_PRICE_EUR = 10_000;
 
 export const customRequestDecisionSchema = z
   .object({
@@ -48,7 +48,7 @@ export const customRequestDecisionSchema = z
       .trim()
       .max(3000, 'Message trop long (3000 caractères maximum).')
       .default(''),
-    estimatedPriceFcfa: z
+    estimatedPriceEur: z
       .string()
       .trim()
       .optional()
@@ -57,13 +57,13 @@ export const customRequestDecisionSchema = z
       .refine(
         (value) =>
           value === null ||
-          (Number.isInteger(value) && value >= 0 && value <= MAX_ESTIMATED_PRICE_FCFA),
-        { message: 'Prix estimé invalide (montant entier en FCFA).' },
+          (Number.isInteger(value) && value >= 0 && value <= MAX_ESTIMATED_PRICE_EUR),
+        { message: 'Prix estimé invalide (montant entier en euros).' },
       )
       .transform((value) => (value === null ? null : value * 100)),
     serviceId: z.string().trim().max(64).optional().default(''),
     proposedSlotLocal: z.string().trim().max(30).optional().default(''),
-    timeZone: z.string().trim().max(80).optional().default('Africa/Dakar'),
+    timeZone: z.string().trim().max(80).optional().default('Europe/Berlin'),
   })
   .refine((data) => data.action === 'IN_REVIEW' || data.message.length >= 2, {
     message: 'Message requis (2 caractères minimum).',

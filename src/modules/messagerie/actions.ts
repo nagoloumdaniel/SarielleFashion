@@ -87,7 +87,7 @@ export async function adminReplyToConversation(
           },
           {
             idempotencyKey: `conversation:${conversation.id}:reply:${message.id}:inapp`,
-            recipient: process.env.ADMIN_EMAIL?.trim() || 'zepatricia7@gmail.com',
+            recipient: process.env.ADMIN_EMAIL?.trim() || 'sarielletalla@gmail.com',
             channel: 'IN_APP',
             templateKey: 'conversation_reply_sent',
             link: `/dashboard/messages/${conversation.id}`,

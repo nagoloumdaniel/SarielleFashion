@@ -63,7 +63,7 @@ function testDateISO(): string {
   return localDateISO(date);
 }
 
-function localMinute(iso: string, timeZone = 'Africa/Dakar'): number {
+function localMinute(iso: string, timeZone = 'Europe/Berlin'): number {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone,
     hour: '2-digit',
@@ -337,7 +337,7 @@ test.describe('Réservations, annulations et calendrier', () => {
     await fillBookingDetailsToSummary(page, '10:00', `${customerPrefix}-client@example.com`);
 
     await expect(page.getByText('Paiement sur place').last()).toBeVisible();
-    await expect(page.getByText(/70[\s  ]*F[\s  ]*CFA/)).toBeVisible();
+    await expect(page.getByText(/70[\s  ]*€/)).toBeVisible();
 
     await page.getByRole('button', { name: 'Confirmer ma réservation' }).click();
     await expect(page.getByRole('heading', { name: 'Votre rendez-vous est confirmé' })).toBeVisible(
@@ -529,8 +529,8 @@ test.describe('Réservations, annulations et calendrier', () => {
     browser,
   }) => {
     test.setTimeout(180_000);
-    const contextA = await browser.newContext({ timezoneId: 'Africa/Dakar' });
-    const contextB = await browser.newContext({ timezoneId: 'Africa/Dakar' });
+    const contextA = await browser.newContext({ timezoneId: 'Europe/Berlin' });
+    const contextB = await browser.newContext({ timezoneId: 'Europe/Berlin' });
     const pageA = await contextA.newPage();
     const pageB = await contextB.newPage();
 

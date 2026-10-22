@@ -77,9 +77,9 @@ function timeValue(minutes: number): string {
 
 function deviceTimeZone(): string {
   try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Africa/Dakar';
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Berlin';
   } catch {
-    return 'Africa/Dakar';
+    return 'Europe/Berlin';
   }
 }
 

@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { useToast } from '@/components/ui/Toast';
 
 /* ============================================================
- * Décision de Patricia sur une évaluation.
+ * Décision de Sarielle sur une évaluation.
  * Rappel : la décision ne crée aucune réservation.
  * ============================================================ */
 

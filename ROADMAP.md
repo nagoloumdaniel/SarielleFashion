@@ -1,4 +1,4 @@
-# ROADMAP COMPLÈTE — Hairstyle by Patricia
+# ROADMAP COMPLÈTE — Sarielle Fashion
 
 **Source :** `Cahier de charge.md` v1.0 (18 sections, 1252 lignes)
 **Méthode :** exécution de A à Z, mini-tâches ordonnées, chaque tâche affectée à 1 skill obligatoire.
@@ -78,7 +78,7 @@
 
 > Objectif : vitrine qui convertit, conforme §4.
 
-- [x] **P3.1** Page d'accueil : hero photo coiffure, accroche, 2 boutons (Réserver / Découvrir), coiffures populaires, prestations, étapes de réservation, présentation Patricia, témoignages, coordonnées. — *skill : frontend-design*
+- [x] **P3.1** Page d'accueil : hero photo coiffure, accroche, 2 boutons (Réserver / Découvrir), coiffures populaires, prestations, étapes de réservation, présentation Sarielle, témoignages, coordonnées. — *skill : frontend-design*
 - [x] **P3.2** Catalogue : cartes (photo, nom, prix/départ, description, durée, catégories, boutons Voir détails / Réserver), recherche + filtres par catégories dynamiques. — *skill : frontend-design + react-best-practices*
 - [x] **P3.3** Fiche détaillée : galerie multi-photos navigable sans quitter la page, prix/fourchette, durée, longueurs acceptées, compatibilités, restrictions, options, infos avant RDV. — *skill : frontend-design*
 - [x] **P3.4** Pagination / chargement progressif catalogue. — *skill : react-best-practices*
@@ -90,7 +90,7 @@
 
 ## PHASE 4 — BACK-OFFICE CATALOGUE
 
-> Objectif : Patricia autonome sur 100 % du catalogue (§6.4, §12.2).
+> Objectif : Sarielle autonome sur 100 % du catalogue (§6.4, §12.2).
 > État : terminée le 19/10/2026. Upload vérifié de bout en bout sur un bucket Cloudflare R2 réel (envoi, URL signée affichée, suppression du fichier).
 
 - [x] **P4.1** Page catalogue dashboard : liste, statuts, recherche, filtres, compteurs, affichage mobile sans débordement. — *skill : frontend-design*
@@ -129,7 +129,7 @@
 - [x] **P6.3** Parcours de réservation 8 étapes (choix coiffure → infos capillaires → vérification → options → créneau → coordonnées → récapitulatif « Paiement sur place » → confirmation), chaque étape avec états d'attente/succès/erreur. — *skill : frontend-design*
 - [x] **P6.4** Validation manuelle : statut « En attente de confirmation », créneau réservé temporairement avec durée max configurable et libération automatique des attentes expirées. — *skill : test-driven-development*
 - [x] **P6.5** Machine à statuts complète (en attente, confirmée, reprogrammée, annulée client, annulée admin, terminée, absent) avec transitions contrôlées côté serveur. — *skill : test-driven-development*
-- [x] **P6.6** Annulation par Patricia : motif, libération créneau, notification mise en file, enregistrement historique. — *skill : frontend-design*
+- [x] **P6.6** Annulation par Sarielle : motif, libération créneau, notification mise en file, enregistrement historique. — *skill : frontend-design*
 - [x] **P6.7** Annulation par client via lien sécurisé à durée limitée ; conditions configurables (délai minimal, motif obligatoire, message hors délai). — *skill : security-audit*
 - [x] **P6.8** Reprogrammation atomique : ancien créneau libéré seulement si nouveau valide, aucun doublon ni perte en cas d'échec. — *skill : test-driven-development*
 - [x] **P6.9** Calendrier dashboard : vues jour/semaine/mois/liste, couleur par statut + libellé, fiche RDV cliquable (détails, statut, annuler, reprogrammer). — *skill : frontend-design*
@@ -146,7 +146,7 @@
 - [x] **P7.2** File d'attente d'envoi + reprise sur échec ; l'envoi e-mail ne bloque et ne conditionne jamais l'enregistrement d'une réservation. — *skill : test-driven-development*
 - [x] **P7.3** Modèles d'e-mail pour les événements §10.1 : réservation, attente, confirmation, annulations, reprogrammation, rappel, contact et réponse. Les événements des demandes personnalisées seront ajoutés en phase 8. — *skill : caveman*
 - [x] **P7.4** Idempotence des notifications (jamais de doublon même si relance technique). — *skill : test-driven-development*
-- [x] **P7.5** Notifications Patricia : e-mail + notification dashboard avec lien direct vers la fiche concernée. — *skill : frontend-design*
+- [x] **P7.5** Notifications Sarielle : e-mail + notification dashboard avec lien direct vers la fiche concernée. — *skill : frontend-design*
 - [x] **P7.6** Messagerie dashboard : boîte de réception (contact, renseignements, commentaires RDV, personnalisées, compatibilité), statuts (nouveau, en cours, attente réponse, traité, archivé), réponse e-mail, notes internes invisibles côté client. — *skill : frontend-design + test-driven-development*
 - [x] **P7.7** Rappels automatiques H-24 (délai configurable), uniquement RDV valides, anti-doublon. — *skill : test-driven-development*
 - [x] **P7.8** Visibilité des échecs d'envoi dans le dashboard + journaux. — *skill : caveman*
@@ -162,7 +162,7 @@
 - [x] **P8.3** Clients : fiche client avec historique réservations et coordonnées, accès restreint. — *skill : frontend-design*
 - [x] **P8.4** Paramètres du salon : identité, e-mail, téléphone, adresse, horaires, règles annulation, délais réservation/rappel, signature et politiques. Le logo est stocké mais pas encore affiché dans l'en-tête public, et les modèles e-mail restent centralisés dans le code. — *skill : frontend-design*
 - [x] **P8.5** Tableau de bord principal : RDV du jour, prochains, en attente, nouvelles demandes, évaluations photo, messages non lus, annulations récentes, indisponibilités, indicateurs. — *skill : frontend-design*
-- [x] **P8.6** Statistiques : réservations, annulations, terminées, prestations populaires, demandes personnalisées, revenus estimés et ticket moyen, avec définitions affichées. Le taux de remplissage reste à définir avec Patricia. — *skill : analytics*
+- [x] **P8.6** Statistiques : réservations, annulations, terminées, prestations populaires, demandes personnalisées, revenus estimés et ticket moyen, avec définitions affichées. Le taux de remplissage reste à définir avec Sarielle. — *skill : analytics*
 - [x] **P8.7** Gestion des absences (no-show) + impact statistique sans bannissement automatique. — *skill : test-driven-development*
 - [x] **P8.8** Liste d'attente : créneau exact (pas de date "libre", aucune logique de fuseau serveur), alerte e-mail à la libération, lien de confirmation à durée limitée (2h, cron `/api/cron/liste-attente`), re-vérification complète via `createBooking` à la confirmation (aucune création d'Appointment en dehors du flux standard). — *skill : writing-plans + test-driven-development* (hors v1 §19, livré en phase 12)
 - [x] **P8.9** Suggestions de coiffures compatibles affichées quand une prestation est incompatible : ne proposent que des prestations `COMPATIBLE` + `BOOK` d'après le moteur (`suggestCompatibleServices`, testé) — jamais de contournement d'une restriction. — *skill : test-driven-development* (hors v1 §19, livré en phase 12)
@@ -211,11 +211,11 @@
 ## PHASE 12 — LANCEMENT & MAINTENANCE
 
 - [x] **P12.1** Environnements séparés dev/prod, variables distinctes. Documenté dans [docs/maintenance.md](docs/maintenance.md#environnements-p121) : bases Neon distinctes, secrets jamais partagés, `db:seed:demo` interdit en production. — *skill : caveman*
-- [ ] **P12.2** CI/CD : build + tests verts → déploiement automatique production. Procédure documentée dans [docs/maintenance.md](docs/maintenance.md#déploiement-p122--procédure-à-exécuter-manuellement-tant-quaucun-compte-hébergeur-nest-connecté-à-ce-dépôt) ; aucun compte hébergeur réel connecté à ce dépôt à ce jour — à faire par Patricia/le développeur avant mise en ligne. — *skill : caveman + verification-before-completion*
+- [ ] **P12.2** CI/CD : build + tests verts → déploiement automatique production. Procédure documentée dans [docs/maintenance.md](docs/maintenance.md#déploiement-p122--procédure-à-exécuter-manuellement-tant-quaucun-compte-hébergeur-nest-connecté-à-ce-dépôt) ; aucun compte hébergeur réel connecté à ce dépôt à ce jour — à faire par Sarielle/le développeur avant mise en ligne. — *skill : caveman + verification-before-completion*
 - [x] **P12.3** Monitoring erreurs production + alerting e-mail. Procédure de branchement documentée dans [docs/maintenance.md](docs/maintenance.md#monitoring-p123--à-activer-lors-du-branchement-de-lhébergeur) (aucun service externe réel branché, limite déjà actée en phase 9). — *skill : caveman*
-- [x] **P12.4** Documentation : README d'installation (déjà à jour), guide d'administration pour Patricia ([docs/guide-admin.md](docs/guide-admin.md)), variables d'environnement ([.env.example](.env.example)), runbook de restauration (déjà dans [docs/security.md](docs/security.md#sauvegarde-et-restauration)). — *skill : caveman*
+- [x] **P12.4** Documentation : README d'installation (déjà à jour), guide d'administration pour Sarielle ([docs/guide-admin.md](docs/guide-admin.md)), variables d'environnement ([.env.example](.env.example)), runbook de restauration (déjà dans [docs/security.md](docs/security.md#sauvegarde-et-restauration)). — *skill : caveman*
 - [x] **P12.5** Changelog v1.0 ([CHANGELOG.md](CHANGELOG.md)). Tag Git `v1.0.0` à créer après le merge de la PR #13 (nécessite accord explicite, voir P12.6). — *skill : changelog-generator*
-- [x] **P12.6** Merge branche finale + nettoyage (PR #16 fusionnée le 2026-10-20, production Vercel déployée : https://hairstylebypati.vercel.app). — *skill : finishing-a-development-branch* (nécessite accord explicite de merge, voir PR #13)
+- [x] **P12.6** Merge branche finale + nettoyage (PR #16 fusionnée le 2026-10-20, production Vercel déployée : https://sariellefashion.vercel.app). — *skill : finishing-a-development-branch* (nécessite accord explicite de merge, voir PR #13)
 - [x] **P12.7** Export PDF du cahier des charges + roadmap pour archivage client — `docs/archivage/Cahier-de-charge-v1.0.pdf`, `docs/archivage/ROADMAP.pdf`. — *skill : markdown-to-pdf*
 - [x] **P12.8** Passerelle maintenance : plan de mises à jour dépendances, sauvegardes vérifiées périodiquement, procédure d'ajout de fonctionnalité sans casser les modules — [docs/maintenance.md](docs/maintenance.md#plan-de-maintenance-p128). — *skill : caveman*
 

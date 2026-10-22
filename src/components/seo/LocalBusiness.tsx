@@ -1,5 +1,5 @@
 /**
- * P3.8 - Données structurées LocalBusiness (JSON-LD) pour Patricia.
+ * P3.8 - Données structurées LocalBusiness (JSON-LD) pour Sarielle.
  * Aide les moteurs de recherche à afficher les infos de l’activité (nom, adresse,
  * horaires) dans les résultats enrichis.
  */
@@ -19,25 +19,18 @@ export interface LocalBusinessData {
 }
 
 export const LOCAL_BUSINESS: LocalBusinessData = {
-  name: 'Hairstyle by Patricia',
+  name: 'Sarielle Fashion',
   address: {
-    streetAddress: 'Ouest - Foire',
-    addressLocality: 'Dakar',
-    addressRegion: 'Dakar',
-    addressCountry: 'SN',
+    streetAddress: 'Clausthal-Zellerfeld',
+    addressLocality: 'Clausthal-Zellerfeld',
+    addressRegion: 'Basse-Saxe',
+    addressCountry: 'DE',
   },
-  email: 'zepatricia7@gmail.com',
-  priceRange: 'FCFA',
-  servesCity: 'Dakar',
-  openingHours: [
-    { dayOfWeek: 'https://schema.org/Monday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Tuesday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Wednesday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Thursday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Friday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Saturday', opens: '05:00', closes: '22:00' },
-    { dayOfWeek: 'https://schema.org/Sunday', opens: '05:00', closes: '22:00' },
-  ],
+  email: 'sarielletalla@gmail.com',
+  priceRange: '€€',
+  servesCity: 'Clausthal-Zellerfeld',
+  // Horaires non communiqués : à renseigner dès qu'ils sont connus (aucune valeur inventée).
+  openingHours: [],
 };
 
 /**
@@ -51,8 +44,6 @@ export default function LocalBusiness({ data }: { data: LocalBusinessData }) {
     '@type': 'HealthAndBeautyBusiness',
     name: data.name,
     logo: `${appUrl}/brand/logo-mark-og.png`,
-    image:
-      'https://images.pexels.com/photos/10825829/pexels-photo-10825829.jpeg?auto=compress&cs=tinysrgb&w=400',
     address: {
       '@type': 'PostalAddress',
       streetAddress: data.address.streetAddress,
@@ -63,12 +54,14 @@ export default function LocalBusiness({ data }: { data: LocalBusinessData }) {
     email: data.email,
     priceRange: data.priceRange,
     servesCity: data.servesCity,
-    openingHoursSpecification: data.openingHours.map((h) => ({
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: h.dayOfWeek,
-      opens: h.opens,
-      closes: h.closes,
-    })),
+    ...(data.openingHours.length > 0 && {
+      openingHoursSpecification: data.openingHours.map((h) => ({
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: h.dayOfWeek,
+        opens: h.opens,
+        closes: h.closes,
+      })),
+    }),
   };
 
   return (

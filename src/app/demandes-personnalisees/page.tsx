@@ -7,10 +7,10 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Demande de coiffure personnalisée',
   description:
-    'Décrivez votre coiffure sur mesure, ajoutez des photos de référence et recevez une réponse personnalisée de Patricia.',
+    'Décrivez votre coiffure sur mesure, ajoutez des photos de référence et recevez une réponse personnalisée de Sarielle.',
   alternates: { canonical: '/demandes-personnalisees' },
   openGraph: {
-    title: 'Demande de coiffure personnalisée - Hairstyle by Patricia',
+    title: 'Demande de coiffure personnalisée - Sarielle Fashion',
     description: 'Décrivez votre coiffure sur mesure et recevez une réponse personnalisée.',
     url: '/demandes-personnalisees',
   },
@@ -20,7 +20,7 @@ const STEPS = [
   { Icon: PenLine, title: 'Décrivez votre coiffure', text: 'Votre idée, vos cheveux, vos photos.' },
   {
     Icon: ShieldCheck,
-    title: 'Patricia étudie la faisabilité',
+    title: 'Sarielle étudie la faisabilité',
     text: 'Elle examine chaque demande.',
   },
   {
@@ -56,7 +56,7 @@ export default function CustomRequestPage() {
           Une coiffure qui n’est pas au catalogue ?
         </Title>
         <p className="text-base leading-relaxed text-ink-soft md:text-lg">
-          Décrivez votre projet et joignez jusqu’à 3 photos de référence. Patricia vous répond avec
+          Décrivez votre projet et joignez jusqu’à 3 photos de référence. Sarielle vous répond avec
           une proposition adaptée.
         </p>
       </header>

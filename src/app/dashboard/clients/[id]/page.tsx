@@ -34,10 +34,10 @@ import { CustomerRgpdActions } from './customer-rgpd-actions';
 
 export const metadata: Metadata = { title: 'Fiche cliente - Tableau de bord' };
 
-/* FCFA sans décimales ; les colonnes *Cents sont en 1/100 FCFA. */
-const fcfa = new Intl.NumberFormat('fr-FR', {
+/* Euros ; les colonnes *Cents sont en centimes. */
+const euro = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
-  currency: 'XOF',
+  currency: 'EUR',
   maximumFractionDigits: 0,
 });
 
@@ -135,7 +135,7 @@ async function AppointmentsSection({ customerId, count }: { customerId: string; 
             <>
               <LocalDateTime iso={appointment.startsAt.toISOString()} dateStyle="medium" />
               {appointment.priceCents != null
-                ? ` · ${fcfa.format(appointment.priceCents / 100)}`
+                ? ` · ${euro.format(appointment.priceCents / 100)}`
                 : ''}
             </>
           }

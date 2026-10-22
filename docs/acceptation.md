@@ -12,7 +12,7 @@ Chaque critère porte un identifiant stable utilisé dans les recettes P11.3 et 
 
 | ID      | Critère                                                      | Couverture roadmap                |
 | ------- | ------------------------------------------------------------ | --------------------------------- |
-| A-CAT-1 | Patricia peut créer une nouvelle coiffure.                   | P4.3                              |
+| A-CAT-1 | Sarielle peut créer une nouvelle coiffure.                   | P4.3                              |
 | A-CAT-2 | Elle peut ajouter plusieurs photos.                          | P4.4, P4.5                        |
 | A-CAT-3 | Elle peut modifier le tarif et la durée.                     | P4.3 (instantané protégé : P6.11) |
 | A-CAT-4 | Elle peut configurer les règles de compatibilité.            | P4.7, P4.8                        |
@@ -26,7 +26,7 @@ Chaque critère porte un identifiant stable utilisé dans les recettes P11.3 et 
 | A-COM-2 | Le message explicatif configuré est affiché.                                       | P5.2, P5.3 (messages par situation : P4.7) |
 | A-COM-3 | Le client peut demander une évaluation par photo lorsque cette option est activée. | P5.4, P5.5                                 |
 | A-COM-4 | La demande arrive dans le dashboard.                                               | P5.6                                       |
-| A-COM-5 | Patricia peut accepter ou refuser la demande.                                      | P5.6                                       |
+| A-COM-5 | Sarielle peut accepter ou refuser la demande.                                      | P5.6                                       |
 | A-COM-6 | Une décision ne crée pas de réservation sans contrôle du créneau.                  | **P5.7, P5.8** (règle d'or)                |
 
 ## C. Réservation (5)
@@ -43,7 +43,7 @@ Chaque critère porte un identifiant stable utilisé dans les recettes P11.3 et 
 
 | ID      | Critère                                                                            | Couverture roadmap                      |
 | ------- | ---------------------------------------------------------------------------------- | --------------------------------------- |
-| A-ANN-1 | Patricia peut annuler une réservation.                                             | P6.6                                    |
+| A-ANN-1 | Sarielle peut annuler une réservation.                                             | P6.6                                    |
 | A-ANN-2 | Le client reçoit une notification d'annulation.                                    | P6.6 + P7.3                             |
 | A-ANN-3 | Le créneau est libéré.                                                             | P6.6, P6.8                              |
 | A-ANN-4 | Le client peut annuler à l'aide d'un lien sécurisé dans les conditions autorisées. | P6.7 (lien signé, délais configurables) |
@@ -55,7 +55,7 @@ Chaque critère porte un identifiant stable utilisé dans les recettes P11.3 et 
 | ID      | Critère                                               | Couverture roadmap |
 | ------- | ----------------------------------------------------- | ------------------ |
 | A-MES-1 | Un message de contact est enregistré.                 | P3.6 + P7.6        |
-| A-MES-2 | Patricia reçoit une notification dans le dashboard.   | P7.5, P7.6         |
+| A-MES-2 | Sarielle reçoit une notification dans le dashboard.   | P7.5, P7.6         |
 | A-MES-3 | Les e-mails sont envoyés ou signalés en échec.        | P7.2, P7.8         |
 | A-MES-4 | Les rappels ne sont pas envoyés en double.            | P7.4, P7.7         |
 | A-MES-5 | Les notes internes ne sont pas accessibles au client. | P7.6               |

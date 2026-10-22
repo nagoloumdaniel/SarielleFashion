@@ -8,7 +8,7 @@ import {
   getCustomRequestAdmin,
   listPublishedServiceOptions,
 } from '@/modules/demandes/queries';
-import { formatFcfa } from '@/modules/reservations/format';
+import { formatEuro } from '@/modules/reservations/format';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { BackButton } from '@/components/shared/BackButton';
 import { LocalDateTime } from '@/components/shared/LocalDateTime';
@@ -196,7 +196,7 @@ export default async function CustomRequestDetailPage({
                     decision.proposedSlot ? (
                       <p className="mt-2 text-xs text-muted">
                         {decision.priceCents != null
-                          ? `Prix : ${formatFcfa(decision.priceCents)}`
+                          ? `Prix : ${formatEuro(decision.priceCents)}`
                           : ''}
                         {decision.proposedServiceName
                           ? ` · Prestation : ${decision.proposedServiceName}`
@@ -223,7 +223,7 @@ export default async function CustomRequestDetailPage({
               <p className="mt-2 whitespace-pre-line text-sm text-fg">{request.adminReply}</p>
               <p className="mt-2 text-sm text-muted">
                 {request.estimatedPriceCents != null
-                  ? `Prix estimé : ${formatFcfa(request.estimatedPriceCents)}`
+                  ? `Prix estimé : ${formatEuro(request.estimatedPriceCents)}`
                   : 'Prix non estimé'}
                 {request.proposedService ? ` · ${request.proposedService.name}` : ''}
               </p>

@@ -75,7 +75,7 @@ const LIST_SELECT = {
   source: true,
   lastMessageAt: true,
   customer: { select: { name: true, email: true } },
-  // Aperçu = dernier message visible de la cliente / de Patricia (jamais une note interne).
+  // Aperçu = dernier message visible de la cliente / de Sarielle (jamais une note interne).
   messages: {
     where: { isInternal: false },
     orderBy: { sentAt: 'desc' },

@@ -12,14 +12,14 @@ import { homeServiceSentence } from '@/modules/parametres/home-service';
 export const metadata: Metadata = {
   title: 'Informations pratiques',
   description:
-    "Horaires, préparation du rendez-vous et politique d'annulation de Hairstyle by Patricia.",
+    "Horaires, préparation du rendez-vous et politique d'annulation de Sarielle Fashion.",
   alternates: { canonical: '/infos-pratiques' },
 };
 
 const preparation = [
-  'Venez avec des cheveux propres, démêlés et séchés.',
-  'Si vous portez une coiffure existante (locs, tresses), ne la défaites pas la veille.',
-  'Apportez une photo ou une inspiration de la coiffure souhaitée si vous en avez une.',
+  'Viens avec des cheveux propres, démêlés et séchés.',
+  'Si tu portes une coiffure existante, ne la défais pas la veille.',
+  'Apporte une photo ou une inspiration du résultat souhaité si tu en as une.',
 ];
 
 function buildCancellationRules(hours: number) {
@@ -27,27 +27,27 @@ function buildCancellationRules(hours: number) {
   return [
     {
       label: 'Annulation à temps',
-      description: `Vous pouvez annuler ou déplacer votre rendez-vous gratuitement jusqu’à ${delay} avant l’heure convenue, via le lien sécurisé reçu par e-mail.`,
+      description: `Tu peux annuler ou déplacer ton rendez-vous gratuitement jusqu’à ${delay} avant l’heure convenue, via le lien sécurisé reçu par e-mail.`,
     },
     {
       label: 'Annulation tardive',
-      description: `Passé le délai de ${delay}, l’annulation est prise en compte mais le créneau ne peut être libéré pour d’autres clientes. Contactez-nous directement pour étudier votre situation.`,
+      description: `Passé le délai de ${delay}, l’annulation est prise en compte mais le créneau ne peut plus être proposé à d’autres personnes. Contacte-moi directement pour étudier ta situation.`,
     },
     {
       label: 'Absence',
       description:
-        'En cas d’absence sans préavis, Patricia se réserve le droit de demander un acompte pour toute réservation ultérieure.',
+        'En cas d’absence sans préavis, Sarielle se réserve le droit de demander un acompte pour toute réservation ultérieure.',
     },
     {
-      label: 'Annulation par Patricia',
+      label: 'Annulation par Sarielle',
       description:
-        'Si Patricia doit annuler pour un motif personnel (maladie, urgence), vous serez contactée sans délai et un nouveau rendez-vous vous sera proposé en priorité, sans frais.',
+        'Si Sarielle doit annuler pour un motif personnel (maladie, urgence), je te contacte sans délai et un nouveau rendez-vous t’est proposé en priorité, sans frais.',
     },
   ];
 }
 
-const DEFAULT_ADDRESS = 'Ouest - Foire\nDakar, Sénégal';
-const DEFAULT_CONTACT_EMAIL = 'zepatricia7@gmail.com';
+const DEFAULT_ADDRESS = 'Clausthal-Zellerfeld\nAllemagne';
+const DEFAULT_CONTACT_EMAIL = 'sarielletalla@gmail.com';
 
 async function loadSettings(): Promise<SalonSettingsData> {
   try {
@@ -134,7 +134,7 @@ export default async function InfosPratiquesPage() {
       {/* Préparation */}
       <section className="space-y-6">
         <Title as="h2" className="">
-          Préparer votre rendez-vous
+          Préparer ton rendez-vous
         </Title>
         <ul className="max-w-3xl space-y-3">
           {preparation.map((item) => (

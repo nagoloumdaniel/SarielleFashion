@@ -201,7 +201,7 @@ export async function getBookingSlots(input: {
   if (snapshot.durationMinutes <= 0) {
     throw new AppError(
       'INVALID_DURATION',
-      'La durée de cette prestation n’est pas renseignée. Contactez Patricia.',
+      'La durée de cette prestation n’est pas renseignée. Contactez Sarielle.',
       409,
     );
   }

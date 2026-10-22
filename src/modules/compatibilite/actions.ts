@@ -32,7 +32,7 @@ import {
  * Actions serveur du parcours de compatibilité (P5.3 à P5.8)
  * - previewCompatibility : verdict serveur, aucune écriture.
  * - submitAssessment : crée la cliente et la demande, photos privées.
- * - decideAssessment : décision de Patricia, elle ne crée JAMAIS
+ * - decideAssessment : décision de Sarielle, elle ne crée JAMAIS
  *   d'Appointment (règle d'or P5.7).
  * ============================================================ */
 
@@ -367,7 +367,7 @@ const DECISION_TARGET_STATUS: Record<AssessmentDecision, AssessmentStatus> = {
 export type AssessmentDecisionState = { error?: string; success?: string };
 
 /**
- * Décision de Patricia sur une évaluation.
+ * Décision de Sarielle sur une évaluation.
  * IMPORTANT (P5.7) : cette action ne crée AUCUN Appointment.
  * Elle enregistre uniquement la décision capillaire et son message.
  */

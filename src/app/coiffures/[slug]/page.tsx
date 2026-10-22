@@ -63,10 +63,10 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
     title: service.name,
     description:
       description ||
-      `${service.name} chez Hairstyle by Patricia : ${formatPrice(service)}, ${formatDuration(service.durationMinutes)}. Réservez en ligne.`,
+      `${service.name} chez Sarielle Fashion : ${formatPrice(service)}, ${formatDuration(service.durationMinutes)}. Réservez en ligne.`,
     alternates: { canonical: `/coiffures/${service.slug}` },
     openGraph: {
-      title: `${service.name} | Hairstyle by Patricia`,
+      title: `${service.name} | Sarielle Fashion`,
       description,
       type: 'website',
       url: `/coiffures/${service.slug}`,
@@ -85,7 +85,7 @@ async function getSimilarServices(categorySlug: string, currentId: string) {
 }
 
 const REASSURANCES = [
-  { icon: MapPin, text: 'Patricia vous reçoit à Dakar, sur rendez-vous.' },
+  { icon: MapPin, text: 'Sarielle vous reçoit à Clausthal-Zellerfeld, sur rendez-vous.' },
   { icon: HandCoins, text: 'Paiement sur place, aucun paiement en ligne.' },
 ] as const;
 
@@ -295,7 +295,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
                 ) : null}
                 {photoPolicyLabel ? <li>{photoPolicyLabel}</li> : null}
                 {compatibility?.autoApprove ? null : (
-                  <li>Patricia vérifie les informations capillaires avant de confirmer.</li>
+                  <li>Sarielle vérifie les informations capillaires avant de confirmer.</li>
                 )}
                 {compatibility?.incompatibleMessage ? (
                   <li className="rounded-[var(--radius-sm)] bg-alert-soft px-3 py-2 text-alert">

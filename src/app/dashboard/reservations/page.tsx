@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import type { AppointmentStatus } from '@prisma/client';
 import { requireAdmin } from '@/modules/auth/guards';
 import { countAppointmentsByStatus, listAppointmentsAdmin } from '@/modules/reservations/queries';
-import { formatDuration, formatFcfa, formatFcfaOrPending } from '@/modules/reservations/format';
+import { formatDuration, formatEuro, formatEuroOrPending } from '@/modules/reservations/format';
 import {
   APPOINTMENT_STATUS_SHORT_LABELS,
   APPOINTMENT_STATUS_TONES,
@@ -125,7 +125,7 @@ export default async function ReservationsPage({
                     <p className="truncate font-semibold text-fg">{appointment.customerName}</p>
                     <p className="truncate text-sm text-muted">
                       {appointment.serviceName} · {formatDuration(appointment.durationMinutes)} ·{' '}
-                      {formatFcfaOrPending(appointment.priceCents)}
+                      {formatEuroOrPending(appointment.priceCents)}
                     </p>
                     {appointment.homeService ? (
                       <p className="mt-1 flex min-w-0 items-center gap-1.5 text-sm text-muted">
@@ -134,7 +134,7 @@ export default async function ReservationsPage({
                         </Badge>
                         <span className="truncate">
                           {appointment.homeAddress ?? 'Adresse non renseignée'} · déplacement{' '}
-                          {formatFcfa(appointment.travelFeeCents ?? 0)}
+                          {formatEuro(appointment.travelFeeCents ?? 0)}
                         </span>
                       </p>
                     ) : null}
