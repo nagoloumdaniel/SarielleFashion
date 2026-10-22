@@ -9,13 +9,13 @@ import { Button, ButtonLink } from '@/components/ui/Button';
 import { SocialLinks } from './SocialLinks';
 import { ThemeToggle } from './ThemeToggle';
 
-/* Navbar flottante en verre (web + mobile) : pilule détachée du bord, flou,
-   menu mobile déployé dans la même capsule. Règles : DESIGN-RULES.md. */
+/* Barre de navigation pleine largeur en verre (web + mobile), bordure basse,
+   menu mobile déployé dessous. Règles : DESIGN-RULES.md. */
 const LINKS = [
   { href: '/', label: 'Accueil' },
   { href: '/coiffures', label: 'Catalogue' },
   { href: '/faq', label: 'FAQ' },
-  { href: '/demandes-personnalisees', label: 'Sur mesure' },
+  { href: '/demandes-personnalisees', label: 'Demande spéciale' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -32,10 +32,10 @@ export function Header() {
   return (
     <>
       {/* Réserve la hauteur de la navbar fixe pour ne pas masquer le contenu. */}
-      <div aria-hidden="true" className="h-[4.75rem] md:h-24" />
+      <div aria-hidden="true" className="h-16 md:h-[4.5rem]" />
       <header className="nav-floating glass-strong" data-open={open}>
-        <div className="flex items-center justify-between gap-3 py-2 pl-5 pr-2.5 md:pr-3">
-          <Link href="/" className="shrink-0" aria-label="Hairstyle by Patricia, accueil">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6">
+          <Link href="/" className="shrink-0" aria-label="Sarielle Fashion, accueil">
             <Logo markClassName="h-8 w-auto text-fg" wordmarkClassName="hidden sm:inline" />
           </Link>
           <nav aria-label="Navigation principale" className="hidden items-center gap-1 md:flex">
@@ -49,7 +49,7 @@ export function Header() {
                   key={l.href}
                   href={l.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`rounded-full px-4 py-2 text-sm font-bold transition ${
+                  className={`rounded-[var(--radius-sm)] px-3.5 py-2 text-sm font-semibold transition ${
                     active ? 'bg-accent-soft text-fg' : 'text-fg hover:bg-accent-soft'
                   }`}
                 >
