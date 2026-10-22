@@ -14,7 +14,6 @@ import './globals.css';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  weight: ['300', '400', '500', '600', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
 });
@@ -22,7 +21,6 @@ const inter = Inter({
 const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-manrope',
-  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
