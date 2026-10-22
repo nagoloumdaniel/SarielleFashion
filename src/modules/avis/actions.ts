@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath, revalidateTag } from 'next/cache';
+import { after } from 'next/server';
 import { getClientIp } from '@/lib/client-ip';
 import { AppError } from '@/lib/errors';
 import { rateLimit } from '@/lib/rate-limit';
@@ -134,7 +135,9 @@ export async function submitReviewAction(
       comment: parsed.data.comment,
       photoKeys,
     });
-    refresh(slug);
+    // Après la réponse : une invalidation immédiate re-rendrait la page du lien (désormais « déjà
+    // envoyé ») et ferait disparaître le message de confirmation.
+    after(() => refresh(slug));
     return { success: SUCCESS_MESSAGE };
   } catch (error) {
     if (photoKeys.length > 0) await deletePrivateImages(photoKeys).catch(() => undefined);

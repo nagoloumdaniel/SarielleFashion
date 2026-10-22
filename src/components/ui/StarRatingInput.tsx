@@ -55,7 +55,7 @@ export function StarRatingInput({
               <Star
                 aria-hidden="true"
                 className={`size-7 transition-colors motion-reduce:transition-none ${
-                  n <= shown ? 'fill-current text-accent' : 'text-line'
+                  n <= shown ? 'fill-current text-accent' : 'text-muted/40'
                 }`}
               />
               <span className="sr-only">

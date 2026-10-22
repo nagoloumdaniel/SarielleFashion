@@ -23,7 +23,7 @@ export function Stars({
         <Star
           key={n}
           aria-hidden="true"
-          className={`${dimension} ${n <= rounded ? 'fill-current text-accent' : 'text-line'}`}
+          className={`${dimension} ${n <= rounded ? 'fill-current text-accent' : 'text-muted/40'}`}
         />
       ))}
     </span>
