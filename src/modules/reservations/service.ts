@@ -919,7 +919,7 @@ export async function cancelAppointmentByCustomer(input: {
   const policy = evaluateCancellationPolicy({
     startsAt: appointment.startsAt,
     now,
-    minCancelNoticeHours: (await getSalonSettingsForSlots()).minCancelNoticeHours,
+    minCancelNoticeMinutes: (await getSalonSettingsForSlots()).minCancelNoticeMinutes,
   });
   if (!policy.allowed) throw new AppError('CANCEL_WINDOW', policy.message, 409);
   assertTransition(appointment.status, 'CANCELLED_BY_CUSTOMER');

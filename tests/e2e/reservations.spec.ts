@@ -119,7 +119,7 @@ async function cleanup(): Promise<void> {
       where: { id: 1 },
       data: {
         holdSlotMinutes: originalSettings.holdSlotMinutes,
-        minCancelNoticeHours: originalSettings.minCancelNoticeHours,
+        minCancelNoticeMinutes: originalSettings.minCancelNoticeMinutes,
         reminderLeadHours: originalSettings.reminderLeadHours,
         bufferMinutes: originalSettings.bufferMinutes,
         slotIntervalMinutes: originalSettings.slotIntervalMinutes,
@@ -171,7 +171,7 @@ test.describe('Réservations, annulations et calendrier', () => {
       where: { id: 1 },
       update: {
         holdSlotMinutes: 30,
-        minCancelNoticeHours: 24,
+        minCancelNoticeMinutes: 30,
         bufferMinutes: 0,
         slotIntervalMinutes: 30,
         maxAdvanceDays: 60,
@@ -274,7 +274,7 @@ test.describe('Réservations, annulations et calendrier', () => {
     });
     pendingAppointmentId = pendingAppointment.id;
 
-    // Annulation hors délai : rendez-vous dans 2 heures.
+    // Annulation hors délai (30 min) : rendez-vous dans 20 minutes.
     const delayedCustomer = await db.customer.create({
       data: {
         name: 'Cliente Hors Délai E2E',
@@ -282,7 +282,7 @@ test.describe('Réservations, annulations et calendrier', () => {
         phone: '06 99 88 77 66',
       },
     });
-    const delayedStart = new Date(Date.now() + 2 * 3_600_000);
+    const delayedStart = new Date(Date.now() + 20 * 60_000);
     const delayedAppointment = await db.appointment.create({
       data: {
         customerId: delayedCustomer.id,
@@ -337,6 +337,8 @@ test.describe('Réservations, annulations et calendrier', () => {
     await fillBookingDetailsToSummary(page, '10:00', `${customerPrefix}-client@example.com`);
 
     await expect(page.getByText('Paiement sur place').last()).toBeVisible();
+    await expect(page.getByText(/en espèces ou par virement/)).toBeVisible();
+    await expect(page.getByText(/jusqu’à 30 minutes avant le rendez-vous/)).toBeVisible();
     await expect(page.getByText(/70[\s  ]*€/)).toBeVisible();
 
     await page.getByRole('button', { name: 'Confirmer ma réservation' }).click();
@@ -522,7 +524,7 @@ test.describe('Réservations, annulations et calendrier', () => {
     await expect(
       page.getByRole('heading', { name: 'Annulation en ligne indisponible' }),
     ).toBeVisible();
-    await expect(page.getByText(/moins de 24 h/)).toBeVisible();
+    await expect(page.getByText(/moins de 30 minutes/)).toBeVisible();
   });
 
   test('should allow only one of two simultaneous bookings on the same slot', async ({

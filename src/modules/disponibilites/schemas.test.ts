@@ -87,7 +87,7 @@ describe('settingsSchema', () => {
     expect(
       settingsSchema.safeParse({
         holdSlotMinutes: '30',
-        minCancelNoticeHours: '24',
+        minCancelNoticeMinutes: '30',
         reminderLeadHours: '24',
         bufferMinutes: '15',
         slotIntervalMinutes: '30',
@@ -104,7 +104,7 @@ describe('settingsSchema', () => {
     expect(
       settingsSchema.safeParse({
         holdSlotMinutes: '30',
-        minCancelNoticeHours: '24',
+        minCancelNoticeMinutes: '30',
         reminderLeadHours: '24',
         bufferMinutes: '0',
         slotIntervalMinutes: '2',

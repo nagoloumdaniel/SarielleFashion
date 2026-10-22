@@ -46,11 +46,6 @@ const openingHoursSchema = z
 const profileSchema = z.object({
   name: z.string().trim().min(2, 'Nom requis (2 caractères minimum).').max(120),
   contactEmail: z.string().trim().email('E-mail invalide.').max(200).or(z.literal('')),
-  phone: z
-    .string()
-    .trim()
-    .max(30)
-    .regex(/^(\+?[0-9][0-9 ().-]{5,29})?$/, 'Numéro invalide (ex. +49 151 23456789).'),
   address: z.string().trim().max(300),
   emailSignature: z.string().trim().max(1000),
   cancellationPolicy: z.string().trim().max(3000),
@@ -76,7 +71,6 @@ export async function adminSaveSalonProfile(
     const parsed = profileSchema.safeParse({
       name: text('name'),
       contactEmail: text('contactEmail'),
-      phone: text('phone'),
       address: text('address'),
       emailSignature: text('emailSignature'),
       cancellationPolicy: text('cancellationPolicy'),
@@ -124,7 +118,6 @@ export async function adminSaveSalonProfile(
     const data = {
       name: input.name,
       contactEmail: input.contactEmail || null,
-      phone: input.phone || null,
       address: input.address || null,
       openingHours,
       emailSignature: input.emailSignature || null,

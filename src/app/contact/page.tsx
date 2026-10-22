@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { ContactForm } from './ContactForm';
+import { getPublicHoursLines } from '@/lib/public-hours';
 import { SocialLinks } from '@/components/layout/SocialLinks';
 import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
@@ -10,7 +11,7 @@ import { Title } from '@/components/ui/Title';
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Contactez Sarielle Sarielle Fashion : questions, réservation, informations pratiques. Réponse rapide.',
+    'Contacte Sarielle Fashion : questions, réservation, informations pratiques. Réponse rapide.',
   alternates: { canonical: '/contact' },
 };
 
@@ -23,16 +24,12 @@ const INFOS = [
   {
     Icon: MapPin,
     title: 'Coiffure sur rendez-vous',
-    text: 'Sarielle vous reçoit à Clausthal-Zellerfeld.',
-  },
-  {
-    Icon: Clock,
-    title: 'Sur rendez-vous',
-    text: 'Selon les créneaux disponibles.',
+    text: 'Sarielle te reçoit à Clausthal-Zellerfeld.',
   },
 ] as const;
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const hoursLines = await getPublicHoursLines();
   return (
     <main className="page-main space-y-10">
       <nav aria-label="Fil d'Ariane" className="text-sm text-muted">
@@ -81,6 +78,22 @@ export default function ContactPage() {
                 </div>
               </li>
             ))}
+            <li className="flex gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-cacao shadow-soft">
+                <Clock aria-hidden="true" className="size-5" />
+              </span>
+              <div>
+                <p className="font-semibold text-fg">Horaires</p>
+                {hoursLines.map((line) => (
+                  <p key={line} className="text-sm text-muted">
+                    {line}
+                  </p>
+                ))}
+                <p className="text-sm text-muted">
+                  Sur rendez-vous, selon les créneaux disponibles.
+                </p>
+              </div>
+            </li>
           </ul>
 
           <div className="border-t border-line pt-5">

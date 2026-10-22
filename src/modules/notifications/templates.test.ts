@@ -21,6 +21,26 @@ describe('renderNotification', () => {
     expect(rendered?.text).toContain('Amina');
   });
 
+  it('should state on-site payment by cash or transfer in customer emails, never online payment', () => {
+    for (const key of [
+      'booking_received',
+      'booking_confirmed',
+      'booking_rescheduled',
+      'booking_reminder',
+    ]) {
+      const rendered = renderNotification(key, appointment);
+      expect(rendered?.html, key).toContain('Paiement sur place, en espèces ou par virement');
+      expect(rendered?.text, key).toContain('en espèces ou par virement');
+      expect(rendered?.html.toLowerCase(), key).not.toMatch(/paypal|carte bancaire|payer en ligne/);
+    }
+  });
+
+  it('should use the informal tone (tutoiement) in booking emails', () => {
+    const rendered = renderNotification('booking_confirmed', appointment);
+    expect(rendered?.html).toContain('ton rendez-vous');
+    expect(rendered?.html).not.toMatch(/votre|vous/i);
+  });
+
   it('should escape HTML from user-controlled values', () => {
     const rendered = renderNotification('booking_confirmed', appointment);
     expect(rendered?.html).not.toContain('<Test>');

@@ -1,3 +1,4 @@
+import { formatNoticeDelay } from '@/modules/reservations/policy';
 import { CalendarOff, ChevronRight, Settings } from 'lucide-react';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -34,7 +35,7 @@ export default async function SettingsPage() {
             </span>
             <span className="block text-sm text-muted">
               Rappel {settings.reminderLeadHours} h avant · annulation possible jusqu’à{' '}
-              {settings.minCancelNoticeHours} h avant
+              {formatNoticeDelay(settings.minCancelNoticeMinutes)} avant
             </span>
           </span>
           <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-muted" />

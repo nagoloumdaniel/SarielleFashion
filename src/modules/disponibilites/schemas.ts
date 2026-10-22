@@ -82,7 +82,7 @@ export const blockedPeriodSchema = z
 
 export const settingsSchema = z.object({
   holdSlotMinutes: z.coerce.number().int().min(0).max(1440),
-  minCancelNoticeHours: z.coerce.number().int().min(0).max(720),
+  minCancelNoticeMinutes: z.coerce.number().int().min(0).max(10080),
   reminderLeadHours: z.coerce.number().int().min(0).max(720),
   bufferMinutes: z.coerce.number().int().min(0).max(240),
   slotIntervalMinutes: z.coerce.number().int().min(5).max(120),

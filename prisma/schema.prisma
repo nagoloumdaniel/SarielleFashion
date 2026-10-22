@@ -650,34 +650,34 @@ model PromotionService {
 // ============================================================
 
 model SalonSettings {
-  id                   Int      @id @default(1)
-  name                 String   @default("Sarielle Fashion")
-  contactEmail         String?
-  phone                String?
-  address              String?
+  id                     Int      @id @default(1)
+  name                   String   @default("Sarielle Fashion")
+  contactEmail           String?
+  phone                  String?
+  address                String?
   // Horaires standards, ex. [{ "weekday": 1, "open": "09:00", "close": "18:00" }]
-  openingHours         Json?
-  holdSlotMinutes      Int      @default(30)
-  minCancelNoticeHours Int      @default(24)
-  reminderLeadHours    Int      @default(24)
+  openingHours           Json?
+  holdSlotMinutes        Int      @default(30)
+  minCancelNoticeMinutes Int      @default(30)
+  reminderLeadHours      Int      @default(24)
   // Réservation (§7, §8)
-  bufferMinutes        Int      @default(0)
-  slotIntervalMinutes  Int      @default(15)
-  maxAdvanceDays       Int      @default(60)
-  minLeadTimeMinutes   Int      @default(120)
-  cancelReasonRequired Boolean  @default(false)
+  bufferMinutes          Int      @default(0)
+  slotIntervalMinutes    Int      @default(15)
+  maxAdvanceDays         Int      @default(60)
+  minLeadTimeMinutes     Int      @default(120)
+  cancelReasonRequired   Boolean  @default(false)
   // Identité et communication (P8.4)
-  logoUrl              String?
-  emailSignature       String?
-  cancellationPolicy   String?
-  bookingPolicy        String?
+  logoUrl                String?
+  emailSignature         String?
+  cancellationPolicy     String?
+  bookingPolicy          String?
   // RGPD : conservation des données et des photos privées
-  dataRetentionMonths  Int      @default(36)
-  photoRetentionDays   Int      @default(90)
-  // Coiffure à domicile (option payante, frais de déplacement en 1/100 FCFA)
-  homeServiceEnabled   Boolean  @default(false)
-  travelFeeCents       Int      @default(0)
-  updatedAt            DateTime @updatedAt
+  dataRetentionMonths    Int      @default(36)
+  photoRetentionDays     Int      @default(90)
+  // Coiffure à domicile (option, frais de déplacement fixes en centimes d’euro)
+  homeServiceEnabled     Boolean  @default(false)
+  travelFeeCents         Int      @default(0)
+  updatedAt              DateTime @updatedAt
 }
 
 // Compteurs de limitation de débit partagés entre instances (serverless).

@@ -1,5 +1,7 @@
 'use client';
 
+import { PAYMENT_SHORT } from '@/modules/parametres/payment';
+import { formatNoticeDelay } from '@/modules/reservations/policy';
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,6 +22,7 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import type { BookableService } from '@/modules/reservations/queries';
 import type { PublicQuestion } from '@/modules/compatibilite/questions';
+import { travelFeeFromLabel } from '@/modules/parametres/home-service';
 import { addTravelFee } from '@/modules/reservations/pricing';
 import { HOME_ADDRESS_MAX, HOME_ADDRESS_MIN } from '@/modules/reservations/schemas';
 import { isQuestionAnswered, isQuestionVisible } from '@/modules/compatibilite/questions';
@@ -96,7 +99,7 @@ function localDateISO(date: Date): string {
 }
 
 interface BookingSettings {
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
   holdSlotMinutes: number;
   maxAdvanceDays: number;
   cancelReasonRequired: boolean;
@@ -494,12 +497,13 @@ export function BookingWizard({
                       Coiffure à domicile
                     </span>
                     <span className="text-sm text-muted">
-                      Option payante : Sarielle vient à votre adresse.
+                      Option payante : Sarielle vient à ton adresse. Frais de déplacement à ta
+                      charge.
                     </span>
                   </span>
                 </span>
                 <span className="whitespace-nowrap font-semibold text-cacao">
-                  +{formatCents(settings.travelFeeCents)}
+                  {travelFeeFromLabel(settings.travelFeeCents)}
                 </span>
               </label>
               {homeService ? (
@@ -512,7 +516,7 @@ export function BookingWizard({
                   maxLength={HOME_ADDRESS_MAX}
                   required
                   autoComplete="street-address"
-                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à votre charge."
+                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à ta charge."
                 />
               ) : null}
             </div>
@@ -920,9 +924,10 @@ export function BookingWizard({
 
           <div className="mt-4 rounded-[var(--radius-md)] bg-accent-soft px-4 py-3 text-sm text-fg">
             <p className="font-semibold">Paiement sur place</p>
+            <p className="mt-1">Tu règles toujours sur place, en espèces ou par virement.</p>
             <p className="mt-1">
-              Annulation en ligne possible jusqu’à {settings.minCancelNoticeHours} h avant le
-              rendez-vous.
+              Annulation en ligne possible jusqu’à{' '}
+              {formatNoticeDelay(settings.minCancelNoticeMinutes)} avant le rendez-vous.
             </p>
           </div>
 
@@ -1019,7 +1024,7 @@ export function BookingWizard({
               <dd className="font-semibold">{formatCents(bookingState.success.priceCents)}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-sm text-muted">Paiement sur place.</p>
+          <p className="mt-4 text-sm text-muted">{PAYMENT_SHORT}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href={bookingState.success.cancelUrl} variant="secondary" icon={Pencil}>
               Gérer ou annuler mon rendez-vous
