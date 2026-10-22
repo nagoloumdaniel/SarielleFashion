@@ -58,7 +58,7 @@
 - FAQ : questions sur 2 colonnes (md+) ; bloc « Une autre question » centré.
 - Champs : menu déroulant `Select`, calendrier `DateField`, heure `TimeField`, `DateTimeField` personnalisés (jamais de select/date natifs) ; icône dans chaque champ (`Input` en ajoute automatiquement selon type/nom).
 - Navbar : icônes réseaux sociaux (`SocialLinks`, react-icons) ; icônes via lucide-react, jamais d'emoji.
-- Landing `/` : AUCUNE image. Hero typographique clair (`.landing-hero`) : pastille lieu, titre display « Ton prochain look. Un style qui te ressemble. », sous-titre, boutons Réserver/Catalogue ; à droite index numéroté des 4 savoir-faire (`.landing-index`). Puis bandeau de chiffres clés, savoir-faire (cartes texte), plus réservées, étapes, à propos, bloc déplacement sombre, demande personnalisée, contact. Tutoiement partout.
+- Landing `/` : AUCUNE image, sauf la section « Mes réalisations » (6 dernières photos de la galerie, absente s'il n'y en a pas ; demande de la cliente). Hero typographique clair (`.landing-hero`) : pastille lieu, titre display « Ton prochain look. Un style qui te ressemble. », sous-titre, boutons Réserver/Catalogue ; à droite index numéroté des 4 savoir-faire (`.landing-index`). Puis bandeau de chiffres clés, savoir-faire (cartes texte), plus réservées, étapes, à propos, bloc déplacement sombre, demande personnalisée, contact. Tutoiement partout.
 - Horaires : Lundi – Dimanche, 5h – 22h (partout). Landing : mêmes polices que le reste du site (Manrope + Inter), aucune exception.
 - Boutons « Réserver » (navbar, landing, contact, infos) → `/coiffures`. `/reserver` sans `?service=` redirige vers le catalogue (plus de liste de noms) ; `/reserver?service=slug` reste le parcours de réservation.
 - Dashboard admin : SANS navbar publique ni footer (masqués sous `/dashboard`). Sidebar avec icônes lucide, « Voir le site » et bascule de thème ; chaque titre de page dashboard a son icône.
@@ -75,3 +75,6 @@
   - Icône dans chaque champ (`Input`, `Select icon`, `Textarea`).
   - Popups : `Modal` (portail, fond flouté, bouton ✕, Échap, clic extérieur, focus piégé, page non scrollable derrière). Pas de `window.confirm` : utiliser `useConfirm()` (`src/components/ui/Confirm.tsx`).
   - En-tête de page : `PageHeader` (icône + titre + description + actions).
+- **Avis et galerie (consignes cliente)** :
+  - Avis publiés immédiatement, sans modération ; l'admin les supprime (`useConfirm`). Étoiles 1-5 (`StarRatingInput`, `Stars`), commentaire facultatif, 3 photos max, badge « Client vérifié » pour les avis par lien e-mail. Moyenne + nombre d'avis sur `PrestationCard` et la fiche (masqués sans avis, jamais de note inventée). Tutoiement.
+  - Galerie : `/galerie` (grille + `Lightbox` accessible clavier), pas de zoom au survol. Dashboard : ajout direct, légende/prestation facultatives, plus de consentement.

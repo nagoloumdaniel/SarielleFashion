@@ -19,7 +19,7 @@ Sarielle Fashion, salon de coiffure. Contact vie privée : adresse e-mail config
 | Journaux d'audit       | identifiant utilisateur, action, entité                                              | sécurité et traçabilité                     | intérêt légitime                        | durée de conservation de sécurité à valider                                  | Sarielle, Neon                 |
 | Thème et session       | cookie de session, préférence de thème                                               | fonctionnement de l'interface               | nécessaire au service                   | session, préférence locale                                                   | navigateur                     |
 
-Purge automatique (cron de rétention) : avis non publiés (en attente, soumis non modérés, rejetés) après 12 mois ; notifications internes lues après 6 mois ; e-mails définitivement en échec après 3 mois. Les avis publiés ne sont jamais purgés automatiquement.
+Purge automatique (cron de rétention) : demandes d'avis restées sans réponse après 12 mois ; notifications internes lues après 6 mois ; e-mails définitivement en échec après 3 mois. Les avis soumis (publiés dès leur envoi, sans modération) ne sont jamais purgés automatiquement : l'admin peut les supprimer, et ils disparaissent avec la fiche d'une cliente effacée. Un avis libre ne conserve que le prénom et l'initiale affichés (aucune adresse e-mail).
 
 Durées paramétrables : `dataRetentionMonths` (36 mois par défaut) et `photoRetentionDays` (90 jours par défaut) dans les paramètres du salon.
 
