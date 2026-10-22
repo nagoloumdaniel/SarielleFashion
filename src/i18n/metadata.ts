@@ -9,6 +9,11 @@ export function languageAlternates(locale: Locale, path: string): Metadata['alte
   return { canonical: absoluteUrl(locale, path), languages };
 }
 
+/** Image Open Graph/Twitter par langue (/opengraph-image en français, /de/opengraph-image en allemand). */
+export function socialImages(locale: Locale, alt: string) {
+  return [{ url: localePath(locale, '/opengraph-image'), width: 1200, height: 630, alt }];
+}
+
 /** Métadonnées localisées d'une page : titre/description uniques par langue + canonical/hreflang + OG/Twitter. */
 export function pageMetadata({
   locale,
@@ -38,8 +43,14 @@ export function pageMetadata({
       siteName: 'Sarielle Fashion',
       title,
       description,
+      images: socialImages(locale, title),
     },
-    twitter: { card: 'summary_large_image', title, description },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: socialImages(locale, title),
+    },
     ...(noindex ? { robots: { index: false, follow: false } } : {}),
   };
 }

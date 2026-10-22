@@ -1,0 +1,16 @@
+{
+  "name": "Sarielle Fashion",
+  "short_name": "Sarielle",
+  "description": "Coiffure, make-up, lace et cils à Clausthal-Zellerfeld. Frisuren, Make-up, Lace und Wimpern.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "fr",
+  "background_color": "#fff8f7",
+  "theme_color": "#fff8f7",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

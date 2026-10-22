@@ -1,7 +1,7 @@
 /* FAQ : questions fixes (l'option à domicile est ajoutée dynamiquement par la page). */
 export const faq = {
   meta: {
-    title: 'FAQ',
+    title: 'Questions fréquentes (FAQ)',
     description:
       "Questions fréquentes sur les prestations, la réservation, l'annulation et les cheveux avec Sarielle Fashion.",
   },
