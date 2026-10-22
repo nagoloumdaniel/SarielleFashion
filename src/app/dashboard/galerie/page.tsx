@@ -30,7 +30,6 @@ export default async function GaleriePage({
       id: photo.id,
       url: await getImageSignedUrl(photo.key, 3600).catch(() => null),
       alt: photo.alt,
-      consentConfirmed: photo.consentConfirmed,
       published: photo.published,
       serviceId: photo.service?.id ?? '',
       serviceName: photo.service?.name ?? null,

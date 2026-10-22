@@ -32,6 +32,7 @@ function handleError(error: unknown): GalleryActionState {
 function revalidate() {
   revalidatePath('/dashboard/galerie');
   revalidatePath('/galerie');
+  revalidatePath('/');
 }
 
 /** Nombre maximal de photos par envoi (la limite d'une requête serveur est de 20 Mo, 5 Mo par photo). */
@@ -53,10 +54,6 @@ export async function adminUploadGalleryPhoto(
   }
   if (!isStorageConfigured()) return { error: getStorageConfigurationHint() };
 
-  const consentConfirmed = formData.get('consentConfirmed') === 'on';
-  if (!consentConfirmed) {
-    return { error: 'La confirmation d’autorisation de la cliente est obligatoire.' };
-  }
   const serviceId = String(formData.get('serviceId') ?? '').trim() || null;
   const alt = String(formData.get('alt') ?? '')
     .trim()
@@ -79,7 +76,7 @@ export async function adminUploadGalleryPhoto(
       await uploadImageObject({ key, body: bytes, contentType: validated.mime });
       try {
         await db.galleryPhoto.create({
-          data: { key, alt, serviceId, consentConfirmed: true, published: false },
+          data: { key, alt, serviceId, published: true },
         });
       } catch (databaseError) {
         // Pas d'objet orphelin si l'écriture en base échoue.
@@ -103,7 +100,7 @@ export async function adminUploadGalleryPhoto(
   }
   if (added === 0) return { error: lastError ?? 'Envoi impossible.' };
   const base =
-    added === 1 ? 'Photo ajoutée (non publiée).' : `${added} photos ajoutées (non publiées).`;
+    added === 1 ? 'Photo ajoutée à la galerie.' : `${added} photos ajoutées à la galerie.`;
   return lastError
     ? { success: `${base} ${files.length - added} photo(s) refusée(s) : ${lastError}` }
     : { success: base };
@@ -120,15 +117,10 @@ export async function adminUpdateGalleryPhoto(
     id: formData.get('id'),
     serviceId: formData.get('serviceId'),
     alt: formData.get('alt'),
-    consentConfirmed: formData.get('consentConfirmed'),
     published: formData.get('published'),
   });
   if (!parsed.success) return { error: 'Données invalides.' };
   const input = parsed.data;
-
-  if (input.published && !input.consentConfirmed) {
-    return { error: 'Impossible de publier sans confirmation d’autorisation de la cliente.' };
-  }
 
   try {
     await db.galleryPhoto.update({
@@ -136,7 +128,6 @@ export async function adminUpdateGalleryPhoto(
       data: {
         serviceId: input.serviceId || null,
         alt: input.alt,
-        consentConfirmed: input.consentConfirmed,
         published: input.published,
       },
     });

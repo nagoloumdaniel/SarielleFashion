@@ -25,6 +25,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/galerie" className="opacity-80 hover:opacity-100 hover:underline">
+                Réalisations
+              </Link>
+            </li>
+            <li>
               <Link href="/faq" className="opacity-80 hover:opacity-100 hover:underline">
                 FAQ
               </Link>

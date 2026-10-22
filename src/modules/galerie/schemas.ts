@@ -10,10 +10,6 @@ export const galleryPhotoMetaSchema = z.object({
   id: z.string().trim().min(1).max(64),
   serviceId: z.string().trim().max(64).optional().default(''),
   alt: z.string().trim().max(200).optional().default(''),
-  consentConfirmed: z.preprocess(
-    (value) => value === 'on' || value === 'true' || value === true,
-    z.boolean(),
-  ),
   published: z.preprocess(
     (value) => value === 'on' || value === 'true' || value === true,
     z.boolean(),
