@@ -3,6 +3,7 @@ import {
   MAX_TRAVEL_FEE_EUR,
   eurosToCents,
   homeServiceSentence,
+  travelFeeFromLabel,
   homeServiceSettingsSchema,
 } from './home-service';
 
@@ -60,17 +61,24 @@ describe('homeServiceSentence', () => {
   it('should announce the option with the extra travel fee', () => {
     const sentence = homeServiceSentence(500000);
     expect(sentence).toContain('Coiffure à domicile possible en option');
-    expect(sentence).toContain('frais de déplacement en supplément');
-    expect(sentence).toMatch(/5\s000/);
+    expect(sentence).toContain('frais de déplacement à ta charge');
+    expect(sentence).toMatch(/à partir de 5\s000/);
   });
 
   it('should not claim extra fees when the travel is free', () => {
     const sentence = homeServiceSentence(0);
     expect(sentence).toContain('Coiffure à domicile possible en option');
-    expect(sentence).not.toContain('en supplément');
+    expect(sentence).not.toContain('à partir de');
+    expect(sentence).not.toContain('à ta charge');
   });
 
   it('should never state that Sarielle travels as a general rule', () => {
     expect(homeServiceSentence(500000)).not.toMatch(/se déplace chez vous/i);
+  });
+});
+
+describe('travelFeeFromLabel', () => {
+  it('should announce a fixed amount as a starting price', () => {
+    expect(travelFeeFromLabel(1500)).toMatch(/^à partir de 15\s€$/);
   });
 });

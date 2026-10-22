@@ -21,6 +21,8 @@ import { ButtonLink } from '@/components/ui/Button';
 import { PrestationCard } from '@/components/catalogue/PrestationCard';
 import { bookingHref, formatDuration, formatPrice, serviceImages } from '@/lib/catalogue';
 import { getCachedPopularServices } from '@/lib/popular-services';
+import { getCachedSalonSettings } from '@/lib/public-cache';
+import { travelFeeFromLabel } from '@/modules/parametres/home-service';
 
 export const metadata: Metadata = {
   title: { absolute: 'Sarielle Fashion | Coiffure, make-up, lace et cils à Clausthal-Zellerfeld' },
@@ -85,8 +87,25 @@ const steps = [
   },
 ];
 
+/* Montant des frais de déplacement annoncé seulement si l'option à domicile est activée. */
+async function loadTravelNote(): Promise<string> {
+  try {
+    const settings = await getCachedSalonSettings();
+    if (settings.homeServiceEnabled && settings.travelFeeCents > 0) {
+      return ` Les frais de déplacement sont à ta charge : ${travelFeeFromLabel(settings.travelFeeCents)}.`;
+    }
+  } catch (error) {
+    console.error('[accueil] paramètres illisibles, frais de déplacement non annoncés', error);
+  }
+  return ' Les frais de déplacement sont à ta charge et indiqués avant la réservation.';
+}
+
 export default async function HomePage() {
-  const [reviews, popular] = await Promise.all([getApprovedReviews(3), getCachedPopularServices()]);
+  const [reviews, popular, travelNote] = await Promise.all([
+    getApprovedReviews(3),
+    getCachedPopularServices(),
+    loadTravelNote(),
+  ]);
   return (
     <main>
       {/* Hero typographique (aucune image) : grand titre, index des savoir-faire à droite. */}
@@ -283,8 +302,8 @@ export default async function HomePage() {
               À Clausthal-Zellerfeld, ou chez toi.
             </h2>
             <p className="leading-relaxed opacity-80">
-              Je peux aussi venir à toi, pour un événement ou simplement par confort. Les frais de
-              déplacement sont à ta charge et indiqués avant la réservation.
+              Je peux aussi venir à toi, pour un événement ou simplement par confort.
+              {travelNote}
             </p>
           </div>
           <ButtonLink href="/contact" variant="onDark" icon={Mail} className="shrink-0">

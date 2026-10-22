@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import type { BookableService } from '@/modules/reservations/queries';
 import type { PublicQuestion } from '@/modules/compatibilite/questions';
+import { travelFeeFromLabel } from '@/modules/parametres/home-service';
 import { addTravelFee } from '@/modules/reservations/pricing';
 import { HOME_ADDRESS_MAX, HOME_ADDRESS_MIN } from '@/modules/reservations/schemas';
 import { isQuestionAnswered, isQuestionVisible } from '@/modules/compatibilite/questions';
@@ -496,12 +497,13 @@ export function BookingWizard({
                       Coiffure à domicile
                     </span>
                     <span className="text-sm text-muted">
-                      Option payante : Sarielle vient à votre adresse.
+                      Option payante : Sarielle vient à ton adresse. Frais de déplacement à ta
+                      charge.
                     </span>
                   </span>
                 </span>
                 <span className="whitespace-nowrap font-semibold text-cacao">
-                  +{formatCents(settings.travelFeeCents)}
+                  {travelFeeFromLabel(settings.travelFeeCents)}
                 </span>
               </label>
               {homeService ? (
@@ -514,7 +516,7 @@ export function BookingWizard({
                   maxLength={HOME_ADDRESS_MAX}
                   required
                   autoComplete="street-address"
-                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à votre charge."
+                  hint="Où Sarielle doit venir (rue, quartier, repère). Frais de déplacement à ta charge."
                 />
               ) : null}
             </div>

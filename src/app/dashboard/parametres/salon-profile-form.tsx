@@ -201,7 +201,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
               value={travelFee}
               onChange={(event) => setTravelFee(event.target.value)}
               error={errors.travelFeeEur}
-              hint="À la charge de la cliente, ajoutés au prix de la prestation. 0 = déplacement offert."
+              hint="Montant fixe annoncé « à partir de X € » au public et ajouté au prix de la prestation, à la charge de la cliente. 0 = déplacement offert."
             />
           </div>
           <p className="text-sm text-muted">
