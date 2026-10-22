@@ -11,7 +11,7 @@ export interface SalonSettingsData {
   phone: string | null;
   address: string | null;
   holdSlotMinutes: number;
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
   reminderLeadHours: number;
   bufferMinutes: number;
   slotIntervalMinutes: number;
@@ -37,7 +37,7 @@ export const DEFAULT_SALON_SETTINGS: SalonSettingsData = {
   phone: null,
   address: null,
   holdSlotMinutes: 30,
-  minCancelNoticeHours: 24,
+  minCancelNoticeMinutes: 30,
   reminderLeadHours: 24,
   bufferMinutes: 0,
   slotIntervalMinutes: 15,
@@ -62,7 +62,7 @@ export function mapSalonSettings(row: SalonSettings): SalonSettingsData {
     phone: row.phone,
     address: row.address,
     holdSlotMinutes: row.holdSlotMinutes,
-    minCancelNoticeHours: row.minCancelNoticeHours,
+    minCancelNoticeMinutes: row.minCancelNoticeMinutes,
     reminderLeadHours: row.reminderLeadHours,
     bufferMinutes: row.bufferMinutes,
     slotIntervalMinutes: row.slotIntervalMinutes,

@@ -7,6 +7,7 @@ import { formatOpeningHours } from '@/modules/parametres/hours';
 import { getCachedSalonSettings } from '@/lib/public-cache';
 import { DEFAULT_SALON_SETTINGS, type SalonSettingsData } from '@/modules/disponibilites/queries';
 import { resolveBookingPolicy, splitParagraphs } from '@/modules/parametres/policies';
+import { formatNoticeDelay } from '@/modules/reservations/policy';
 import { homeServiceSentence } from '@/modules/parametres/home-service';
 
 export const metadata: Metadata = {
@@ -22,16 +23,16 @@ const preparation = [
   'Apporte une photo ou une inspiration du résultat souhaité si tu en as une.',
 ];
 
-function buildCancellationRules(hours: number) {
-  const delay = hours > 0 ? `${hours} heures` : 'le délai prévu';
+function buildCancellationRules(minutes: number) {
+  const delay = minutes > 0 ? formatNoticeDelay(minutes) : 'le délai prévu';
   return [
     {
       label: 'Annulation à temps',
-      description: `Tu peux annuler ou déplacer ton rendez-vous gratuitement jusqu’à ${delay} avant l’heure convenue, via le lien sécurisé reçu par e-mail.`,
+      description: `Tu peux annuler ton rendez-vous gratuitement en ligne jusqu’à ${delay} avant l’heure convenue, via le lien sécurisé reçu par e-mail.`,
     },
     {
       label: 'Annulation tardive',
-      description: `Passé le délai de ${delay}, l’annulation est prise en compte mais le créneau ne peut plus être proposé à d’autres personnes. Contacte-moi directement pour étudier ta situation.`,
+      description: `Passé le délai de ${delay}, le lien d’annulation ne fonctionne plus et le créneau ne peut plus être proposé à d’autres personnes. Contacte Sarielle directement pour étudier ta situation.`,
     },
     {
       label: 'Absence',
@@ -68,7 +69,7 @@ export default async function InfosPratiquesPage() {
   const customCancellation = settings.cancellationPolicy?.trim() ?? '';
   const cancellationRules = customCancellation
     ? null
-    : buildCancellationRules(settings.minCancelNoticeHours);
+    : buildCancellationRules(settings.minCancelNoticeMinutes);
   const bookingParagraphs = splitParagraphs(resolveBookingPolicy(settings.bookingPolicy));
   return (
     <main className="page-main space-y-12">

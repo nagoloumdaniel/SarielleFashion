@@ -1,5 +1,6 @@
 'use client';
 
+import { formatNoticeDelay } from '@/modules/reservations/policy';
 import {
   ArrowLeft,
   ArrowRight,
@@ -96,7 +97,7 @@ function localDateISO(date: Date): string {
 }
 
 interface BookingSettings {
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
   holdSlotMinutes: number;
   maxAdvanceDays: number;
   cancelReasonRequired: boolean;
@@ -920,9 +921,10 @@ export function BookingWizard({
 
           <div className="mt-4 rounded-[var(--radius-md)] bg-accent-soft px-4 py-3 text-sm text-fg">
             <p className="font-semibold">Paiement sur place</p>
+            <p className="mt-1">Tu règles toujours sur place, en espèces ou par virement.</p>
             <p className="mt-1">
-              Annulation en ligne possible jusqu’à {settings.minCancelNoticeHours} h avant le
-              rendez-vous.
+              Annulation en ligne possible jusqu’à{' '}
+              {formatNoticeDelay(settings.minCancelNoticeMinutes)} avant le rendez-vous.
             </p>
           </div>
 

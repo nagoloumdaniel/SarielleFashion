@@ -12,12 +12,12 @@ describe('resolveCancellationPolicy', () => {
   });
 
   it('should fall back to a sober default using the notice delay', () => {
-    expect(resolveCancellationPolicy(null, 48)).toContain('48 heures');
-    expect(resolveCancellationPolicy('   ', 24)).toContain('24 heures');
+    expect(resolveCancellationPolicy(null, 30)).toContain('30 minutes');
+    expect(resolveCancellationPolicy('   ', 1440)).toContain('24 heures');
   });
 
   it('should not mention a delay when there is no minimum notice', () => {
-    expect(resolveCancellationPolicy('', 0)).not.toMatch(/0 heures/);
+    expect(resolveCancellationPolicy('', 0)).not.toMatch(/0 (minutes|heures)/);
   });
 });
 
@@ -26,13 +26,16 @@ describe('resolveBookingPolicy', () => {
     expect(resolveBookingPolicy('Acompte de 5 000 EUR.')).toBe('Acompte de 5 000 EUR.');
   });
 
-  it('should fall back to a default mentioning on-site payment', () => {
-    expect(resolveBookingPolicy(null)).toContain('Paiement sur place');
+  it('should fall back to a default mentioning on-site payment by cash or transfer', () => {
+    const text = resolveBookingPolicy(null);
+    expect(text).toContain('sur place');
+    expect(text).toContain('espèces');
+    expect(text).toContain('virement');
   });
 
   it('should never mention a salon', () => {
     expect(resolveBookingPolicy(null).toLowerCase()).not.toContain('salon');
-    expect(resolveCancellationPolicy(null, 24).toLowerCase()).not.toContain('salon');
+    expect(resolveCancellationPolicy(null, 30).toLowerCase()).not.toContain('salon');
   });
 });
 
@@ -48,10 +51,10 @@ describe('emailContextFromSettings', () => {
       emailSignature: ' Sarielle ',
       cancellationPolicy: null,
       bookingPolicy: 'Acompte.',
-      minCancelNoticeHours: 12,
+      minCancelNoticeMinutes: 90,
     });
     expect(ctx.signature).toBe('Sarielle');
-    expect(ctx.cancellationPolicy).toContain('12 heures');
+    expect(ctx.cancellationPolicy).toContain('1 h 30');
     expect(ctx.bookingPolicy).toBe('Acompte.');
   });
 });

@@ -55,12 +55,12 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
   const tokenValid = isCancellationTokenValid(appointment.cancelTokenExpiresAt, now);
   const active = isActiveAppointmentStatus(appointment.status);
   const policyParagraphs = splitParagraphs(
-    resolveCancellationPolicy(settings.cancellationPolicy, settings.minCancelNoticeHours),
+    resolveCancellationPolicy(settings.cancellationPolicy, settings.minCancelNoticeMinutes),
   );
   const policy = evaluateCancellationPolicy({
     startsAt: appointment.startsAt,
     now,
-    minCancelNoticeHours: settings.minCancelNoticeHours,
+    minCancelNoticeMinutes: settings.minCancelNoticeMinutes,
   });
 
   return (

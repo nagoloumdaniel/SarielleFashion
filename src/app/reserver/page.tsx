@@ -57,7 +57,7 @@ export default async function ReserverPage({
       <BookingWizard
         service={service}
         settings={{
-          minCancelNoticeHours: settings.minCancelNoticeHours,
+          minCancelNoticeMinutes: settings.minCancelNoticeMinutes,
           holdSlotMinutes: settings.holdSlotMinutes,
           maxAdvanceDays: settings.maxAdvanceDays,
           cancelReasonRequired: settings.cancelReasonRequired,

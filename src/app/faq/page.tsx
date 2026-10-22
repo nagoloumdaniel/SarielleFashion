@@ -55,7 +55,7 @@ const faqItems = [
     id: 'annulation',
     title: 'Quelle est la politique d’annulation ?',
     content:
-      'Tu peux annuler ou déplacer ton rendez-vous gratuitement jusqu’à 24 heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai ou en cas d’absence, les conditions détaillées dans les informations pratiques s’appliquent.',
+      'Tu peux annuler ton rendez-vous gratuitement en ligne jusqu’à 30 minutes avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, le lien ne fonctionne plus : contacte Sarielle directement. Les conditions détaillées dans les informations pratiques s’appliquent.',
   },
   {
     id: 'options',
