@@ -31,7 +31,7 @@ async function loadEmailContext(): Promise<EmailContext> {
       emailSignature: null,
       cancellationPolicy: null,
       bookingPolicy: null,
-      minCancelNoticeHours: 24,
+      minCancelNoticeMinutes: 30,
     });
   }
 }

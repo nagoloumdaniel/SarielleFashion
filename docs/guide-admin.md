@@ -52,7 +52,7 @@ Nombre de réservations, annulations, rendez-vous terminés, prestations les plu
 
 ## Paramètres du salon
 
-Identité du salon, e-mail et téléphone de contact, adresse, horaires affichés publiquement, règles d'annulation (délai minimal, motif obligatoire), délai de réservation et de rappel automatique.
+Identité du salon, e-mail de contact, adresse, horaires affichés publiquement, règles d'annulation (délai minimal en minutes, 30 par défaut ; motif obligatoire), coiffure à domicile (frais de déplacement fixes, annoncés « à partir de X € »), délai de réservation et de rappel automatique. Le paiement se fait toujours sur place (espèces ou virement).
 
 ## Notifications
 

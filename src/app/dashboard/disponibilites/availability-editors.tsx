@@ -52,7 +52,7 @@ export interface BlockedPeriodView {
 
 export interface BookingSettingsView {
   holdSlotMinutes: number;
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
   reminderLeadHours: number;
   bufferMinutes: number;
   slotIntervalMinutes: number;
@@ -423,12 +423,13 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
           hint="0 = pas de libération automatique."
         />
         <Input
-          label="Délai minimum d’annulation (h)"
-          name="minCancelNoticeHours"
+          label="Délai minimum d’annulation (min)"
+          name="minCancelNoticeMinutes"
           type="number"
           min={0}
-          max={720}
-          defaultValue={settings.minCancelNoticeHours}
+          max={10080}
+          defaultValue={settings.minCancelNoticeMinutes}
+          hint="Annulation en ligne possible jusqu’à ce délai avant le rendez-vous (30 par défaut)."
         />
         <Input
           label="Rappel avant rendez-vous (h)"

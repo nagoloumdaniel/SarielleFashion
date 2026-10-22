@@ -1,10 +1,7 @@
-import type { IconType } from 'react-icons';
+import { SOCIALS, type Social } from './socials';
 
-/* Réseaux sociaux (icônes). Remplacer les URL par les comptes réels de Sarielle. */
-export type Social = { href: string; label: string; Icon: IconType };
-
-/* Aucun compte renseigné pour l'instant : ajouter { href, label, Icon } ici. */
-export const SOCIALS: readonly Social[] = [];
+export { SOCIALS };
+export type { Social };
 
 export function SocialLinks({ className = '' }: { className?: string }) {
   if (SOCIALS.length === 0) return null;

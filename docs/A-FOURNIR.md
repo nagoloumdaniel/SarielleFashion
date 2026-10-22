@@ -1,30 +1,22 @@
 # Infos à fournir pour finaliser Sarielle Fashion
 
-Ce qui est déjà fait : logo et icônes, palette rouge, Manrope + Inter, landing sans image, e-mail de contact et d'admin (`sarielletalla@gmail.com`), euro, fuseau `Europe/Berlin`, textes de la page d'accueil (5 ans, ≈ 30 clientes/mois, 4 savoir-faire, femmes/hommes/enfants/événements, déplacement à la charge du client, tutoiement).
+Ce qui est déjà fait ou décidé par la cliente : logo et icônes, palette rouge, Manrope + Inter, landing sans image, e-mail de contact et d'admin (`sarielletalla@gmail.com`), euro (aucune taxe affichée), fuseau `Europe/Berlin`, marque et nom légal « Sarielle Fashion », aucun téléphone du salon affiché, TikTok (`@sarielle6`), horaires Lundi - Dimanche 5h - 22h, mentions légales simples (e-mail, Clausthal-Zellerfeld, Allemagne, hébergement), paiement toujours sur place (espèces ou virement), délai d'annulation de 30 minutes, déplacement à la charge du client avec montant fixe annoncé « à partir de X € », module de compatibilité capillaire conservé, textes de la page d'accueil (5 ans, ≈ 30 clientes/mois, 4 savoir-faire, femmes/hommes/enfants/événements, tutoiement).
 
 ## 1. Identité et contact
 
-- Nom exact de la marque (aujourd'hui : « Sarielle Fashion ») et nom légal de la responsable.
-- Adresse complète à Clausthal-Zellerfeld (rue, n°, code postal) : lieu de réception des clientes.
-- Téléphone / WhatsApp (format +49 …).
-- Comptes de réseaux sociaux (Instagram, TikTok, Facebook…) : aucun n'est affiché tant qu'ils ne sont pas fournis.
-- Horaires d'ouverture et jours de repos (aucun horaire n'est affiché aujourd'hui, par honnêteté).
+- Adresse complète à Clausthal-Zellerfeld (rue, n°, code postal) : lieu de réception des clientes (aujourd'hui : « Clausthal-Zellerfeld, Allemagne »).
+- Autres réseaux sociaux éventuels (Instagram, Facebook…) : seul TikTok est affiché.
 
-## 2. Obligations légales (Allemagne)
+## 2. Données personnelles
 
-- Impressum (§ 5 DDG) : nom, adresse, e-mail, statut (Einzelunternehmen / Gewerbe), Steuernummer ou USt-IdNr.
-- TVA : petite entreprise (§ 19 UStG, « keine Umsatzsteuer ») ou assujettie ? Sert aux mentions de prix.
-- Données personnelles (DSGVO) : hébergeurs réellement utilisés, durée de conservation souhaitée.
+- DSGVO : hébergeurs réellement utilisés, durée de conservation souhaitée.
 - Faut-il une version allemande du site en plus du français ? (clientèle locale)
 
 ## 3. Prestations et tarifs
 
 - Liste des prestations par catégorie (coiffure femme / homme / enfant, make-up, pose de lace, cils, événements) : nom, description, prix en euros, durée.
 - Options payantes éventuelles (soins, longueurs, accessoires).
-- Frais de déplacement : montant fixe ou selon la distance, rayon maximum.
-- Moyens de paiement acceptés (espèces, PayPal, virement…) et acompte éventuel.
-- Délai d'annulation gratuite (24 h par défaut).
-- Module « compatibilité capillaire » (questions sur la longueur / les locs) : le garder, l'adapter ou le retirer ?
+- Montant des frais de déplacement (fixe), à saisir dans Dashboard > Paramètres si l'option « à domicile » est activée.
 
 ## 4. Contenus
 

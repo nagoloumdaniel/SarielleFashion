@@ -8,10 +8,9 @@ import { db } from '@/lib/db';
 export interface SalonSettingsData {
   name: string;
   contactEmail: string | null;
-  phone: string | null;
   address: string | null;
   holdSlotMinutes: number;
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
   reminderLeadHours: number;
   bufferMinutes: number;
   slotIntervalMinutes: number;
@@ -34,10 +33,9 @@ export interface SalonSettingsData {
 export const DEFAULT_SALON_SETTINGS: SalonSettingsData = {
   name: 'Sarielle Fashion',
   contactEmail: null,
-  phone: null,
   address: null,
   holdSlotMinutes: 30,
-  minCancelNoticeHours: 24,
+  minCancelNoticeMinutes: 30,
   reminderLeadHours: 24,
   bufferMinutes: 0,
   slotIntervalMinutes: 15,
@@ -59,10 +57,9 @@ export function mapSalonSettings(row: SalonSettings): SalonSettingsData {
   return {
     name: row.name,
     contactEmail: row.contactEmail,
-    phone: row.phone,
     address: row.address,
     holdSlotMinutes: row.holdSlotMinutes,
-    minCancelNoticeHours: row.minCancelNoticeHours,
+    minCancelNoticeMinutes: row.minCancelNoticeMinutes,
     reminderLeadHours: row.reminderLeadHours,
     bufferMinutes: row.bufferMinutes,
     slotIntervalMinutes: row.slotIntervalMinutes,

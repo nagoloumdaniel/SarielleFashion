@@ -4,34 +4,10 @@
  * horaires) dans les résultats enrichis.
  */
 
-export interface LocalBusinessData {
-  name: string;
-  address: {
-    streetAddress: string;
-    addressLocality: string;
-    addressRegion: string;
-    addressCountry: string;
-  };
-  email: string;
-  priceRange: string;
-  servesCity: string;
-  openingHours: Array<{ dayOfWeek: string; opens: string; closes: string }>;
-}
+import { LOCAL_BUSINESS, type LocalBusinessData } from './local-business-data';
 
-export const LOCAL_BUSINESS: LocalBusinessData = {
-  name: 'Sarielle Fashion',
-  address: {
-    streetAddress: 'Clausthal-Zellerfeld',
-    addressLocality: 'Clausthal-Zellerfeld',
-    addressRegion: 'Basse-Saxe',
-    addressCountry: 'DE',
-  },
-  email: 'sarielletalla@gmail.com',
-  priceRange: '€€',
-  servesCity: 'Clausthal-Zellerfeld',
-  // Horaires non communiqués : à renseigner dès qu'ils sont connus (aucune valeur inventée).
-  openingHours: [],
-};
+export { LOCAL_BUSINESS };
+export type { LocalBusinessData };
 
 /**
  * Génère le bloc JSON-LD LocalBusiness.

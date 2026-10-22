@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
 import { getCachedSalonSettings } from '@/lib/public-cache';
 import { homeServiceSentence } from '@/modules/parametres/home-service';
+import { PAYMENT_SENTENCE } from '@/modules/parametres/payment';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -52,10 +53,15 @@ const faqItems = [
       'Les prix dépendent de la longueur, de la densité et de la complexité de la coiffure. Le catalogue affiche un prix de départ ou une fourchette. Le tarif final est toujours confirmé avant de commencer la prestation.',
   },
   {
+    id: 'paiement',
+    title: 'Comment et quand puis-je payer ?',
+    content: `${PAYMENT_SENTENCE} Le tarif final est confirmé avant de commencer la prestation.`,
+  },
+  {
     id: 'annulation',
     title: 'Quelle est la politique d’annulation ?',
     content:
-      'Tu peux annuler ou déplacer ton rendez-vous gratuitement jusqu’à 24 heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai ou en cas d’absence, les conditions détaillées dans les informations pratiques s’appliquent.',
+      'Tu peux annuler ton rendez-vous gratuitement en ligne jusqu’à 30 minutes avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, le lien ne fonctionne plus : contacte Sarielle directement. Les conditions détaillées dans les informations pratiques s’appliquent.',
   },
   {
     id: 'options',

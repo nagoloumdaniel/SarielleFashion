@@ -1,4 +1,5 @@
 import type { EmailContext } from '@/modules/parametres/policies';
+import { PAYMENT_SHORT } from '@/modules/parametres/payment';
 import { formatEuro } from '@/modules/reservations/format';
 
 /* ============================================================
@@ -161,27 +162,27 @@ function renderWaitlist(payload: WaitlistEmailPayload, ctx: EmailContext): Rende
     subject: `Une place s’est libérée : ${payload.serviceName}`,
     html: layout(ctx, {
       title: 'Un créneau s’est libéré',
-      intro: `Bonjour ${payload.customerName}, le créneau que vous attendiez pour ${payload.serviceName} vient de se libérer.`,
+      intro: `Bonjour ${payload.customerName}, le créneau que tu attendais pour ${payload.serviceName} vient de se libérer.`,
       rows: [['Créneau', formatDate(payload.startsAt)]],
       ctaLabel: 'Confirmer ma réservation',
       ctaUrl: payload.confirmUrl,
       note: `Ce lien est valable jusqu’au ${formatDate(payload.expiresAt)}. Passé ce délai, la place sera proposée à la personne suivante.`,
     }),
-    text: `Bonjour ${payload.customerName},\n\nLe créneau du ${formatDate(payload.startsAt)} pour ${payload.serviceName} est disponible.\nConfirmez votre réservation : ${payload.confirmUrl}\nLien valable jusqu’au ${formatDate(payload.expiresAt)}.\n\n${SALON_NAME}`,
+    text: `Bonjour ${payload.customerName},\n\nLe créneau du ${formatDate(payload.startsAt)} pour ${payload.serviceName} est disponible.\nConfirme ta réservation : ${payload.confirmUrl}\nLien valable jusqu’au ${formatDate(payload.expiresAt)}.\n\n${SALON_NAME}`,
   };
 }
 
 function renderReview(payload: ReviewEmailPayload, ctx: EmailContext): RenderedEmail {
   return {
-    subject: 'Votre avis compte pour Sarielle',
+    subject: 'Ton avis compte pour Sarielle',
     html: layout(ctx, {
-      title: 'Comment s’est passé votre rendez-vous ?',
-      intro: `Bonjour ${payload.customerName}, Sarielle espère que votre prestation « ${payload.serviceName} » vous a plu. Votre avis aide d’autres clientes à faire leur choix.`,
+      title: 'Comment s’est passé ton rendez-vous ?',
+      intro: `Bonjour ${payload.customerName}, Sarielle espère que ta prestation « ${payload.serviceName} » t’a plu. Ton avis aide d’autres clientes à faire leur choix.`,
       ctaLabel: 'Laisser un avis',
       ctaUrl: payload.reviewUrl,
-      note: 'Votre avis est publié sur le site dès son envoi, avec la mention « client vérifié ».',
+      note: 'Ton avis est publié sur le site dès son envoi, avec la mention « client vérifié ».',
     }),
-    text: `Bonjour ${payload.customerName},\n\nVotre avis sur ${payload.serviceName} compte pour Sarielle.\nLaisser un avis : ${payload.reviewUrl}\n\n${SALON_NAME}`,
+    text: `Bonjour ${payload.customerName},\n\nTon avis sur ${payload.serviceName} compte pour Sarielle.\nLaisser un avis : ${payload.reviewUrl}\n\n${SALON_NAME}`,
   };
 }
 
@@ -252,7 +253,7 @@ function layout(ctx: EmailContext, input: LayoutInput): string {
               ${policies}
               <p style="margin:24px 0 0;border-top:1px solid #f1d6d3;padding-top:16px;color:#67494c;font-size:12px;line-height:1.6">
                 ${SALON_NAME}<br />
-                Paiement sur place. Merci de votre confiance.${signature}
+                ${PAYMENT_SHORT} Merci pour ta confiance.${signature}
               </p>
             </td></tr>
           </table>
@@ -320,7 +321,7 @@ function renderAppointment(
   ctx: EmailContext,
 ): RenderedEmail {
   const admin = key.startsWith('admin_');
-  const service = payload.serviceName ?? 'votre prestation';
+  const service = payload.serviceName ?? 'ta prestation';
   const customer = payload.customerName;
   const when = formatDate(payload.startsAt);
   const rows = appointmentRows(payload, admin);
@@ -332,70 +333,70 @@ function renderAppointment(
   switch (key) {
     case 'booking_received':
       return {
-        subject: 'Votre demande de rendez-vous est enregistrée',
+        subject: 'Ta demande de rendez-vous est enregistrée',
         html: layout(ctx, {
-          title: 'Votre rendez-vous est enregistré',
-          intro: `Bonjour ${customer}, votre réservation pour ${service} a bien été enregistrée. Sarielle confirmera votre créneau si nécessaire.`,
+          title: 'Ton rendez-vous est enregistré',
+          intro: `Bonjour ${customer}, ta réservation pour ${service} a bien été enregistrée. Sarielle confirmera ton créneau si nécessaire.`,
           rows,
-          note: 'Paiement sur place. Vous recevrez une confirmation dès que le rendez-vous sera validé.',
+          note: `${PAYMENT_SHORT} Tu recevras une confirmation dès que le rendez-vous sera validé.`,
         }),
-        text: `Bonjour ${customer},\n\nVotre réservation pour ${service} est enregistrée.\nDate : ${when}\n${home}Paiement sur place.\n\n${SALON_NAME}`,
+        text: `Bonjour ${customer},\n\nTa réservation pour ${service} est enregistrée.\nDate : ${when}\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
       };
     case 'booking_confirmed':
       return {
-        subject: 'Votre rendez-vous est confirmé',
+        subject: 'Ton rendez-vous est confirmé',
         html: layout(ctx, {
-          title: 'Votre rendez-vous est confirmé',
-          intro: `Bonjour ${customer}, votre rendez-vous pour ${service} est confirmé.`,
+          title: 'Ton rendez-vous est confirmé',
+          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} est confirmé.`,
           rows,
           ctaLabel: 'Gérer ou annuler mon rendez-vous',
           ctaUrl: payload.cancelUrl ?? null,
-          note: 'Paiement sur place. Conservez ce message pour retrouver votre rendez-vous.',
+          note: `${PAYMENT_SHORT} Conserve ce message pour retrouver ton rendez-vous.`,
           policies: confirmationPolicies(ctx),
         }),
-        text: `Bonjour ${customer},\n\nVotre rendez-vous pour ${service} est confirmé le ${when}.\n${home}Paiement sur place.\n${payload.cancelUrl ? `Gérer mon rendez-vous : ${payload.cancelUrl}\n` : ''}${confirmationPoliciesText(ctx)}\n${SALON_NAME}`,
+        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} est confirmé le ${when}.\n${home}${PAYMENT_SHORT}\n${payload.cancelUrl ? `Gérer mon rendez-vous : ${payload.cancelUrl}\n` : ''}${confirmationPoliciesText(ctx)}\n${SALON_NAME}`,
       };
     case 'booking_cancelled_customer':
     case 'booking_cancelled_admin':
       return {
-        subject: 'Votre rendez-vous est annulé',
+        subject: 'Ton rendez-vous est annulé',
         html: layout(ctx, {
-          title: 'Votre rendez-vous est annulé',
-          intro: `Bonjour ${customer}, votre rendez-vous pour ${service} a été annulé${key === 'booking_cancelled_admin' ? ' par Sarielle' : ''}.`,
+          title: 'Ton rendez-vous est annulé',
+          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} a été annulé${key === 'booking_cancelled_admin' ? ' par Sarielle' : ''}.`,
           rows,
           paragraphs: [
-            'Le créneau a été libéré. Vous pouvez réserver un nouveau rendez-vous depuis le site.',
+            'Le créneau a été libéré. Tu peux réserver un nouveau rendez-vous depuis le site.',
           ],
           ctaLabel: 'Réserver un nouveau créneau',
           ctaUrl: `${APP_URL}/reserver`,
         }),
-        text: `Bonjour ${customer},\n\nVotre rendez-vous pour ${service} du ${when} a été annulé.\nVous pouvez réserver un nouveau créneau : ${APP_URL}/reserver\n\n${SALON_NAME}`,
+        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} du ${when} a été annulé.\nTu peux réserver un nouveau créneau : ${APP_URL}/reserver\n\n${SALON_NAME}`,
       };
     case 'booking_rescheduled':
       return {
-        subject: 'Votre rendez-vous est reprogrammé',
+        subject: 'Ton rendez-vous est reprogrammé',
         html: layout(ctx, {
-          title: 'Votre rendez-vous est reprogrammé',
-          intro: `Bonjour ${customer}, votre rendez-vous pour ${service} a été déplacé au nouveau créneau ci-dessous.`,
+          title: 'Ton rendez-vous est reprogrammé',
+          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} a été déplacé au nouveau créneau ci-dessous.`,
           rows,
           ctaLabel: 'Gérer ou annuler mon rendez-vous',
           ctaUrl: payload.cancelUrl ?? null,
-          note: 'Paiement sur place.',
+          note: PAYMENT_SHORT,
         }),
-        text: `Bonjour ${customer},\n\nVotre rendez-vous pour ${service} est reprogrammé : ${when}.\n${home}Paiement sur place.\n\n${SALON_NAME}`,
+        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} est reprogrammé : ${when}.\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
       };
     case 'booking_reminder':
       return {
-        subject: 'Rappel : votre rendez-vous approche',
+        subject: 'Rappel : ton rendez-vous approche',
         html: layout(ctx, {
-          title: 'Votre rendez-vous approche',
-          intro: `Bonjour ${customer}, un rappel pour votre rendez-vous pour ${service}.`,
+          title: 'Ton rendez-vous approche',
+          intro: `Bonjour ${customer}, un rappel pour ton rendez-vous pour ${service}.`,
           rows,
           ctaLabel: 'Voir mon rendez-vous',
           ctaUrl: payload.cancelUrl ?? `${APP_URL}/reserver`,
-          note: 'Paiement sur place. En cas d’empêchement, utilisez le lien reçu avec votre confirmation.',
+          note: `${PAYMENT_SHORT} En cas d’empêchement, utilise le lien reçu avec ta confirmation.`,
         }),
-        text: `Bonjour ${customer},\n\nRappel : rendez-vous pour ${service} le ${when}.\n${home}Paiement sur place.\n\n${SALON_NAME}`,
+        text: `Bonjour ${customer},\n\nRappel : rendez-vous pour ${service} le ${when}.\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
       };
     case 'admin_new_booking':
       return {
@@ -451,7 +452,7 @@ function renderConversation(
       subject: `Nouveau message : ${payload.subject}`,
       html: layout(ctx, {
         title: 'Nouveau message de contact',
-        intro: `${payload.customerName} vous a envoyé un message.`,
+        intro: `${payload.customerName} t’a envoyé un message.`,
         rows: [
           ['Sujet', payload.subject],
           ['E-mail', payload.customerEmail ?? 'non renseigné'],
@@ -465,24 +466,24 @@ function renderConversation(
   }
   if (key === 'contact_received') {
     return {
-      subject: 'Votre message a bien été reçu',
+      subject: 'Ton message a bien été reçu',
       html: layout(ctx, {
         title: 'Message bien reçu',
-        intro: `Bonjour ${payload.customerName}, Sarielle a bien reçu votre message et vous répondra personnellement.`,
+        intro: `Bonjour ${payload.customerName}, Sarielle a bien reçu ton message et te répondra personnellement.`,
         rows: [['Sujet', payload.subject]],
-        note: 'Vous pouvez répondre directement à cet e-mail.',
+        note: 'Tu peux répondre directement à cet e-mail.',
       }),
-      text: `Bonjour ${payload.customerName},\n\nVotre message « ${payload.subject} » a bien été reçu. Sarielle vous répondra personnellement.\n\n${SALON_NAME}`,
+      text: `Bonjour ${payload.customerName},\n\nTon message « ${payload.subject} » a bien été reçu. Sarielle te répondra personnellement.\n\n${SALON_NAME}`,
     };
   }
   // conversation_reply
   return {
-    subject: `Réponse à votre message : ${payload.subject}`,
+    subject: `Réponse à ton message : ${payload.subject}`,
     html: layout(ctx, {
       title: 'Réponse de Sarielle',
-      intro: `Bonjour ${payload.customerName}, voici la réponse à votre message.`,
+      intro: `Bonjour ${payload.customerName}, voici la réponse à ton message.`,
       paragraphs: payload.message ? [payload.message] : [],
-      note: 'Vous pouvez répondre directement à cet e-mail.',
+      note: 'Tu peux répondre directement à cet e-mail.',
     }),
     text: `Bonjour ${payload.customerName},\n\n${payload.message ?? ''}\n\n${SALON_NAME}`,
   };
@@ -499,15 +500,15 @@ function renderCustomRequest(
   const desired = payload.desiredDate ? formatDate(payload.desiredDate) : null;
   if (key === 'custom_request_received') {
     return {
-      subject: 'Votre demande de coiffure personnalisée a bien été reçue',
+      subject: 'Ta demande de coiffure personnalisée a bien été reçue',
       html: layout(ctx, {
         title: 'Demande bien reçue',
-        intro: `Bonjour ${payload.requesterName}, Sarielle a bien reçu votre demande de coiffure personnalisée et vous répondra personnellement.`,
+        intro: `Bonjour ${payload.requesterName}, Sarielle a bien reçu ta demande de coiffure personnalisée et te répondra personnellement.`,
         rows: [['Date souhaitée', desired ?? 'Non précisée']],
         paragraphs: [payload.description],
-        note: 'Cette demande ne réserve pas encore de créneau. Sarielle vous proposera une prestation ou un rendez-vous adapté.',
+        note: 'Cette demande ne réserve pas encore de créneau. Sarielle te proposera une prestation ou un rendez-vous adapté.',
       }),
-      text: `Bonjour ${payload.requesterName},\n\nVotre demande de coiffure personnalisée a bien été reçue. Sarielle vous répondra personnellement.\n\n${SALON_NAME}`,
+      text: `Bonjour ${payload.requesterName},\n\nTa demande de coiffure personnalisée a bien été reçue. Sarielle te répondra personnellement.\n\n${SALON_NAME}`,
     };
   }
   if (key === 'admin_custom_request') {
@@ -515,7 +516,7 @@ function renderCustomRequest(
       subject: `Nouvelle demande personnalisée : ${payload.requesterName}`,
       html: layout(ctx, {
         title: 'Nouvelle demande personnalisée',
-        intro: `${payload.requesterName} vous a envoyé une demande de coiffure hors catalogue.`,
+        intro: `${payload.requesterName} t’a envoyé une demande de coiffure hors catalogue.`,
         rows: [
           ['Demandeuse', payload.requesterName],
           ['E-mail', payload.requesterEmail ?? 'Non renseigné'],
@@ -542,10 +543,10 @@ function renderCustomRequest(
   if (payload.proposedServiceName) rows.push(['Prestation proposée', payload.proposedServiceName]);
   if (payload.proposedSlot) rows.push(['Créneau proposé', formatDate(payload.proposedSlot)]);
   return {
-    subject: 'Réponse à votre demande de coiffure personnalisée',
+    subject: 'Réponse à ta demande de coiffure personnalisée',
     html: layout(ctx, {
       title: 'Réponse de Sarielle',
-      intro: `Bonjour ${payload.requesterName}, voici la réponse à votre demande de coiffure personnalisée.`,
+      intro: `Bonjour ${payload.requesterName}, voici la réponse à ta demande de coiffure personnalisée.`,
       rows,
       paragraphs: payload.adminReply ? [payload.adminReply] : [],
       ctaLabel: 'Réserver un créneau',
@@ -605,31 +606,31 @@ function renderAssessmentDecision(
   const copy: Record<AssessmentDecisionKind, { subject: string; title: string; intro: string }> = {
     ACCEPTED: {
       subject: `Évaluation acceptée : ${service}`,
-      title: 'Votre évaluation est acceptée',
-      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » : votre chevelure est compatible.`,
+      title: 'Ton évaluation est acceptée',
+      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » : ta chevelure est compatible.`,
     },
     CONDITIONAL: {
       subject: `Évaluation acceptée sous conditions : ${service}`,
       title: 'Évaluation acceptée sous conditions',
-      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » : la prestation est possible sous conditions, détaillées ci-dessous.`,
+      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » : la prestation est possible sous conditions, détaillées ci-dessous.`,
     },
     REFUSED: {
-      subject: `Réponse à votre évaluation : ${service}`,
-      title: 'Réponse à votre évaluation',
-      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} ». Cette prestation ne peut malheureusement pas être réalisée dans votre situation.`,
+      subject: `Réponse à ton évaluation : ${service}`,
+      title: 'Réponse à ton évaluation',
+      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} ». Cette prestation ne peut malheureusement pas être réalisée dans ta situation.`,
     },
     INFO_REQUESTED: {
       subject: `Précisions demandées : ${service}`,
       title: 'Sarielle a besoin de précisions',
-      intro: `Bonjour ${name}, Sarielle a étudié votre évaluation pour « ${service} » et souhaite quelques précisions avant de se prononcer.`,
+      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » et souhaite quelques précisions avant de se prononcer.`,
     },
   };
   const { subject, title, intro } = copy[payload.decision];
   const message = payload.message?.trim() ?? '';
   const note = canBook
-    ? 'Cette réponse ne réserve aucun rendez-vous : choisissez votre coiffure et votre créneau depuis le catalogue.'
+    ? 'Cette réponse ne réserve aucun rendez-vous : choisis ta coiffure et ton créneau depuis le catalogue.'
     : payload.decision === 'INFO_REQUESTED'
-      ? 'Aucun rendez-vous n’est réservé. Répondez à cet e-mail ou contactez Sarielle depuis le site.'
+      ? 'Aucun rendez-vous n’est réservé. Réponds à cet e-mail ou contacte Sarielle depuis le site.'
       : undefined;
   return {
     subject,

@@ -25,6 +25,9 @@ import { ButtonLink } from '@/components/ui/Button';
 import { PrestationCard } from '@/components/catalogue/PrestationCard';
 import { bookingHref, formatDuration, formatPrice, serviceImages } from '@/lib/catalogue';
 import { getCachedPopularServices } from '@/lib/popular-services';
+import { getPublicHoursLines } from '@/lib/public-hours';
+import { getCachedSalonSettings } from '@/lib/public-cache';
+import { travelFeeFromLabel } from '@/modules/parametres/home-service';
 
 export const metadata: Metadata = {
   title: { absolute: 'Sarielle Fashion | Coiffure, make-up, lace et cils à Clausthal-Zellerfeld' },
@@ -89,16 +92,31 @@ const steps = [
   },
 ];
 
+/* Montant des frais de déplacement annoncé seulement si l'option à domicile est activée. */
+async function loadTravelNote(): Promise<string> {
+  try {
+    const settings = await getCachedSalonSettings();
+    if (settings.homeServiceEnabled && settings.travelFeeCents > 0) {
+      return ` Les frais de déplacement sont à ta charge : ${travelFeeFromLabel(settings.travelFeeCents)}.`;
+    }
+  } catch (error) {
+    console.error('[accueil] paramètres illisibles, frais de déplacement non annoncés', error);
+  }
+  return ' Les frais de déplacement sont à ta charge et indiqués avant la réservation.';
+}
+
 // Les URLs signées des photos (1 h) restent valides : la page est régénérée toutes les 5 min.
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [reviews, popular, realisations] = await Promise.all([
+  const [reviews, popular, realisations, travelNote] = await Promise.all([
     listLatestReviews(3).catch(() => []),
     getCachedPopularServices(),
     listPublishedGalleryPhotos(6).catch(() => []),
+    loadTravelNote(),
   ]);
   const summaries = await getServiceRatingSummaries(popular.map((service) => service.id));
+  const hoursLines = await getPublicHoursLines();
   return (
     <main>
       {/* Hero typographique (aucune image) : grand titre, index des savoir-faire à droite. */}
@@ -311,8 +329,8 @@ export default async function HomePage() {
               À Clausthal-Zellerfeld, ou chez toi.
             </h2>
             <p className="leading-relaxed opacity-80">
-              Je peux aussi venir à toi, pour un événement ou simplement par confort. Les frais de
-              déplacement sont à ta charge et indiqués avant la réservation.
+              Je peux aussi venir à toi, pour un événement ou simplement par confort.
+              {travelNote}
             </p>
           </div>
           <ButtonLink href="/contact" variant="onDark" icon={Mail} className="shrink-0">
@@ -376,7 +394,14 @@ export default async function HomePage() {
             </p>
             <p className="flex items-start gap-3 text-fg">
               <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-accent" />
-              <span>Sur rendez-vous</span>
+              <span>
+                {hoursLines.map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+                <span className="block text-muted">Sur rendez-vous</span>
+              </span>
             </p>
           </div>
         </section>

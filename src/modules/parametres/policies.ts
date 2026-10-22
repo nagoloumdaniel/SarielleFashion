@@ -4,6 +4,8 @@
  * sinon texte par défaut sobre. Aucune dépendance base de données.
  * ============================================================ */
 
+import { formatNoticeDelay } from '@/modules/reservations/policy';
+
 export interface EmailContext {
   /** Signature affichée en pied de tous les e-mails (texte brut). */
   signature?: string | null;
@@ -15,21 +17,21 @@ export interface EmailContext {
 
 export function resolveCancellationPolicy(
   custom: string | null | undefined,
-  minCancelNoticeHours: number,
+  minCancelNoticeMinutes: number,
 ): string {
   const text = custom?.trim();
   if (text) return text;
-  const notice = Math.max(0, Math.round(minCancelNoticeHours));
+  const notice = Math.max(0, Math.round(minCancelNoticeMinutes));
   if (notice > 0) {
-    return `Vous pouvez annuler ou déplacer votre rendez-vous gratuitement jusqu’à ${notice} heures avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, contactez Sarielle directement.`;
+    return `Tu peux annuler ton rendez-vous gratuitement jusqu’à ${formatNoticeDelay(notice)} avant l’heure convenue, via le lien sécurisé reçu par e-mail. Passé ce délai, le lien ne fonctionne plus : contacte Sarielle directement.`;
   }
-  return 'Vous pouvez annuler ou déplacer votre rendez-vous via le lien sécurisé reçu par e-mail. En cas de difficulté, contactez Sarielle directement.';
+  return 'Tu peux annuler ton rendez-vous via le lien sécurisé reçu par e-mail. En cas de difficulté, contacte Sarielle directement.';
 }
 
 export function resolveBookingPolicy(custom: string | null | undefined): string {
   const text = custom?.trim();
   if (text) return text;
-  return 'Les rendez-vous se prennent uniquement sur réservation. Paiement sur place. Merci de respecter l’heure convenue.';
+  return 'Les rendez-vous se prennent uniquement sur réservation. Le paiement se fait toujours sur place, en espèces ou par virement. Merci de respecter l’heure convenue.';
 }
 
 export function splitParagraphs(text: string): string[] {
@@ -43,13 +45,13 @@ export function emailContextFromSettings(settings: {
   emailSignature: string | null;
   cancellationPolicy: string | null;
   bookingPolicy: string | null;
-  minCancelNoticeHours: number;
+  minCancelNoticeMinutes: number;
 }): EmailContext {
   return {
     signature: settings.emailSignature?.trim() || null,
     cancellationPolicy: resolveCancellationPolicy(
       settings.cancellationPolicy,
-      settings.minCancelNoticeHours,
+      settings.minCancelNoticeMinutes,
     ),
     bookingPolicy: resolveBookingPolicy(settings.bookingPolicy),
   };
