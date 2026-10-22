@@ -15,9 +15,7 @@ export async function Footer() {
             <LogoMark className="h-8 w-auto text-panel-fg" />
             Sarielle Fashion
           </p>
-          <p className="mt-2 text-sm opacity-80">
-            {t('nav.footer.tagline')}
-          </p>
+          <p className="mt-2 text-sm opacity-80">{t('nav.footer.tagline')}</p>
         </div>
         <nav aria-label={t('nav.footer.practicalAria')}>
           <p className="font-semibold">{t('nav.footer.practical')}</p>

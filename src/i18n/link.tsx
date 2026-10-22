@@ -18,7 +18,8 @@ export function useRouter() {
   const router = useNextRouter();
   const locale = useLocale();
   const push = useCallback(
-    (href: string, o?: Parameters<typeof router.push>[1]) => router.push(localePath(locale, href), o),
+    (href: string, o?: Parameters<typeof router.push>[1]) =>
+      router.push(localePath(locale, href), o),
     [router, locale],
   );
   const replace = useCallback(

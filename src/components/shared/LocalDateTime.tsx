@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/i18n/client';
+import { INTL_LOCALE } from '@/i18n/config';
 
 /* Rendu serveur en Europe/Berlin (heure d'été gérée par Intl), puis fuseau de l'appareil après
    montage : évite tout écart d'hydratation quand le serveur n'est pas dans le fuseau du navigateur. */
@@ -24,12 +26,16 @@ export function LocalDateTime({
   timeStyle?: 'full' | 'long' | 'medium' | 'short';
   className?: string;
 }) {
+  const { t, locale } = useI18n();
   const timeZone = useDeviceZone();
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return <span className={className}>Date inconnue</span>;
-  const formatted = new Intl.DateTimeFormat('fr-FR', { dateStyle, timeStyle, timeZone }).format(
-    date,
-  );
+  if (Number.isNaN(date.getTime()))
+    return <span className={className}>{t('common.ui.unknownDate')}</span>;
+  const formatted = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    dateStyle,
+    timeStyle,
+    timeZone,
+  }).format(date);
   return (
     <time dateTime={iso} className={className}>
       {formatted}
@@ -46,10 +52,14 @@ export function LocalDate({
   dateStyle?: 'full' | 'long' | 'medium' | 'short';
   className?: string;
 }) {
+  const { t, locale } = useI18n();
   const timeZone = useDeviceZone();
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return <span className={className}>Date inconnue</span>;
-  const formatted = new Intl.DateTimeFormat('fr-FR', { dateStyle, timeZone }).format(date);
+  if (Number.isNaN(date.getTime()))
+    return <span className={className}>{t('common.ui.unknownDate')}</span>;
+  const formatted = new Intl.DateTimeFormat(INTL_LOCALE[locale], { dateStyle, timeZone }).format(
+    date,
+  );
   return (
     <time dateTime={iso} className={className}>
       {formatted}

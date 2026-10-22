@@ -2,6 +2,7 @@
 
 import { CircleCheck, ImagePlus, Scissors, Send, TriangleAlert, UserRound } from 'lucide-react';
 import { useActionState, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/i18n/client';
 import { submitCustomRequest, type CustomRequestSubmitState } from '@/modules/demandes/actions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -15,6 +16,7 @@ function todayISO(): string {
 }
 
 export function CustomRequestForm() {
+  const { t, msg, path } = useI18n();
   const [state, formAction, pending] = useActionState<CustomRequestSubmitState, FormData>(
     submitCustomRequest,
     {},
@@ -42,17 +44,19 @@ export function CustomRequestForm() {
         <span className="flex size-12 items-center justify-center rounded-full bg-card text-success">
           <CircleCheck aria-hidden="true" className="size-6" />
         </span>
-        <h2 className="font-heading text-2xl font-bold text-success">Demande bien reçue</h2>
-        <p className="text-fg">{state.success}</p>
-        <p className="text-sm text-ink-soft">Un accusé de réception vous est envoyé par e-mail.</p>
+        <h2 className="font-heading text-2xl font-bold text-success">
+          {t('requests.form.successTitle')}
+        </h2>
+        <p className="text-fg">{msg(state.success)}</p>
+        <p className="text-sm text-ink-soft">{t('requests.form.ack')}</p>
         <Button
           type="button"
           variant="secondary"
           icon={Send}
           className="mt-2"
-          onClick={() => window.location.assign('/demandes-personnalisees')}
+          onClick={() => window.location.assign(path('/demandes-personnalisees'))}
         >
-          Envoyer une autre demande
+          {t('requests.form.another')}
         </Button>
       </div>
     );
@@ -65,18 +69,18 @@ export function CustomRequestForm() {
       className="space-y-8 rounded-[var(--radius-lg)] bg-card p-5 shadow-soft sm:p-8"
     >
       <div className="hidden" aria-hidden="true">
-        <label htmlFor="demande-website">Site web</label>
+        <label htmlFor="demande-website">{t('requests.form.honeypot')}</label>
         <input id="demande-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       <fieldset className="space-y-5">
         <legend className="flex items-center gap-2 font-heading text-xl font-bold text-fg">
           <UserRound aria-hidden="true" className="size-5 text-cacao" />
-          Vos coordonnées
+          {t('requests.form.contactLegend')}
         </legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
-            label="Nom et prénom"
+            label={t('requests.form.name')}
             name="name"
             autoComplete="name"
             required
@@ -84,7 +88,7 @@ export function CustomRequestForm() {
             maxLength={100}
           />
           <Input
-            label="E-mail"
+            label={t('requests.form.email')}
             name="email"
             type="email"
             autoComplete="email"
@@ -92,7 +96,7 @@ export function CustomRequestForm() {
             maxLength={200}
           />
           <Input
-            label="Téléphone (facultatif)"
+            label={t('requests.form.phone')}
             name="phone"
             type="tel"
             autoComplete="tel"
@@ -104,71 +108,69 @@ export function CustomRequestForm() {
       <fieldset className="space-y-5">
         <legend className="flex items-center gap-2 font-heading text-xl font-bold text-fg">
           <Scissors aria-hidden="true" className="size-5 text-cacao" />
-          Votre coiffure
+          {t('requests.form.hairLegend')}
         </legend>
         <Textarea
-          label="Décrivez la coiffure souhaitée"
+          label={t('requests.form.description')}
           name="description"
           rows={4}
           required
           minLength={20}
           maxLength={3000}
-          hint="Forme, longueur, technique, inspiration, occasion."
+          hint={t('requests.form.descriptionHint')}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <Select
-            label="Longueur actuelle"
+            label={t('requests.form.length')}
             name="hairLength"
             required
             options={[
-              { value: 'SHORT', label: 'Courts' },
-              { value: 'MEDIUM', label: 'Mi-longs' },
-              { value: 'LONG', label: 'Longs' },
-              { value: 'VERY_LONG', label: 'Très longs' },
+              { value: 'SHORT', label: t('requests.form.lengthOptions.SHORT') },
+              { value: 'MEDIUM', label: t('requests.form.lengthOptions.MEDIUM') },
+              { value: 'LONG', label: t('requests.form.lengthOptions.LONG') },
+              { value: 'VERY_LONG', label: t('requests.form.lengthOptions.VERY_LONG') },
             ]}
           />
           <Input
-            label="Type de cheveux"
+            label={t('requests.form.hairType')}
             name="hairType"
             required
             minLength={2}
             maxLength={120}
-            hint="Exemples : naturels, défrisés, cheveux fins, cheveux longs."
+            hint={t('requests.form.hairTypeHint')}
           />
           <Input
-            label="Coiffure actuelle (facultatif)"
+            label={t('requests.form.currentStyle')}
             name="currentStyle"
             maxLength={200}
-            hint="Exemple : lace posée depuis 3 semaines."
+            hint={t('requests.form.currentStyleHint')}
           />
           <Input
-            label="Date souhaitée (facultatif)"
+            label={t('requests.form.desiredDate')}
             name="desiredDate"
             type="date"
             min={todayISO()}
           />
         </div>
         <Textarea
-          label="Précisions complémentaires (facultatif)"
+          label={t('requests.form.comment')}
           name="comment"
           rows={2}
           maxLength={1000}
-          hint="Contraintes de temps, budget, accessoires, sensibilité du cuir chevelu."
+          hint={t('requests.form.commentHint')}
         />
       </fieldset>
 
       <fieldset className="space-y-3">
         <legend className="flex items-center gap-2 font-heading text-xl font-bold text-fg">
           <ImagePlus aria-hidden="true" className="size-5 text-cacao" />
-          Photos de référence
+          {t('requests.form.photosLegend')}
         </legend>
-        <p className="text-sm text-ink-soft">
-          Jusqu’à 3 photos, 5 Mo maximum chacune. Elles restent privées.
-        </p>
+        <p className="text-sm text-ink-soft">{t('requests.form.photosInfo')}</p>
         <input
           type="file"
           name="photos"
-          aria-label="Photos de référence, trois maximum"
+          aria-label={t('requests.form.photosAria')}
           accept="image/jpeg,image/png,image/webp"
           multiple
           className="block w-full cursor-pointer rounded-[var(--radius-md)] border border-dashed border-line bg-page p-4 text-sm text-fg transition file:mr-3 file:cursor-pointer file:rounded-[var(--radius-md)] file:border-0 file:bg-accent file:px-4 file:py-2 file:font-semibold file:text-accent-fg hover:border-cacao focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cacao"
@@ -184,7 +186,7 @@ export function CustomRequestForm() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={url}
-                  alt="Aperçu d’une photo de référence"
+                  alt={t('requests.form.previewAlt')}
                   className="size-24 rounded-[var(--radius-sm)] object-cover"
                 />
               </li>
@@ -202,8 +204,7 @@ export function CustomRequestForm() {
           className="mt-1 size-4"
         />
         <label htmlFor="demande-consent" className="text-sm text-ink-soft">
-          J’accepte que mes informations et mes photos soient utilisées pour traiter ma demande. Je
-          peux demander leur suppression à tout moment.
+          {t('requests.form.consent')}
         </label>
       </div>
 
@@ -213,12 +214,12 @@ export function CustomRequestForm() {
           className="flex items-start gap-2 rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
         >
           <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
 
       <Button type="submit" icon={Send} loading={pending} className="w-full sm:w-auto">
-        {pending ? 'Envoi de la demande…' : 'Envoyer ma demande'}
+        {pending ? t('requests.form.sending') : t('requests.form.send')}
       </Button>
     </form>
   );

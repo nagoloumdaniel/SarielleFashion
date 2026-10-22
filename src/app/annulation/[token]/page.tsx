@@ -2,13 +2,11 @@ import type { Metadata } from 'next';
 import { Mail } from 'lucide-react';
 import { getAppointmentByCancelToken } from '@/modules/reservations/queries';
 import {
+  cancellationPolicyMessage,
   evaluateCancellationPolicy,
   isCancellationTokenValid,
 } from '@/modules/reservations/policy';
-import {
-  APPOINTMENT_STATUS_LABELS,
-  isActiveAppointmentStatus,
-} from '@/modules/reservations/status';
+import { isActiveAppointmentStatus } from '@/modules/reservations/status';
 import { getSalonSettings } from '@/modules/disponibilites/queries';
 import { resolveCancellationPolicy, splitParagraphs } from '@/modules/parametres/policies';
 import { LocalDateTime } from '@/components/shared/LocalDateTime';
@@ -17,21 +15,25 @@ import { Badge } from '@/components/ui/Badge';
 import { CancelForm } from './cancel-form';
 import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
+import { I18nScope } from '@/i18n/client';
+import { formatDuration, formatEuro } from '@/i18n/format';
+import { getI18n } from '@/i18n/server';
+import { pageMetadata } from '@/i18n/metadata';
 
-export const metadata: Metadata = {
-  title: 'Gérer mon rendez-vous',
-  robots: { index: false, follow: false },
-};
-
-const euroFormatter = new Intl.NumberFormat('fr-FR', {
-  style: 'currency',
-  currency: 'EUR',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getI18n();
+  return pageMetadata({
+    locale,
+    path: '/annulation',
+    title: t('booking.cancel.meta.title'),
+    description: t('booking.cancel.meta.title'),
+    noindex: true,
+  });
+}
 
 export default async function AnnulationPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
+  const { t, locale, messages } = await getI18n();
   const appointment = await getAppointmentByCancelToken(token);
 
   if (!appointment) {
@@ -39,11 +41,11 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
       <main className="page-main">
         <div className="rounded-[var(--radius-lg)] border border-alert bg-alert-soft p-8 text-center">
           <Title as="h1" size="display" className="">
-            Lien invalide
+            {t('booking.cancel.invalidTitle')}
           </Title>
-          <p className="mt-3 text-fg">Ce lien ne correspond à aucun rendez-vous.</p>
+          <p className="mt-3 text-fg">{t('booking.cancel.invalidText')}</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-6">
-            Contacter Sarielle
+            {t('booking.cancel.contactCta')}
           </ButtonLink>
         </div>
       </main>
@@ -63,72 +65,80 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
     minCancelNoticeMinutes: settings.minCancelNoticeMinutes,
   });
 
+  const policyMessage = cancellationPolicyMessage(t, policy);
+
   return (
     <main className="page-main space-y-6">
-      <Breadcrumb items={[{ label: 'Accueil', href: '/' }, { label: 'Mon rendez-vous' }]} />
+      <Breadcrumb
+        items={[
+          { label: t('booking.breadcrumb.home'), href: '/' },
+          { label: t('booking.cancel.breadcrumbCurrent') },
+        ]}
+      />
 
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone="neutral">{appointment.service.name}</Badge>
           <Badge tone={active ? 'success' : 'alert'}>
-            {APPOINTMENT_STATUS_LABELS[appointment.status] ?? appointment.status}
+            {t(`booking.status.${appointment.status}`)}
           </Badge>
         </div>
         <Title as="h1" size="display" className="">
-          Gérer mon rendez-vous
+          {t('booking.cancel.pageTitle')}
         </Title>
       </header>
 
       <section className="rounded-[var(--radius-lg)] border border-line bg-card p-6 shadow-soft">
         <dl className="space-y-3 text-sm">
           <div className="flex flex-wrap justify-between gap-2">
-            <dt className="font-semibold text-fg">Date et heure</dt>
+            <dt className="font-semibold text-fg">{t('booking.cancel.dateTime')}</dt>
             <dd className="text-muted">
               <LocalDateTime iso={appointment.startsAt.toISOString()} />
             </dd>
           </div>
           <div className="flex flex-wrap justify-between gap-2">
-            <dt className="font-semibold text-fg">Durée</dt>
-            <dd className="text-muted">{appointment.durationMinutes} minutes</dd>
+            <dt className="font-semibold text-fg">{t('booking.cancel.duration')}</dt>
+            <dd className="text-muted">{formatDuration(locale, appointment.durationMinutes)}</dd>
           </div>
           <div className="flex flex-wrap justify-between gap-2">
-            <dt className="font-semibold text-fg">Prix</dt>
+            <dt className="font-semibold text-fg">{t('booking.cancel.price')}</dt>
             <dd className="text-muted">
               {appointment.priceCents == null
-                ? 'Prix à confirmer'
-                : euroFormatter.format(appointment.priceCents / 100)}
+                ? t('booking.priceToConfirm')
+                : formatEuro(locale, appointment.priceCents)}
             </dd>
           </div>
           {appointment.homeService ? (
             <>
               <div className="flex flex-wrap justify-between gap-2">
-                <dt className="font-semibold text-fg">Lieu</dt>
+                <dt className="font-semibold text-fg">{t('booking.cancel.place')}</dt>
                 <dd className="whitespace-pre-line text-muted">
-                  À domicile{appointment.homeAddress ? `\n${appointment.homeAddress}` : ''}
+                  {t('booking.cancel.atHome')}
+                  {appointment.homeAddress ? `\n${appointment.homeAddress}` : ''}
                 </dd>
               </div>
               <div className="flex flex-wrap justify-between gap-2">
-                <dt className="font-semibold text-fg">Frais de déplacement</dt>
+                <dt className="font-semibold text-fg">{t('booking.cancel.travelFee')}</dt>
                 <dd className="text-muted">
-                  {euroFormatter.format((appointment.travelFeeCents ?? 0) / 100)}
+                  {formatEuro(locale, appointment.travelFeeCents ?? 0)}
                 </dd>
               </div>
             </>
           ) : null}
           <div className="flex flex-wrap justify-between gap-2">
-            <dt className="font-semibold text-fg">Cliente</dt>
+            <dt className="font-semibold text-fg">{t('booking.cancel.customer')}</dt>
             <dd className="text-muted">{appointment.customer.name}</dd>
           </div>
           <div className="flex flex-wrap justify-between gap-2">
-            <dt className="font-semibold text-fg">Paiement</dt>
-            <dd className="text-muted">Sur place, en espèces ou par virement</dd>
+            <dt className="font-semibold text-fg">{t('booking.cancel.payment')}</dt>
+            <dd className="text-muted">{t('booking.cancel.paymentValue')}</dd>
           </div>
         </dl>
       </section>
 
       <section className="rounded-[var(--radius-lg)] border border-line bg-page p-6">
         <Title as="h2" className="">
-          Conditions d’annulation
+          {t('booking.cancel.policyTitle')}
         </Title>
         <div className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
           {policyParagraphs.map((paragraph) => (
@@ -140,41 +150,47 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
       {!tokenValid ? (
         <section className="rounded-[var(--radius-lg)] border border-alert bg-alert-soft p-6">
           <Title as="h2" className="">
-            Lien expiré
+            {t('booking.cancel.expiredTitle')}
           </Title>
-          <p className="mt-2 text-fg">Ce lien n’est plus valide.</p>
+          <p className="mt-2 text-fg">{t('booking.cancel.expiredText')}</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-5">
-            Contacter Sarielle
+            {t('booking.cancel.contactCta')}
           </ButtonLink>
         </section>
       ) : !active ? (
         <section className="rounded-[var(--radius-lg)] border border-line bg-page p-6">
           <Title as="h2" className="">
-            Ce rendez-vous n’est plus actif
+            {t('booking.cancel.inactiveTitle')}
           </Title>
           <p className="mt-2 text-muted">
-            Statut actuel : {APPOINTMENT_STATUS_LABELS[appointment.status] ?? appointment.status}.
-            {appointment.cancelReason ? ` Motif : ${appointment.cancelReason}.` : ''}
+            {t('booking.cancel.currentStatus', {
+              status: t(`booking.status.${appointment.status}`),
+            })}
+            {appointment.cancelReason
+              ? t('booking.cancel.reasonLine', { reason: appointment.cancelReason })
+              : ''}
           </p>
         </section>
       ) : !policy.allowed ? (
         <section className="rounded-[var(--radius-lg)] border border-alert bg-alert-soft p-6">
           <Title as="h2" className="">
-            Annulation en ligne indisponible
+            {t('booking.cancel.closedTitle')}
           </Title>
-          <p className="mt-2 text-fg">{policy.message}</p>
+          <p className="mt-2 text-fg">{policyMessage}</p>
           <ButtonLink href="/contact" icon={Mail} className="mt-5">
-            Contacter Sarielle
+            {t('booking.cancel.contactCta')}
           </ButtonLink>
         </section>
       ) : (
         <section className="rounded-[var(--radius-lg)] border border-line bg-card p-6 shadow-soft">
           <Title as="h2" className="">
-            Annuler ce rendez-vous
+            {t('booking.cancel.cancelTitle')}
           </Title>
-          <p className="mt-2 text-sm text-muted">{policy.message}</p>
+          <p className="mt-2 text-sm text-muted">{policyMessage}</p>
           <div className="mt-4">
-            <CancelForm token={token} reasonRequired={settings.cancelReasonRequired} />
+            <I18nScope messages={{ booking: messages.booking }}>
+              <CancelForm token={token} reasonRequired={settings.cancelReasonRequired} />
+            </I18nScope>
           </div>
         </section>
       )}

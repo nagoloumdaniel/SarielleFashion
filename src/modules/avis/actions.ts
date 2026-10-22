@@ -9,6 +9,7 @@ import { requireAdmin } from '@/modules/auth/guards';
 import { deletePrivateImages, storePrivateImages } from '@/modules/fichiers/private-images';
 import { isStorageConfigured } from '@/modules/fichiers/storage';
 import { logAudit } from '@/modules/stats/audit';
+import { getLocale } from '@/i18n/server';
 import { MAX_REVIEW_PHOTOS } from './engine';
 import { listServiceReviews, REVIEWS_TAG, type PublicReview } from './queries';
 import {
@@ -96,6 +97,7 @@ export async function submitPublicReviewAction(
       rating: parsed.data.rating,
       comment: parsed.data.comment,
       photoKeys,
+      locale: await getLocale(),
     });
     refresh(slug);
     return { success: SUCCESS_MESSAGE };
@@ -152,7 +154,11 @@ export async function loadMoreReviewsAction(
 ): Promise<{ items: PublicReview[]; hasMore: boolean }> {
   const parsed = loadMoreReviewsSchema.safeParse({ serviceId, offset });
   if (!parsed.success) return { items: [], hasMore: false };
-  return listServiceReviews(parsed.data.serviceId, { offset: parsed.data.offset, limit: 6 });
+  return listServiceReviews(parsed.data.serviceId, {
+    offset: parsed.data.offset,
+    limit: 6,
+    locale: await getLocale(),
+  });
 }
 
 /** Suppression par l'admin (seule action de modération : plus d'approbation préalable). */

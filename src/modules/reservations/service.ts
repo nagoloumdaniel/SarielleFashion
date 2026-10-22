@@ -36,6 +36,7 @@ import {
   isCancellationTokenValid,
 } from './policy';
 import { assertTransition } from './status';
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/config';
 import { queueAppointmentNotifications } from './notifications';
 import { notifyWaitlistForFreedSlot } from '@/modules/liste-attente/service';
 import { createReviewRequest } from '@/modules/avis/service';
@@ -81,7 +82,7 @@ async function serviceInTx(
       priceToCents: true,
       priceOnRequest: true,
       categoryId: true,
-      category: { select: { name: true } },
+      category: { select: { name: true, slug: true } },
       options: {
         where: { active: true },
         orderBy: OPTION_ORDER_BY,
@@ -112,6 +113,7 @@ async function serviceInTx(
     slug: row.slug,
     description: row.description,
     categoryId: row.categoryId,
+    categorySlug: row.category.slug,
     categoryName: row.category.name,
     durationMinutes: row.durationMinutes,
     priceFromCents: row.priceFromCents,
@@ -355,6 +357,8 @@ export interface CreateBookingInput {
   /** Coiffure à domicile demandée : acceptée seulement si activée, frais recalculés ici. */
   homeService?: boolean;
   homeAddress?: string | null;
+  /** Langue de l'interface au moment de la réservation (fr | de), mémorisée pour les e-mails. */
+  locale?: Locale;
   /** Confirmation depuis un lien de liste d'attente (P8.8), facultatif. */
   waitlistToken?: string | null;
 }
@@ -538,6 +542,7 @@ export async function createBooking(input: CreateBookingInput): Promise<CreatedB
           hairInfo: input.answers as Prisma.InputJsonValue,
           comments: input.comment || null,
           cancelToken,
+          locale: input.locale ?? DEFAULT_LOCALE,
           cancelTokenExpiresAt: buildCancellationExpiry(slot.startsAt),
           holdExpiresAt,
         },
@@ -570,6 +575,7 @@ export async function createBooking(input: CreateBookingInput): Promise<CreatedB
         endsAt: appointment.endsAt,
         status,
         cancelToken,
+        locale: input.locale,
         settings,
         homeService: home.homeService,
         homeAddress: home.homeService ? homeAddress : null,
@@ -716,6 +722,7 @@ export async function rescheduleAppointment(input: {
         endsAt: slot.endsAt,
         status: 'RESCHEDULED',
         cancelToken: appointment.cancelToken,
+        locale: appointment.locale,
         settings,
         homeService: appointment.homeService,
         homeAddress: appointment.homeAddress,
@@ -803,6 +810,7 @@ export async function updateAppointmentStatus(input: {
         endsAt: appointment.endsAt,
         status: 'CONFIRMED',
         cancelToken: appointment.cancelToken,
+        locale: appointment.locale,
         settings,
         homeService: appointment.homeService,
         homeAddress: appointment.homeAddress,
@@ -818,6 +826,7 @@ export async function updateAppointmentStatus(input: {
         customerEmail: appointment.customer.email,
         customerName: appointment.customer.name,
         serviceName: appointment.service.name,
+        locale: appointment.locale,
       });
     }
   });
@@ -874,6 +883,7 @@ export async function cancelAppointmentByAdmin(input: {
       endsAt: appointment.endsAt,
       status: 'CANCELLED_BY_ADMIN',
       cancelToken: appointment.cancelToken,
+      locale: appointment.locale,
       reason: input.reason || null,
       settings,
     });
@@ -947,6 +957,7 @@ export async function cancelAppointmentByCustomer(input: {
       endsAt: appointment.endsAt,
       status: 'CANCELLED_BY_CUSTOMER',
       cancelToken: appointment.cancelToken,
+      locale: appointment.locale,
       reason: input.reason || null,
       settings,
     });

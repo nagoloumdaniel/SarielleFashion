@@ -8,7 +8,13 @@ import { usePathname } from '@/i18n/link';
 
 /* Sélecteur de langue FR | DE : liens réels (indexables, utilisables sans JavaScript),
    conserve la page courante et ses paramètres. Règle : DESIGN-RULES.md. */
-function Switcher({ className = '', tone = 'default' }: { className?: string; tone?: 'default' | 'dark' }) {
+function Switcher({
+  className = '',
+  tone = 'default',
+}: {
+  className?: string;
+  tone?: 'default' | 'dark';
+}) {
   const { locale, t } = useI18n();
   const pathname = usePathname();
   const search = useSearchParams().toString();

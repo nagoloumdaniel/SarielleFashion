@@ -14,7 +14,10 @@ function compile(): Compiled[] {
     .filter(([source]) => /\{\d+\}/.test(source))
     .map(([source, target]) => {
       const escape = (part: string) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const pattern = source.split(/\{\d+\}/).map(escape).join('(.+?)');
+      const pattern = source
+        .split(/\{\d+\}/)
+        .map(escape)
+        .join('(.+?)');
       return { regex: new RegExp(`^${pattern}$`), target };
     });
   return compiled;
@@ -27,7 +30,24 @@ export function localizeMessage(locale: Locale, text: string | undefined | null)
   if (exact) return exact;
   for (const { regex, target } of compile()) {
     const match = regex.exec(text);
-    if (match) return target.replace(/\{(\d+)\}/g, (_, i: string) => match[Number(i) + 1] ?? '');
+    if (match) {
+      return target.replace(/\{(\d+)\}/g, (_, i: string) =>
+        translateParam(match[Number(i) + 1] ?? ''),
+      );
+    }
   }
   return text;
+}
+
+/** Paramètre capturé : libellé connu du catalogue, sinon délai (« 30 minutes », « 1 h 30 ») traduit. */
+function translateParam(value: string): string {
+  const known = deServerMessages[value];
+  if (known) return known;
+  return value
+    .replace(/^(\d+) h (\d{2})$/, '$1 Std. $2 Min.')
+    .replace(/^(\d+) heures?$/, (_, n: string) => `${n} ${Number(n) === 1 ? 'Stunde' : 'Stunden'}`)
+    .replace(
+      /^(\d+) minutes?$/,
+      (_, n: string) => `${n} ${Number(n) === 1 ? 'Minute' : 'Minuten'}`,
+    );
 }

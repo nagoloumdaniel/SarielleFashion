@@ -43,7 +43,8 @@ export function stripLocale(href: string): { locale: Locale; path: string } {
   for (const l of LOCALES) {
     if (l === DEFAULT_LOCALE) continue;
     if (path === `/${l}`) return { locale: l, path: `/${suffix}` };
-    if (path.startsWith(`/${l}/`)) return { locale: l, path: `${path.slice(l.length + 1)}${suffix}` };
+    if (path.startsWith(`/${l}/`))
+      return { locale: l, path: `${path.slice(l.length + 1)}${suffix}` };
   }
   return { locale: DEFAULT_LOCALE, path: href };
 }

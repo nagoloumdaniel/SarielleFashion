@@ -2,6 +2,9 @@ import { z } from 'zod';
 import type { HairLength, PhotoPolicy, Prisma } from '@prisma/client';
 import { db } from './db';
 import { OPTION_ORDER_BY } from '@/modules/catalogue/ordering';
+import { INTL_LOCALE, DEFAULT_LOCALE, type Locale } from '@/i18n/config';
+import { MESSAGES } from '@/i18n/messages';
+import { createTranslator } from '@/i18n/translate';
 
 /* ------------------------------------------------------------------ */
 /* Paramètres de requête publique (P1.9, P3.2)                        */
@@ -179,23 +182,31 @@ export async function getPublishedServiceBySlug(slug: string): Promise<ServiceDe
   });
 }
 
-export const HAIR_LENGTH_LABELS: Record<HairLength, string> = {
-  SHORT: 'Cheveux courts',
-  MEDIUM: 'Longueur moyenne',
-  LONG: 'Cheveux longs',
-  VERY_LONG: 'Cheveux très longs',
-};
+/** Libellé d'une longueur de cheveux dans la langue demandée. */
+export function hairLengthLabel(length: HairLength, locale: Locale = DEFAULT_LOCALE): string {
+  return MESSAGES[locale].catalogue.hairLength[length];
+}
 
-export const PHOTO_POLICY_LABELS: Record<PhotoPolicy, string | null> = {
-  REQUIRED: 'Une photo de vos cheveux est obligatoire pour l’évaluation.',
-  OPTIONAL: 'Vous pouvez joindre une photo de vos cheveux (facultatif).',
-  FORBIDDEN: null,
-};
+/** Consigne photo d'une prestation (null si aucune photo n'est demandée). */
+export function photoPolicyLabel(
+  policy: PhotoPolicy,
+  locale: Locale = DEFAULT_LOCALE,
+): string | null {
+  return policy === 'FORBIDDEN' ? null : MESSAGES[locale].catalogue.photoPolicy[policy];
+}
+
+/** Nom d'une catégorie : libellé traduit pour les catégories par défaut (par slug), sinon le nom saisi par l'admin. */
+export function categoryLabel(locale: Locale, slug: string, name: string): string {
+  if (locale === DEFAULT_LOCALE) return name;
+  return MESSAGES[locale].catalogue.categories[slug] ?? name;
+}
 
 /** Galerie d'une fiche : images réelles, sinon photos de démonstration. */
 export function serviceGallery(
   service: Pick<ServiceDetail, 'name' | 'slug' | 'images' | 'category'>,
+  locale: Locale = DEFAULT_LOCALE,
 ): { key: string; src: string; alt: string }[] {
+  const t = createTranslator(locale, MESSAGES[locale]);
   const displayable = service.images.filter((image) => isDisplayableImageKey(image.key));
   if (displayable.length > 0) {
     return displayable.map((image, index) => ({
@@ -203,11 +214,16 @@ export function serviceGallery(
       src: image.key,
       alt:
         image.alt ||
-        `${service.name} - photo ${index + 1} sur ${displayable.length} (${service.category.name})`,
+        t('catalogue.gallery.imageAlt', {
+          name: service.name,
+          n: index + 1,
+          count: displayable.length,
+          category: categoryLabel(locale, service.category.slug, service.category.name),
+        }),
     }));
   }
 
-  const fallback = demoImage(service);
+  const fallback = demoImage(service, locale);
   return [{ key: 'demo', src: fallback.src, alt: fallback.alt }];
 }
 
@@ -215,7 +231,8 @@ export function serviceGallery(
 /* Helpers d'affichage partagés (cartes, fiche, accueil)              */
 /* ------------------------------------------------------------------ */
 
-type Placeholder = { src: string; alt: string };
+/** `alt` = clé de `catalogue.demoAlt` (traduite à l'affichage). */
+type Placeholder = { src: string; alt: keyof (typeof MESSAGES)['fr']['catalogue']['demoAlt'] };
 
 const pexels = (id: number) =>
   `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=900`;
@@ -229,69 +246,69 @@ const CATEGORY_PLACEHOLDERS: Record<string, Placeholder[]> = {
   tresses: [
     {
       src: pexels(36441633),
-      alt: 'Tresses africaines en cours de réalisation (photo de démonstration)',
+      alt: 'braids',
     },
     {
       src: pexels(33664383),
-      alt: 'Coiffure tressée élégante vue de profil (photo de démonstration)',
+      alt: 'braidsProfile',
     },
     {
       src: pexels(31801412),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
+      alt: 'braidsPortrait',
     },
   ],
   vanilles: [
     {
       src: pexels(37547660),
-      alt: 'Femmes aux cheveux tressés en vanilles (photo de démonstration)',
+      alt: 'vanilles',
     },
     {
       src: pexels(33475847),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
+      alt: 'braidsPortrait',
     },
   ],
   locs: [
     {
       src: pexels(30152002),
-      alt: 'Femme portant des locs (photo de démonstration)',
+      alt: 'locs',
     },
     {
       src: pexels(14778613),
-      alt: 'Cheveux naturels bouclés en close-up (photo de démonstration)',
+      alt: 'curls',
     },
   ],
   'depart-de-locs': [
     {
       src: pexels(31801412),
-      alt: 'Portrait d’une femme aux cheveux tressés (photo de démonstration)',
+      alt: 'braidsPortrait',
     },
     {
       src: pexels(30152002),
-      alt: 'Femme portant des locs (photo de démonstration)',
+      alt: 'locs',
     },
   ],
   protectrices: [
     {
       src: pexels(16563139),
-      alt: 'Mains d’une coiffeuse réalisant une coiffure protectrice (photo de démonstration)',
+      alt: 'hands',
     },
     {
       src: pexels(11269055),
-      alt: 'Femme aux cheveux courts et soignés (photo de démonstration)',
+      alt: 'shortHair',
     },
   ],
   coupes: [
     {
       src: pexels(11269055),
-      alt: 'Femme aux cheveux courts et soignés (photo de démonstration)',
+      alt: 'shortHair',
     },
     {
       src: pexels(10825829),
-      alt: 'Portrait de démonstration d’une femme coiffée (photo de démonstration)',
+      alt: 'portrait',
     },
     {
       src: pexels(10810251),
-      alt: 'Cheveux courts colorés et coiffés (photo de démonstration)',
+      alt: 'shortColored',
     },
   ],
 };
@@ -304,14 +321,18 @@ function isDisplayableImageKey(key: string): boolean {
 }
 
 /** Choisit une photo de démonstration stable pour une prestation donnée. */
-function demoImage(service: Pick<CatalogueService, 'slug' | 'category'>): Placeholder {
+function demoImage(
+  service: Pick<CatalogueService, 'slug' | 'category'>,
+  locale: Locale = DEFAULT_LOCALE,
+): { src: string; alt: string } {
   const gallery = CATEGORY_PLACEHOLDERS[service.category.slug] ?? DEFAULT_PLACEHOLDERS;
   if (gallery.length === 0) {
     throw new Error('Aucune photo de démonstration configurée.');
   }
   const index =
     [...service.slug].reduce((sum, char) => sum + char.charCodeAt(0), 0) % gallery.length;
-  return gallery[index] ?? gallery[0]!;
+  const picked = gallery[index] ?? gallery[0]!;
+  return { src: picked.src, alt: MESSAGES[locale].catalogue.demoAlt[picked.alt] };
 }
 
 /**
@@ -319,62 +340,93 @@ function demoImage(service: Pick<CatalogueService, 'slug' | 'category'>): Placeh
  * Les clés S3 nues (P4.4) nécessiteront une URL signée : en attendant,
  * on affiche la photo de démonstration de la catégorie.
  */
-export function serviceImage(service: Pick<CatalogueService, 'slug' | 'images' | 'category'>): {
+export function serviceImage(
+  service: Pick<CatalogueService, 'slug' | 'images' | 'category'>,
+  locale: Locale = DEFAULT_LOCALE,
+): {
   src: string;
   alt: string;
 } {
   const primary = service.images[0];
-  const fallback = demoImage(service);
+  const fallback = demoImage(service, locale);
   return {
     src: primary && isDisplayableImageKey(primary.key) ? primary.key : fallback.src,
     alt: primary?.alt || fallback.alt,
   };
 }
 
-const amountFormatter = new Intl.NumberFormat('fr-FR', {
-  style: 'decimal',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
+const amountFormatters = new Map<Locale, Intl.NumberFormat>();
+
+function amountFormatter(locale: Locale): Intl.NumberFormat {
+  let formatter = amountFormatters.get(locale);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(INTL_LOCALE[locale], {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    amountFormatters.set(locale, formatter);
+  }
+  return formatter;
+}
 
 const CURRENCY_UNIT = '€';
 
 /** Montant en euros sans décimale (valeur interne en centimes). */
-function formatEuros(cents: number): string {
-  return `${amountFormatter.format(cents / 100)} ${CURRENCY_UNIT}`;
+function formatEuros(cents: number, locale: Locale): string {
+  return `${amountFormatter(locale).format(cents / 100)} ${CURRENCY_UNIT}`;
 }
 
 /**
- * Fourchette de prix : « 50 - 75 € » (demi-cadratin entouré d'espaces fines,
+ * Fourchette de prix : « 50 - 75 € » (tiret simple entouré d'espaces,
  * unité affichée une seule fois). Valeurs en centimes (colonnes *Cents).
  */
-export function formatPriceRange(fromCents: number, toCents: number): string {
-  return `${amountFormatter.format(fromCents / 100)} - ${formatEuros(toCents)}`;
+export function formatPriceRange(
+  fromCents: number,
+  toCents: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return `${amountFormatter(locale).format(fromCents / 100)} - ${formatEuros(toCents, locale)}`;
 }
 
 /** Les 4 modes de prix du §4.4 : fixe, départ, fourchette, « Prix à confirmer ». */
-export function formatPrice(service: {
-  priceFromCents: number | null;
-  priceToCents: number | null;
-  priceOnRequest: boolean;
-}): string {
+export function formatPrice(
+  service: {
+    priceFromCents: number | null;
+    priceToCents: number | null;
+    priceOnRequest: boolean;
+  },
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   const { priceFromCents: from, priceToCents: to, priceOnRequest } = service;
+  const words = MESSAGES[locale].catalogue.price;
+  const t = createTranslator(locale, MESSAGES[locale]);
 
-  if (priceOnRequest) return 'Prix à confirmer';
+  if (priceOnRequest) return words.onRequest;
 
   if (from != null && to != null) {
-    if (from === to) return formatEuros(from);
-    return formatPriceRange(from, to);
+    if (from === to) return formatEuros(from, locale);
+    return formatPriceRange(from, to, locale);
   }
-  if (from != null) return `À partir de ${formatEuros(from)}`;
-  if (to != null) return `Jusqu'à ${formatEuros(to)}`;
-  return 'Prix à confirmer';
+  if (from != null) return t('catalogue.price.from', { price: formatEuros(from, locale) });
+  if (to != null) return t('catalogue.price.upTo', { price: formatEuros(to, locale) });
+  return words.onRequest;
 }
 
-export function formatDuration(durationMinutes: number | null): string {
-  if (durationMinutes == null || durationMinutes <= 0) return 'Durée à confirmer';
+export function formatDuration(
+  durationMinutes: number | null,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  if (durationMinutes == null || durationMinutes <= 0) {
+    return MESSAGES[locale].catalogue.price.durationPending;
+  }
   const hours = Math.floor(durationMinutes / 60);
   const minutes = durationMinutes % 60;
+  if (locale === 'de') {
+    if (hours > 0 && minutes > 0) return `${hours} Std. ${minutes} Min.`;
+    if (hours > 0) return `${hours} Std.`;
+    return `${minutes} Min.`;
+  }
   if (hours > 0 && minutes > 0) return `${hours} h ${minutes.toString().padStart(2, '0')}`;
   if (hours > 0) return `${hours} h`;
   return `${minutes} min`;
@@ -388,9 +440,10 @@ export function bookingHref(slug: string): string {
 /** Toutes les photos affichables d'une prestation (jusqu'à 4), repli démo sinon. */
 export function serviceImages(
   service: Pick<CatalogueService, 'slug' | 'images' | 'category'>,
+  locale: Locale = DEFAULT_LOCALE,
 ): { src: string; alt: string }[] {
   const list = service.images
     .filter((image) => isDisplayableImageKey(image.key))
     .map((image) => ({ src: image.key, alt: image.alt || service.slug }));
-  return list.length > 0 ? list : [serviceImage(service)];
+  return list.length > 0 ? list : [serviceImage(service, locale)];
 }

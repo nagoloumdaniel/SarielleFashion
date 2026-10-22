@@ -2,14 +2,13 @@
 
 import { Star } from 'lucide-react';
 import { useId, useState } from 'react';
-
-const LABELS = ['Décevant', 'Moyen', 'Bien', 'Très bien', 'Excellent'];
+import { useI18n } from '@/i18n/client';
 
 /* Note de 1 à 5 : vrais boutons radio (flèches du clavier, lecteurs d'écran), étoiles visuelles.
    Aperçu au survol, libellé de la note choisie. */
 export function StarRatingInput({
   name = 'rating',
-  label = 'Ta note',
+  label,
   error,
   required = true,
 }: {
@@ -18,6 +17,8 @@ export function StarRatingInput({
   error?: string;
   required?: boolean;
 }) {
+  const { t, messages } = useI18n();
+  const LABELS = messages.common.ui.rating.labels;
   const [value, setValue] = useState(0);
   const [hover, setHover] = useState(0);
   const groupId = useId();
@@ -26,13 +27,13 @@ export function StarRatingInput({
   return (
     <fieldset className="flex flex-col gap-1.5">
       <legend className="text-sm font-semibold text-fg">
-        {label}{' '}
+        {label ?? t('common.ui.rating.label')}{' '}
         {required ? (
           <span aria-hidden="true" className="text-alert">
             *
           </span>
         ) : null}
-        {required ? <span className="sr-only">(obligatoire)</span> : null}
+        {required ? <span className="sr-only">{t('common.ui.required')}</span> : null}
       </legend>
       <div className="flex items-center gap-3">
         <div className="flex gap-1" onMouseLeave={() => setHover(0)}>
@@ -59,7 +60,7 @@ export function StarRatingInput({
                 }`}
               />
               <span className="sr-only">
-                {n} sur 5, {LABELS[n - 1]}
+                {t('common.ui.rating.of', { n, label: LABELS[n - 1] ?? '' })}
               </span>
             </label>
           ))}

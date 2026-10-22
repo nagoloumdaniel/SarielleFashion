@@ -1,8 +1,8 @@
 'use client';
 
 import { RotateCcw, Search, X } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useI18n } from '@/i18n/client';
+import { Link, useRouter } from '@/i18n/link';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { Button, buttonClasses } from '@/components/ui/Button';
 import type { CatalogueCategory } from '@/lib/catalogue';
@@ -35,6 +35,7 @@ export function CatalogueFilters({
   total,
 }: CatalogueFiltersProps) {
   const router = useRouter();
+  const { t, path } = useI18n();
   const [search, setSearch] = useState(initialSearch);
   const [isPending, startTransition] = useTransition();
   const categoryRef = useRef(initialCategory);
@@ -67,7 +68,7 @@ export function CatalogueFilters({
   }, [search, initialSearch, navigate]);
 
   const hasFilters = initialSearch !== '' || initialCategory !== '';
-  const resultLabel = `${total} coiffure${total > 1 ? 's' : ''} trouvée${total > 1 ? 's' : ''}`;
+  const resultLabel = t('catalogue.filters.found', { count: total });
 
   return (
     <section
@@ -75,11 +76,11 @@ export function CatalogueFilters({
       className="space-y-4 rounded-[var(--radius-xl)] border border-line bg-card/80 p-4 shadow-soft backdrop-blur-md md:p-5"
     >
       <h2 id="filtres-titre" className="sr-only">
-        Rechercher et filtrer les coiffures
+        {t('catalogue.filters.heading')}
       </h2>
 
       <form
-        action="/coiffures"
+        action={path('/coiffures')}
         method="get"
         role="search"
         onSubmit={(event) => {
@@ -91,7 +92,7 @@ export function CatalogueFilters({
       >
         <div className="relative min-w-0 flex-1">
           <label htmlFor="catalogue-search" className="sr-only">
-            Rechercher une coiffure
+            {t('catalogue.filters.searchLabel')}
           </label>
           <Search
             aria-hidden="true"
@@ -103,7 +104,7 @@ export function CatalogueFilters({
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Coiffure, make-up, cils…"
+            placeholder={t('catalogue.filters.placeholder')}
             autoComplete="off"
             enterKeyHint="search"
             className="h-10 w-full rounded-[var(--radius-md)] border border-line bg-page pl-10 pr-10 text-base text-fg placeholder:text-muted/70 focus:border-cacao focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 [&::-webkit-search-cancel-button]:appearance-none"
@@ -120,7 +121,7 @@ export function CatalogueFilters({
                 setSearch('');
                 navigate('', categoryRef.current);
               }}
-              aria-label="Effacer la recherche"
+              aria-label={t('catalogue.filters.clear')}
               className="absolute right-1.5 top-1/2 inline-flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
             >
               <X aria-hidden="true" className="size-4" />
@@ -129,12 +130,12 @@ export function CatalogueFilters({
         </div>
 
         <Button type="submit" icon={Search} iconOnly="mobile" loading={isPending}>
-          Rechercher
+          {t('catalogue.filters.submit')}
         </Button>
       </form>
 
       <nav
-        aria-label="Filtrer par catégorie"
+        aria-label={t('catalogue.filters.categoriesAria')}
         className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:-mx-5 md:px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <Link
@@ -146,7 +147,7 @@ export function CatalogueFilters({
             variant: initialCategory === '' ? 'primary' : 'secondary',
           })}
         >
-          Toutes
+          {t('catalogue.filters.all')}
         </Link>
         {categories.map((category) => {
           const active = category.slug === initialCategory;
@@ -173,7 +174,7 @@ export function CatalogueFilters({
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
         <p className="text-sm text-muted" aria-live="polite">
-          {isPending ? 'Mise à jour des résultats…' : resultLabel}
+          {isPending ? t('catalogue.filters.updating') : resultLabel}
         </p>
         {hasFilters ? (
           <Link
@@ -182,7 +183,7 @@ export function CatalogueFilters({
             className="inline-flex items-center gap-1.5 text-sm font-semibold text-cacao underline-offset-4 hover:underline"
           >
             <RotateCcw aria-hidden="true" className="size-3.5" />
-            Réinitialiser les filtres
+            {t('catalogue.filters.reset')}
           </Link>
         ) : null}
       </div>

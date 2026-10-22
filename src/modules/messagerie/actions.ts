@@ -77,13 +77,18 @@ export async function adminReplyToConversation(
         subject: conversation.subject,
         message: input.content,
       } satisfies Prisma.InputJsonValue;
+      // Langue de la cliente (enregistrée à son premier message) pour l'e-mail de réponse.
+      const clientPayload = {
+        ...payload,
+        locale: conversation.locale,
+      } satisfies Prisma.InputJsonValue;
       await tx.notification.createMany({
         data: [
           {
             idempotencyKey: `conversation:${conversation.id}:reply:${message.id}`,
             recipient: conversation.customer!.email,
             templateKey: 'conversation_reply',
-            payload,
+            payload: clientPayload,
           },
           {
             idempotencyKey: `conversation:${conversation.id}:reply:${message.id}:inapp`,

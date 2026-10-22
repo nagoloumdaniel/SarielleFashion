@@ -1,43 +1,28 @@
 import { CalendarCheck, ChevronRight, ImagePlus, Lock, PenLine, ShieldCheck } from 'lucide-react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { Link } from '@/i18n/link';
+import { I18nScope } from '@/i18n/client';
+import { getI18n } from '@/i18n/server';
+import { pageMetadata } from '@/i18n/metadata';
 import { CustomRequestForm } from './custom-request-form';
 import { Title } from '@/components/ui/Title';
 
-export const metadata: Metadata = {
-  title: 'Demande de coiffure personnalisée',
-  description:
-    'Décrivez votre coiffure sur mesure, ajoutez des photos de référence et recevez une réponse personnalisée de Sarielle.',
-  alternates: { canonical: '/demandes-personnalisees' },
-  openGraph: {
-    title: 'Demande de coiffure personnalisée - Sarielle Fashion',
-    description: 'Décrivez votre coiffure sur mesure et recevez une réponse personnalisée.',
-    url: '/demandes-personnalisees',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, messages } = await getI18n();
+  return pageMetadata({ locale, path: '/demandes-personnalisees', ...messages.requests.meta });
+}
 
-const STEPS = [
-  { Icon: PenLine, title: 'Décrivez votre coiffure', text: 'Votre idée, vos cheveux, vos photos.' },
-  {
-    Icon: ShieldCheck,
-    title: 'Sarielle étudie la faisabilité',
-    text: 'Elle examine chaque demande.',
-  },
-  {
-    Icon: CalendarCheck,
-    title: 'Vous réservez si la proposition vous convient',
-    text: 'Aucun engagement avant votre accord.',
-  },
-] as const;
+const STEP_ICONS = [PenLine, ShieldCheck, CalendarCheck] as const;
 
-export default function CustomRequestPage() {
+export default async function CustomRequestPage() {
+  const { t, messages } = await getI18n();
   return (
     <main className="page-main space-y-10">
-      <nav aria-label="Fil d'Ariane" className="text-sm text-ink-soft">
+      <nav aria-label={t('common.breadcrumb')} className="text-sm text-ink-soft">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="transition hover:text-cacao">
-              Accueil
+              {t('nav.home')}
             </Link>
           </li>
           <li aria-hidden="true">
@@ -45,7 +30,7 @@ export default function CustomRequestPage() {
           </li>
           <li>
             <span aria-current="page" className="font-medium text-fg">
-              Demande personnalisée
+              {t('requests.breadcrumb')}
             </span>
           </li>
         </ol>
@@ -53,49 +38,51 @@ export default function CustomRequestPage() {
 
       <header className="max-w-3xl space-y-4">
         <Title as="h1" size="display">
-          Une coiffure qui n’est pas au catalogue ?
+          {t('requests.h1')}
         </Title>
-        <p className="text-base leading-relaxed text-ink-soft md:text-lg">
-          Décrivez votre projet et joignez jusqu’à 3 photos de référence. Sarielle vous répond avec
-          une proposition adaptée.
-        </p>
+        <p className="text-base leading-relaxed text-ink-soft md:text-lg">{t('requests.intro')}</p>
       </header>
 
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10">
         <section className="order-2 lg:order-1" aria-labelledby="formulaire-demande">
           <Title as="h2" id="formulaire-demande">
-            Votre demande
+            {t('requests.formTitle')}
           </Title>
           <p className="mt-2 flex items-center gap-2 text-sm text-ink-soft">
             <Lock aria-hidden="true" className="size-4 shrink-0 text-cacao" />
-            Une demande ne réserve pas de créneau. Aucun paiement n’est demandé.
+            {t('requests.noBooking')}
           </p>
           <div className="mt-5">
-            <CustomRequestForm />
+            <I18nScope messages={{ requests: messages.requests }}>
+              <CustomRequestForm />
+            </I18nScope>
           </div>
         </section>
 
         <aside
-          aria-label="Comment ça se passe"
+          aria-label={t('requests.asideAria')}
           className="order-1 space-y-5 rounded-[var(--radius-lg)] bg-gradient-soft p-6 sm:p-8 lg:order-2"
         >
-          <h2 className="font-heading text-xl font-bold text-fg">Comment ça se passe</h2>
+          <h2 className="font-heading text-xl font-bold text-fg">{t('requests.asideTitle')}</h2>
           <ol className="space-y-5">
-            {STEPS.map(({ Icon, title, text }) => (
-              <li key={title} className="flex gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-cacao shadow-soft">
-                  <Icon aria-hidden="true" className="size-5" />
-                </span>
-                <div>
-                  <p className="font-semibold text-fg">{title}</p>
-                  <p className="text-sm text-ink-soft">{text}</p>
-                </div>
-              </li>
-            ))}
+            {messages.requests.steps.map(({ title, text }, index) => {
+              const Icon = STEP_ICONS[index] ?? PenLine;
+              return (
+                <li key={title} className="flex gap-3">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-cacao shadow-soft">
+                    <Icon aria-hidden="true" className="size-5" />
+                  </span>
+                  <div>
+                    <p className="font-semibold text-fg">{title}</p>
+                    <p className="text-sm text-ink-soft">{text}</p>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
           <p className="flex items-start gap-2 border-t border-line pt-4 text-sm text-ink-soft">
             <ImagePlus aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-cacao" />
-            Photos nettes de face, de profil et de vos cheveux actuels.
+            {t('requests.photoTip')}
           </p>
         </aside>
       </div>

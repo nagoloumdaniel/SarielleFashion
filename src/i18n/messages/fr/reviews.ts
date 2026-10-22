@@ -1,1 +1,45 @@
-export const reviews = {};
+/* Avis clients (fiche prestation, lien e-mail). */
+export const reviews = {
+  tokenPage: {
+    metaTitle: 'Laisser un avis',
+    invalidTitle: 'Lien invalide',
+    invalidText: 'Ce lien d’avis ne correspond à aucun rendez-vous.',
+    answeredTitle: 'Avis déjà envoyé',
+    expiredTitle: 'Lien expiré',
+    answeredText: 'Merci, ton avis a déjà été transmis.',
+    expiredText:
+      'Ce lien d’avis a expiré. Tu peux toujours donner ton avis depuis la fiche de la prestation.',
+    title: 'Ton avis sur « {service} »',
+  },
+  section: {
+    title: 'Avis des clientes',
+    empty: 'Aucun avis pour cette prestation pour le moment. Sois la première à donner le tien.',
+    give: 'Donner mon avis',
+  },
+  list: {
+    label: 'Avis des clientes',
+    verified: 'Client vérifié',
+    photosLabel: 'Photos de l’avis',
+    enlarge: 'Agrandir la photo {n} sur {total}',
+    loadError: 'Impossible de charger les avis. Réessaie.',
+    more: 'Afficher plus d’avis',
+  },
+  form: {
+    firstName: 'Ton prénom',
+    firstNameHint: 'Seuls ton prénom et l’initiale de ton nom sont affichés.',
+    comment: 'Ton commentaire (facultatif)',
+    commentPlaceholder: 'Raconte comment s’est passé ton rendez-vous',
+    photos: 'Photos (facultatif, {max} maximum)',
+    pickPhotos: 'Choisir des photos',
+    addPhotos: 'Ajouter des photos',
+    photoRules: 'JPEG, PNG ou WebP, 5 Mo maximum chacune.',
+    tooMany: '{max} photos maximum.',
+    badType: 'Utilise des photos JPEG, PNG ou WebP.',
+    tooBig: 'Chaque photo doit peser 5 Mo au maximum.',
+    preview: 'Aperçu de la photo {n}',
+    remove: 'Retirer la photo {n}',
+    honeypot: 'Ne pas remplir',
+    submit: 'Publier mon avis',
+  },
+  photoAlt: 'Photo {n} jointe à l’avis de {author}',
+};

@@ -3,6 +3,7 @@
 import { AppError } from '@/lib/errors';
 import { getClientIp } from '@/lib/client-ip';
 import { rateLimit } from '@/lib/rate-limit';
+import { getLocale } from '@/i18n/server';
 import { addToWaitlist } from './service';
 import { waitlistEntrySchema } from './schemas';
 
@@ -44,6 +45,7 @@ export async function joinWaitlistAction(
       name: parsed.data.name,
       email: parsed.data.email,
       phone: parsed.data.phone,
+      locale: await getLocale(),
     });
     return {
       success:

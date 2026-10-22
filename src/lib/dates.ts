@@ -7,6 +7,8 @@
  * aucune variable d'environnement, aucun fuseau salon en base.
  * Conversions pures via l'API Intl, testables isolément (TDD).
  */
+import { INTL_LOCALE, type Locale } from '@/i18n/config';
+
 export const WEEKDAY_FR = [
   'lundi',
   'mardi',
@@ -140,4 +142,20 @@ export function formatHour(minute: number): string {
   const h = Math.floor(minute / 60) % 24;
   const m = minute % 60;
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+/**
+ * Nom du jour de la semaine dans la langue de l'interface (index 0 = lundi … 6 = dimanche).
+ * Version locale-aware de WEEKDAY_FR (conservé tel quel pour le dashboard).
+ */
+export function weekdayName(
+  locale: Locale,
+  index: number,
+  width: 'long' | 'short' = 'long',
+): string {
+  // 2024-01-01 est un lundi : base stable, indépendante du fuseau (midi UTC).
+  const date = new Date(Date.UTC(2024, 0, 1 + (((index % 7) + 7) % 7), 12));
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], { weekday: width, timeZone: 'UTC' }).format(
+    date,
+  );
 }

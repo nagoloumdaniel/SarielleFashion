@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { useI18n } from '@/i18n/client';
 import { IMAGE_BLUR_DATA_URL } from '@/lib/image-placeholder';
 
 type GalleryImage = { key: string; src: string; alt: string };
@@ -22,6 +23,7 @@ export function ServiceGallery({
   images: GalleryImage[];
   serviceName: string;
 }) {
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
@@ -36,8 +38,8 @@ export function ServiceGallery({
     <div className="space-y-3">
       <div
         role="group"
-        aria-roledescription="carrousel"
-        aria-label={`Galerie photos de ${serviceName}`}
+        aria-roledescription={t('catalogue.gallery.carousel')}
+        aria-label={t('catalogue.gallery.label', { name: serviceName })}
         tabIndex={count > 1 ? 0 : undefined}
         onKeyDown={(event) => {
           if (count < 2) return;
@@ -91,7 +93,7 @@ export function ServiceGallery({
               onClick={() => goTo(index - 1)}
               className={`${NAV_BUTTON} left-3`}
             >
-              Photo précédente
+              {t('catalogue.gallery.previous')}
             </Button>
             <Button
               type="button"
@@ -102,7 +104,7 @@ export function ServiceGallery({
               onClick={() => goTo(index + 1)}
               className={`${NAV_BUTTON} right-3`}
             >
-              Photo suivante
+              {t('catalogue.gallery.next')}
             </Button>
             <p
               aria-live="polite"
@@ -115,7 +117,10 @@ export function ServiceGallery({
       </div>
 
       {count > 1 ? (
-        <ul aria-label="Miniatures de la galerie" className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+        <ul
+          aria-label={t('catalogue.gallery.thumbnails')}
+          className="grid grid-cols-4 gap-2 sm:grid-cols-5"
+        >
           {images.map((image, imageIndex) => {
             const activeThumb = imageIndex === index;
             return (
@@ -123,7 +128,7 @@ export function ServiceGallery({
                 <button
                   type="button"
                   onClick={() => setIndex(imageIndex)}
-                  aria-label={`Afficher la photo ${imageIndex + 1} sur ${count}`}
+                  aria-label={t('catalogue.gallery.show', { n: imageIndex + 1, count })}
                   aria-current={activeThumb ? 'true' : undefined}
                   className={`relative block aspect-square w-full overflow-hidden rounded-[var(--radius-md)] border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                     activeThumb

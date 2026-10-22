@@ -8,6 +8,7 @@ import {
 } from '@/modules/reservations/actions';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
+import { useI18n } from '@/i18n/client';
 import { Textarea } from '@/components/ui/Textarea';
 
 /* ============================================================
@@ -15,6 +16,7 @@ import { Textarea } from '@/components/ui/Textarea';
  * ============================================================ */
 
 export function CancelForm({ token, reasonRequired }: { token: string; reasonRequired: boolean }) {
+  const { t, msg } = useI18n();
   const [state, formAction, pending] = useActionState<CustomerCancelState, FormData>(
     cancelAppointmentByCustomer,
     {},
@@ -24,9 +26,9 @@ export function CancelForm({ token, reasonRequired }: { token: string; reasonReq
     return (
       <div className="rounded-[var(--radius-lg)] border border-success bg-success-soft p-6">
         <Title as="h2" className="">
-          Rendez-vous annulé
+          {t('booking.cancel.doneTitle')}
         </Title>
-        <p className="mt-2 text-sm text-fg">{state.success}</p>
+        <p className="mt-2 text-sm text-fg">{msg(state.success)}</p>
       </div>
     );
   }
@@ -35,7 +37,9 @@ export function CancelForm({ token, reasonRequired }: { token: string; reasonReq
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="token" value={token} />
       <Textarea
-        label={reasonRequired ? 'Motif de l’annulation (obligatoire)' : 'Motif (facultatif)'}
+        label={
+          reasonRequired ? t('booking.cancel.reasonRequired') : t('booking.cancel.reasonOptional')
+        }
         name="reason"
         required={reasonRequired}
         rows={3}
@@ -45,15 +49,15 @@ export function CancelForm({ token, reasonRequired }: { token: string; reasonReq
           role="alert"
           className="rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
         >
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
       <div className="flex flex-wrap gap-3">
         <Button type="submit" variant="danger" icon={XCircle} loading={pending}>
-          Confirmer l’annulation
+          {t('booking.cancel.confirm')}
         </Button>
         <ButtonLink href="/contact" variant="secondary" icon={Mail}>
-          Contacter Sarielle
+          {t('booking.cancel.contactCta')}
         </ButtonLink>
       </div>
     </form>

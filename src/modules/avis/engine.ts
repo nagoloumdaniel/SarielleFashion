@@ -54,20 +54,24 @@ export function summarizeRatings(ratings: Array<number | null | undefined>): Rat
   return { count: valid.length, average: Math.round((sum / valid.length) * 10) / 10 };
 }
 
-/** « 4,8 » (virgule française). */
-export function formatAverage(average: number): string {
-  return average.toFixed(1).replace('.', ',');
+/** « 4,8 » (virgule décimale en français comme en allemand). */
+export function formatAverage(average: number, locale: 'fr' | 'de' = 'fr'): string {
+  return average.toLocaleString(locale === 'de' ? 'de-DE' : 'fr-FR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 }
 
-/** « 1 avis » / « 12 avis ». */
-export function formatReviewCount(count: number): string {
+/** « 1 avis » / « 12 avis » (fr), « 1 Bewertung » / « 12 Bewertungen » (de). */
+export function formatReviewCount(count: number, locale: 'fr' | 'de' = 'fr'): string {
+  if (locale === 'de') return count === 1 ? '1 Bewertung' : `${count} Bewertungen`;
   return count === 1 ? '1 avis' : `${count} avis`;
 }
 
 /** Nom affiché publiquement : prénom + initiale du nom (« Awa D. »), jamais le nom complet. */
-export function publicAuthorName(fullName: string): string {
+export function publicAuthorName(fullName: string, locale: 'fr' | 'de' = 'fr'): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return 'Cliente';
+  if (parts.length === 0) return locale === 'de' ? 'Kundin' : 'Cliente';
   const first = parts[0]!;
   const last = parts.length > 1 ? parts[parts.length - 1]! : '';
   return last ? `${first} ${last.charAt(0).toUpperCase()}.` : first;

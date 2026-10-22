@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '@/i18n/client';
 import { DateField } from './DateField';
 import { TimeField } from './TimeField';
 
@@ -24,6 +25,7 @@ export function DateTimeField({
   min?: string;
   max?: string;
 }) {
+  const t = useT();
   const [d0, t0] = (defaultValue ?? '').split('T');
   const [date, setDate] = useState(d0 ?? '');
   const [time, setTime] = useState(t0?.slice(0, 5) ?? '');
@@ -41,7 +43,11 @@ export function DateTimeField({
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
-        <TimeField label="Heure" value={time} onChange={(e) => setTime(e.target.value)} />
+        <TimeField
+          label={t('common.ui.time.label')}
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+        />
       </div>
       {hint && !error ? <p className="text-sm text-muted">{hint}</p> : null}
     </div>

@@ -12,6 +12,8 @@ import { requireAdmin } from '@/modules/auth/guards';
 import { deletePrivateImages, storePrivateImages } from '@/modules/fichiers/private-images';
 import { adminNotificationRecipient } from '@/modules/notifications/service';
 import { logAudit } from '@/modules/stats/audit';
+import { getLocale } from '@/i18n/server';
+import { isLocale, type Locale } from '@/i18n/config';
 import {
   customRequestDecisionSchema,
   customRequestSchema,
@@ -45,6 +47,7 @@ function customPayload(
     estimatedPriceCents: number | null;
     proposedServiceName: string | null;
     proposedSlot: string | null;
+    locale: Locale;
   }>,
 ): Prisma.InputJsonValue {
   return {
@@ -64,6 +67,7 @@ export async function submitCustomRequest(
   formData: FormData,
 ): Promise<CustomRequestSubmitState> {
   const ip = await getClientIp();
+  const locale = await getLocale();
   const limit = await rateLimit(`demandes:submit:${ip}`, { max: 4, windowMs: 60 * 60_000 });
   if (!limit.allowed) {
     return { error: 'Trop de demandes envoyées. Réessayez dans un moment.' };
@@ -120,6 +124,7 @@ export async function submitCustomRequest(
           hairInfo,
           desiredDate,
           status: 'NEW',
+          locale,
         },
       });
       await tx.notification.createMany({
@@ -142,7 +147,7 @@ export async function submitCustomRequest(
             idempotencyKey: `custom:${created.id}:client:received`,
             recipient: customer.email,
             templateKey: 'custom_request_received',
-            payload: customPayload(created),
+            payload: customPayload(created, { locale }),
           },
         ],
         skipDuplicates: true,
@@ -252,6 +257,8 @@ export async function decideCustomRequest(
                 estimatedPriceCents: input.estimatedPriceEur,
                 proposedServiceName: serviceName,
                 proposedSlot: proposedSlot?.toISOString() ?? null,
+                // Langue de la cliente (enregistrée à sa demande), pas celle de l'admin.
+                locale: isLocale(request.locale) ? request.locale : 'fr',
               }),
             },
           ],
