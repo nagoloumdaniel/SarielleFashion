@@ -1,49 +1,49 @@
 @import 'tailwindcss';
 
 /* ============================================================
-   Tokens design - système jaune doré / ocre (DESIGN-RULES.md)
+   Tokens design - système rouge (DESIGN-RULES.md)
    Rôles : Fond · Surface · Texte · Primaire · Accent (clair / sombre).
    Aucune autre couleur de marque : tout dérive de l'échelle primary.
    ============================================================ */
 @theme {
   /* Échelle primaire (ocre → jaune lumineux) */
-  --color-primary-50: #fffbe6;
-  --color-primary-100: #fff1b8;
-  --color-primary-200: #ffe680;
-  --color-primary-300: #ffd84d;
-  --color-primary-400: #f2c21f;
-  --color-primary-500: #c99a0a;
-  --color-primary-600: #a87c00;
-  --color-primary-700: #8a6400;
-  --color-primary-800: #6b4d00;
-  --color-primary-900: #4a3500;
+  --color-primary-50: #fff1f0;
+  --color-primary-100: #fde6e4;
+  --color-primary-200: #ff8e8e;
+  --color-primary-300: #ff6b6b;
+  --color-primary-400: #ff5252;
+  --color-primary-500: #e04444;
+  --color-primary-600: #d83a3a;
+  --color-primary-700: #c62828;
+  --color-primary-800: #a31f1f;
+  --color-primary-900: #551010;
 
   /* Rôles sémantiques (thème clair) */
-  --color-page: #fffcf0; /* Fond */
+  --color-page: #fff8f7; /* Fond */
   --color-card: #ffffff; /* Surface */
-  --color-fg: #28230c; /* Texte */
-  --color-accent: #8a6400; /* Primaire : ocre foncé, texte blanc AA */
-  --color-accent-hover: #6b4d00;
-  --color-accent-soft: #fff1b8; /* Accent : jaune clair lumineux */
+  --color-fg: #271719; /* Texte */
+  --color-accent: #c62828; /* Primaire : ocre foncé, texte blanc AA */
+  --color-accent-hover: #a31f1f;
+  --color-accent-soft: #fde6e4; /* Accent : jaune clair lumineux */
   --color-accent-fg: #ffffff; /* texte sur Primaire */
-  --color-bright: #ffd84d; /* jaune vif pour fonds toujours sombres */
+  --color-bright: #ff6b6b; /* jaune vif pour fonds toujours sombres */
 
-  --color-muted: #5a5224; /* texte secondaire (AA sur page et surface) */
-  --color-ink-soft: #5a5224; /* alias historique de muted */
-  --color-line: #eadfb0; /* bordures */
+  --color-muted: #67494c; /* texte secondaire (AA sur page et surface) */
+  --color-ink-soft: #67494c; /* alias historique de muted */
+  --color-line: #f1d6d3; /* bordures */
 
   /* Anciens noms conservés, remappés sur le nouveau système */
-  --color-cacao: #8a6400;
+  --color-cacao: #c62828;
   --color-cacao-fg: #ffffff;
-  --color-cacao-deep: #28230c;
-  --color-cream: #fff8d8;
-  --color-cream-dark: #fff1b8;
+  --color-cacao-deep: #271719;
+  --color-cream: #fff4f2;
+  --color-cream-dark: #fde6e4;
   --color-surface: #ffffff;
-  --color-ink: #17150b; /* panneaux toujours sombres */
-  --color-panel: #17150b;
-  --color-panel-fg: #fff8d8;
-  --color-footer: #17150b;
-  --color-hero: #8a6400;
+  --color-ink: #151011; /* panneaux toujours sombres */
+  --color-panel: #151011;
+  --color-panel-fg: #fff4f2;
+  --color-footer: #151011;
+  --color-hero: #c62828;
 
   /* États (hors marque, nécessaires aux formulaires) */
   --color-alert: #b3382f;
@@ -53,43 +53,43 @@
   --color-success-soft: #e6f3ec;
 
   /* Rayons */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.9rem;
-  --radius-lg: 1.4rem;
-  --radius-xl: 2rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
   --radius-full: 9999px;
 
   /* Ombres chaudes teintées ocre */
-  --shadow-soft: 0 2px 12px rgb(138 100 0 / 0.1);
-  --shadow-lift: 0 10px 34px rgb(138 100 0 / 0.2);
-  --shadow-glass: 0 8px 32px rgb(40 35 12 / 0.12);
+  --shadow-soft: 0 2px 12px rgb(198 40 40 / 0.1);
+  --shadow-lift: 0 10px 34px rgb(198 40 40 / 0.2);
+  --shadow-glass: 0 8px 32px rgb(39 23 25 / 0.12);
 
-  /* Typographie : Playfair Display (titres) + Lato (texte) */
-  --font-heading: var(--font-playfair), Georgia, serif;
-  --font-sans: var(--font-lato), ui-sans-serif, system-ui, sans-serif;
+  /* Typographie : Manrope (titres) + Inter (texte) */
+  --font-heading: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Thème sombre : surcharge des rôles. Appliqué sur <html data-theme> avant rendu. */
 html[data-theme='dark'] {
   color-scheme: dark;
-  --color-page: #17150b;
-  --color-card: #23200f;
-  --color-fg: #fff8d8;
-  --color-accent: #ffd84d;
-  --color-accent-hover: #ffe680;
-  --color-accent-soft: #41350e;
-  --color-accent-fg: #17150b;
+  --color-page: #151011;
+  --color-card: #211719;
+  --color-fg: #fff4f2;
+  --color-accent: #ff6b6b;
+  --color-accent-hover: #ff8e8e;
+  --color-accent-soft: #452225;
+  --color-accent-fg: #151011;
 
-  --color-muted: #d6cb9a;
-  --color-ink-soft: #d6cb9a;
-  --color-line: #3a3319;
+  --color-muted: #d9bdba;
+  --color-ink-soft: #d9bdba;
+  --color-line: #3a2629;
 
-  --color-cacao: #ffd84d;
-  --color-cacao-fg: #17150b;
-  --color-cacao-deep: #fff8d8;
-  --color-footer: #100e06;
-  --color-hero: #41350e;
-  --color-panel: #100e06;
+  --color-cacao: #ff6b6b;
+  --color-cacao-fg: #151011;
+  --color-cacao-deep: #fff4f2;
+  --color-footer: #0e0a0b;
+  --color-hero: #452225;
+  --color-panel: #0e0a0b;
 
   --color-alert: #ff9a90;
   --color-alert-soft: #3a1f1c;
@@ -101,7 +101,7 @@ html[data-theme='dark'] {
   --shadow-glass: 0 8px 32px rgb(0 0 0 / 0.5);
 }
 
-/* Contraste : #FFFFFF sur #8A6400 ≈ 5.6:1 (AA) ; #17150B sur #FFD84D ≈ 12:1 (AAA). */
+/* Contraste : #FFFFFF sur #c62828 ≈ 5.6:1 (AA) ; #151011 sur #ff6b6b ≈ 12:1 (AAA). */
 
 html {
   background-color: var(--color-page);
@@ -213,18 +213,18 @@ html[data-theme='dark'] .theme-icon-light {
    Effets : dégradés, verre (glass), flou, navbar flottante
    ============================================================ */
 :root {
-  --gradient-primary: linear-gradient(135deg, #8a6400 0%, #7a5800 45%, #6b4d00 100%);
-  --gradient-soft: linear-gradient(160deg, #fff1b8 0%, #fffcf0 70%);
-  --glass-bg: rgb(255 252 240 / 0.62);
+  --gradient-primary: linear-gradient(135deg, #c62828 0%, #b32424 45%, #a31f1f 100%);
+  --gradient-soft: linear-gradient(160deg, #fde6e4 0%, #fff8f7 70%);
+  --glass-bg: rgb(255 248 247 / 0.62);
   --glass-bg-strong: rgb(255 255 255 / 0.8);
-  --glass-border: rgb(138 100 0 / 0.18);
+  --glass-border: rgb(198 40 40 / 0.18);
 }
 html[data-theme='dark'] {
-  --gradient-primary: linear-gradient(135deg, #ffe680 0%, #ffd84d 50%, #f2c21f 100%);
-  --gradient-soft: linear-gradient(160deg, #41350e 0%, #17150b 70%);
-  --glass-bg: rgb(35 32 15 / 0.6);
-  --glass-bg-strong: rgb(35 32 15 / 0.82);
-  --glass-border: rgb(255 216 77 / 0.2);
+  --gradient-primary: linear-gradient(135deg, #ff8e8e 0%, #ff6b6b 50%, #ff5252 100%);
+  --gradient-soft: linear-gradient(160deg, #452225 0%, #151011 70%);
+  --glass-bg: rgb(33 23 25 / 0.6);
+  --glass-bg-strong: rgb(33 23 25 / 0.82);
+  --glass-border: rgb(255 107 107 / 0.2);
 }
 
 .glass {
@@ -257,28 +257,14 @@ html[data-theme='dark'] {
 /* Navbar flottante : pilule en verre détachée du bord, web et mobile */
 .nav-floating {
   position: fixed;
-  top: 0.75rem;
-  left: 1rem;
-  right: 1rem;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
-  margin-inline: auto;
-  max-width: calc(80rem - 2rem);
-  border-radius: var(--radius-full);
+  border-bottom: 1px solid var(--color-line);
 }
 .nav-floating[data-open='true'] {
-  border-radius: var(--radius-xl);
-}
-@media (min-width: 640px) {
-  .nav-floating {
-    left: 1.5rem;
-    right: 1.5rem;
-    max-width: calc(80rem - 3rem);
-  }
-}
-@media (min-width: 768px) {
-  .nav-floating {
-    top: 1rem;
-  }
+  border-radius: 0;
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass,
@@ -288,20 +274,19 @@ html[data-theme='dark'] {
 }
 
 /* ============================================================
-   Titres immersifs : majuscules, Playfair 900 + Lato italique dégradé
+   Titres immersifs : majuscules, Manrope 800 + Inter italique dégradé
    ============================================================ */
 :root {
-  --gradient-title: linear-gradient(100deg, #6b4d00 0%, #a87c00 55%, #8a6400 100%);
+  --gradient-title: linear-gradient(100deg, #a31f1f 0%, #d83a3a 55%, #c62828 100%);
 }
 html[data-theme='dark'] {
-  --gradient-title: linear-gradient(100deg, #ffe680 0%, #ffd84d 55%, #f2c21f 100%);
+  --gradient-title: linear-gradient(100deg, #ff8e8e 0%, #ff6b6b 55%, #ff5252 100%);
 }
 
 .display-title,
 .section-title {
   font-family: var(--font-heading);
-  font-weight: 900;
-  text-transform: uppercase;
+  font-weight: 800;
   color: var(--color-fg);
   text-wrap: balance;
   overflow-wrap: anywhere;
@@ -310,7 +295,7 @@ html[data-theme='dark'] {
 .display-title {
   font-size: clamp(1.75rem, 6.5vw, 4.25rem);
   line-height: 1;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.03em;
 }
 .section-title {
   font-size: clamp(1.5rem, 4.2vw, 2.5rem);
@@ -318,14 +303,9 @@ html[data-theme='dark'] {
   letter-spacing: -0.01em;
 }
 .title-accent {
-  font-family: var(--font-sans);
-  font-style: italic;
-  font-weight: 300;
-  letter-spacing: 0;
-  background-image: var(--gradient-title);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: var(--color-accent);
 }
 .display-title .title-word {
   display: inline-block;
@@ -353,17 +333,17 @@ html[data-theme='dark'] {
   color: var(--color-panel-fg);
 }
 .title-on-dark .title-accent {
-  background-image: linear-gradient(100deg, #fff1b8 0%, #ffd84d 100%);
+  background-image: linear-gradient(100deg, #fde6e4 0%, #ff6b6b 100%);
 }
 
 /* ============================================================
    Carte prestation immersive : voile + flou adaptés au thème
    ============================================================ */
 :root {
-  --scrim: 40 35 12;
+  --scrim: 39 23 25;
 }
 html[data-theme='dark'] {
-  --scrim: 16 14 6;
+  --scrim: 14 10 11;
 }
 .prestation-card {
   box-shadow: var(--shadow-lift);
@@ -474,14 +454,13 @@ body:has([data-fullscreen]) {
 }
 
 /* ============================================================
-   Landing : hero sur fond ocre/olive en dégradés, navbar intacte.
+   Landing : hero typographique clair (aucune image), halo rouge discret.
    ============================================================ */
 .landing-hero {
+  background-color: var(--color-page);
   background-image:
-    radial-gradient(55% 50% at 12% 88%, rgb(255 216 77 / 0.3), transparent 70%),
-    radial-gradient(50% 50% at 90% 82%, rgb(255 216 77 / 0.26), transparent 70%),
-    radial-gradient(70% 45% at 50% 22%, rgb(255 230 128 / 0.22), transparent 72%),
-    linear-gradient(180deg, rgb(255 241 184 / 0.08) 0%, transparent 40%, rgb(23 21 11 / 0.5) 100%);
+    radial-gradient(60% 55% at 85% 10%, rgb(255 107 107 / 0.16), transparent 70%),
+    radial-gradient(45% 45% at 5% 95%, rgb(198 40 40 / 0.1), transparent 70%);
 }
 .landing-title {
   font-size: clamp(2.1rem, min(8vw, 10svh), 5.25rem);
@@ -489,35 +468,25 @@ body:has([data-fullscreen]) {
   text-wrap: balance;
 }
 
-/* Portrait de la landing : cercle qui se déforme en continu (blob fluide) */
-.landing-blob-ring {
-  filter: drop-shadow(0 0 28px rgb(255 216 77 / 0.25));
+/* Index typographique du hero (aucune image) */
+.landing-index {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid var(--color-fg);
 }
-.landing-blob {
-  overflow: hidden;
-  border-radius: 50%;
-  animation: landing-blob 12s ease-in-out infinite;
-  will-change: border-radius;
+.landing-index-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  padding: 1.35rem 0.25rem;
+  border-bottom: 1px solid var(--color-line);
 }
-@keyframes landing-blob {
-  0%,
-  100% {
-    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
-  }
-  25% {
-    border-radius: 58% 42% 46% 54% / 46% 56% 44% 54%;
-  }
-  50% {
-    border-radius: 44% 56% 58% 42% / 56% 44% 56% 44%;
-  }
-  75% {
-    border-radius: 52% 48% 40% 60% / 42% 52% 48% 58%;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .landing-blob {
-    animation: none;
-  }
+.landing-index-num {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  min-width: 2rem;
 }
 
 /* === erreur/accueil === */
@@ -556,9 +525,9 @@ body:has([data-fullscreen]) {
   transform: none;
 }
 [data-dashboard] {
-  --shadow-soft: 0 1px 3px rgb(40 35 12 / 0.07);
-  --shadow-lift: 0 3px 10px rgb(40 35 12 / 0.1);
-  --shadow-glass: 0 2px 8px rgb(40 35 12 / 0.08);
+  --shadow-soft: 0 1px 3px rgb(39 23 25 / 0.07);
+  --shadow-lift: 0 3px 10px rgb(39 23 25 / 0.1);
+  --shadow-glass: 0 2px 8px rgb(39 23 25 / 0.08);
 }
 .dash-nav-link:focus-visible,
 .dash-row:focus-visible {

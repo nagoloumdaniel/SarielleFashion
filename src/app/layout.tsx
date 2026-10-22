@@ -5,25 +5,24 @@ import { HideOnAuth } from '@/components/layout/HideOnAuth';
 import LocalBusiness from '@/components/seo/LocalBusiness';
 import { LOCAL_BUSINESS } from '@/components/seo/LocalBusiness';
 import type { Metadata } from 'next';
-import { Lato, Playfair_Display } from 'next/font/google';
+import { Inter, Manrope } from 'next/font/google';
 import { THEME_SCRIPT } from '@/lib/inline-scripts';
 import './globals.css';
 
 /* P1.3 - polices optimisées via next/font : préchargement, swap,
    zéro requête externe, poids limités au strict nécessaire. */
-const lato = Lato({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-lato',
-  weight: ['100', '300', '400', '700', '900'],
+  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700'],
   style: ['normal', 'italic'],
   display: 'swap',
 });
 
-const playfair = Playfair_Display({
+const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-playfair',
-  weight: ['400', '500', '600', '700', '800', '900'],
-  style: ['normal', 'italic'],
+  variable: '--font-manrope',
+  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 });
 
@@ -74,9 +73,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${lato.variable} ${playfair.variable}`} suppressHydrationWarning>
+    <html lang="fr" className={`${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#FFFCF0" />
+        <meta name="theme-color" content="#fff8f7" />
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body suppressHydrationWarning>

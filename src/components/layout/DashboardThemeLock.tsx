@@ -11,7 +11,7 @@ export function DashboardThemeLock() {
     root.dataset.theme = 'light';
     root.style.colorScheme = 'light';
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (meta) meta.content = '#FFFCF0';
+    if (meta) meta.content = '#fff8f7';
     return () => {
       let stored: string | null = null;
       try {
@@ -27,7 +27,7 @@ export function DashboardThemeLock() {
             : 'light';
       root.dataset.theme = next;
       root.style.colorScheme = next;
-      if (meta) meta.content = next === 'dark' ? '#17150B' : '#FFFCF0';
+      if (meta) meta.content = next === 'dark' ? '#151011' : '#fff8f7';
     };
   }, []);
   return null;

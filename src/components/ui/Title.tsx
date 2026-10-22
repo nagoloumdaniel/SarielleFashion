@@ -11,8 +11,8 @@ type TitleProps = {
   children: ReactNode;
 };
 
-/* Titre immersif (DESIGN-RULES.md) : majuscules, Playfair Display 900 mêlé à
-   Lato italique en dégradé. Les derniers mots passent en style « accent ».
+/* Titre immersif (DESIGN-RULES.md) : Manrope 800, casse normale ; les
+   derniers mots passent en rouge « accent ».
    Le texte reste un seul titre accessible : les mots sont de simples <span>. */
 export function Title({
   as = 'h2',

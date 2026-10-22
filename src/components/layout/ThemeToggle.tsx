@@ -27,7 +27,7 @@ function applyTheme(theme: Theme, persist = true): void {
     }
   }
   const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-  if (meta) meta.content = theme === 'dark' ? '#17150B' : '#FFFCF0';
+  if (meta) meta.content = theme === 'dark' ? '#151011' : '#fff8f7';
 }
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
