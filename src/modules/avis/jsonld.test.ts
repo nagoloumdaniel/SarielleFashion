@@ -30,7 +30,7 @@ describe('buildServiceReviewsJsonLd', () => {
       ...common,
       summary: { count: 3, average: 4.7 },
       reviews: [review],
-    }) as Record<string, any>;
+    }) as { '@type': string; aggregateRating: object; review: object[] };
     expect(ld['@type']).toBe('Service');
     expect(ld.aggregateRating).toMatchObject({ ratingValue: 4.7, reviewCount: 3 });
     expect(ld.review).toHaveLength(1);
