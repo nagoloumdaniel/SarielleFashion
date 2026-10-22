@@ -6,6 +6,7 @@ import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
 import { getCachedSalonSettings } from '@/lib/public-cache';
 import { homeServiceSentence } from '@/modules/parametres/home-service';
+import { PAYMENT_SENTENCE } from '@/modules/parametres/payment';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -50,6 +51,11 @@ const faqItems = [
     title: 'Comment sont fixés les prix ?',
     content:
       'Les prix dépendent de la longueur, de la densité et de la complexité de la coiffure. Le catalogue affiche un prix de départ ou une fourchette. Le tarif final est toujours confirmé avant de commencer la prestation.',
+  },
+  {
+    id: 'paiement',
+    title: 'Comment et quand puis-je payer ?',
+    content: `${PAYMENT_SENTENCE} Le tarif final est confirmé avant de commencer la prestation.`,
   },
   {
     id: 'annulation',

@@ -1,4 +1,4 @@
-import { CalendarCheck, Check, Mail } from 'lucide-react';
+import { CalendarCheck, Check, HandCoins, Mail } from 'lucide-react';
 import type { Metadata } from 'next';
 import { Breadcrumb } from '@/components/shared/Breadcrumb';
 import { ButtonLink } from '@/components/ui/Button';
@@ -9,6 +9,7 @@ import { DEFAULT_SALON_SETTINGS, type SalonSettingsData } from '@/modules/dispon
 import { resolveBookingPolicy, splitParagraphs } from '@/modules/parametres/policies';
 import { formatNoticeDelay } from '@/modules/reservations/policy';
 import { homeServiceSentence } from '@/modules/parametres/home-service';
+import { PAYMENT_SENTENCE } from '@/modules/parametres/payment';
 
 export const metadata: Metadata = {
   title: 'Informations pratiques',
@@ -145,6 +146,17 @@ export default async function InfosPratiquesPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* Paiement : toujours sur place, espèces ou virement */}
+      <section className="space-y-6">
+        <Title as="h2" className="">
+          Paiement
+        </Title>
+        <div className="flex max-w-3xl items-start gap-3 border-l-4 border-accent pl-5">
+          <HandCoins aria-hidden="true" className="mt-1 size-5 shrink-0 text-accent" />
+          <p className="leading-relaxed text-muted">{PAYMENT_SENTENCE}</p>
+        </div>
       </section>
 
       {/* Conditions de réservation (paramètre « bookingPolicy » ou texte par défaut) */}

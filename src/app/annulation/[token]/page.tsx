@@ -121,7 +121,7 @@ export default async function AnnulationPage({ params }: { params: Promise<{ tok
           </div>
           <div className="flex flex-wrap justify-between gap-2">
             <dt className="font-semibold text-fg">Paiement</dt>
-            <dd className="text-muted">Sur place</dd>
+            <dd className="text-muted">Sur place, en espèces ou par virement</dd>
           </div>
         </dl>
       </section>

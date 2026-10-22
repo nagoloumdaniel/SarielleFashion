@@ -1,5 +1,6 @@
 'use client';
 
+import { PAYMENT_SHORT } from '@/modules/parametres/payment';
 import { formatNoticeDelay } from '@/modules/reservations/policy';
 import {
   ArrowLeft,
@@ -1021,7 +1022,7 @@ export function BookingWizard({
               <dd className="font-semibold">{formatCents(bookingState.success.priceCents)}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-sm text-muted">Paiement sur place.</p>
+          <p className="mt-4 text-sm text-muted">{PAYMENT_SHORT}</p>
           <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href={bookingState.success.cancelUrl} variant="secondary" icon={Pencil}>
               Gérer ou annuler mon rendez-vous
