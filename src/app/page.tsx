@@ -126,10 +126,6 @@ export default async function HomePage() {
       >
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 pb-20 pt-32 sm:px-10 md:pt-40 lg:min-h-svh lg:grid-cols-[1.25fr_1fr] lg:gap-16 lg:pb-16">
           <div className="flex flex-col items-start gap-6">
-            <p className="reveal inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-1.5 text-sm font-semibold text-accent">
-              <MapPin aria-hidden="true" className="size-4" />
-              Clausthal-Zellerfeld · déplacement possible
-            </p>
             <Title as="h1" size="display" id="hero-title" className="landing-title">
               Ton prochain look. Un style qui te ressemble.
             </Title>
@@ -137,15 +133,23 @@ export default async function HomePage() {
               Coiffure, make-up, pose de lace et de cils. Je prends soin de toi, avec une seule
               priorité : ta satisfaction.
             </p>
+            {/* Mobile : boutons empilés, même largeur, cible tactile >= 48 px. `flex-1` seulement dès
+                sm : en colonne il écrasait la hauteur des boutons (~28 px). */}
             <div className="reveal flex w-full max-w-md flex-col gap-3 sm:flex-row">
-              <ButtonLink href="/coiffures" icon={CalendarDays} className="flex-1">
+              <ButtonLink
+                href="/coiffures"
+                size="lg"
+                icon={CalendarDays}
+                className="min-h-12 w-full px-6 text-base! sm:flex-1"
+              >
                 Réserver
               </ButtonLink>
               <ButtonLink
                 href="/coiffures"
                 variant="secondary"
+                size="lg"
                 icon={LayoutGrid}
-                className="flex-1"
+                className="min-h-12 w-full px-6 text-base! sm:flex-1"
               >
                 Voir le catalogue
               </ButtonLink>

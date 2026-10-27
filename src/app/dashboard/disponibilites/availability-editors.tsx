@@ -135,6 +135,11 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     data.set('weekday', String(weekday));
+    // Jour fermé : les champs désactivés ne sont pas postés ; le serveur exige des heures valides.
+    if (!active) {
+      data.set('start', '09:00');
+      data.set('end', '18:00');
+    }
     run(adminSaveWeeklyRule, data);
   }
 
@@ -153,29 +158,44 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
           Ouvert
         </label>
       </div>
-      <fieldset
-        disabled={!active}
+      {/* Jour fermé : seuls les sélecteurs d'heure sont désactivés ; le bouton reste actif pour
+          enregistrer la fermeture. Mobile : Début et Fin côte à côte, bouton pleine largeur dessous.
+          Dès sm : une seule ligne, bouton carré h-10 aligné au bas des sélecteurs. */}
+      <div
+        role="group"
         aria-label={`Horaires de ${WEEKDAYS[weekday]}`}
-        className={`grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-end gap-2 border-0 p-0 transition-opacity ${
-          active ? '' : 'opacity-50'
-        } ${active ? '' : 'grayscale'}`}
+        className="grid min-w-0 grid-cols-2 items-end gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
-        <Input
-          label="Début"
-          name="start"
-          type="time"
-          defaultValue={timeValue(rule?.startMinute ?? 540)}
-        />
-        <Input
-          label="Fin"
-          name="end"
-          type="time"
-          defaultValue={timeValue(rule?.endMinute ?? 1080)}
-        />
-        <Button type="submit" variant="secondary" icon={Save} iconOnly loading={pending}>
-          {`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+        <div className={`min-w-0 transition-opacity ${active ? '' : 'opacity-50 grayscale'}`}>
+          <Input
+            label="Début"
+            name="start"
+            type="time"
+            disabled={!active}
+            defaultValue={timeValue(rule?.startMinute ?? 540)}
+          />
+        </div>
+        <div className={`min-w-0 transition-opacity ${active ? '' : 'opacity-50 grayscale'}`}>
+          <Input
+            label="Fin"
+            name="end"
+            type="time"
+            disabled={!active}
+            defaultValue={timeValue(rule?.endMinute ?? 1080)}
+          />
+        </div>
+        <Button
+          type="submit"
+          variant="secondary"
+          icon={Save}
+          loading={pending}
+          aria-label={`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+          title={`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+          className="col-span-2 w-full sm:col-span-1 sm:size-10 sm:w-10 sm:px-0"
+        >
+          <span className="sm:sr-only">Enregistrer</span>
         </Button>
-      </fieldset>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import type { Prisma } from '@prisma/client';
 import { db } from './db';
+import { withSignedImages } from './catalogue-images';
 import { CATALOGUE_TAG } from './public-cache';
 
 /** Nombre de coiffures affichées dans « Les plus réservées ». */
@@ -85,10 +86,11 @@ export async function getPopularServices(): Promise<PopularService[]> {
       ];
     });
 
-    return rankPopularServices(stats).flatMap((id) => {
+    const ranked = rankPopularServices(stats).flatMap((id) => {
       const service = byId.get(id);
       return service ? [service] : [];
     });
+    return await Promise.all(ranked.map(withSignedImages));
   } catch (error) {
     console.error('[popular-services]', error);
     return [];

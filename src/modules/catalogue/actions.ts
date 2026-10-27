@@ -9,6 +9,7 @@ import { AppError } from '@/lib/errors';
 import { logAudit } from '@/modules/stats/audit';
 import {
   addServiceImage,
+  applyServiceImagePlan,
   archiveService,
   createCategory,
   createService,
@@ -20,6 +21,7 @@ import {
   deleteServiceOption,
   deleteServiceQuestion,
   getServiceImage,
+  getServiceImageIds,
   getServiceImageKeys,
   reorderCategories,
   reorderServiceImages,
@@ -44,6 +46,7 @@ import {
 } from '@/modules/fichiers/storage';
 import { buildServiceImageKey, validateImageFile } from '@/modules/fichiers/image-validation';
 import { eurosToCents, priceFieldsFromInput } from './pricing';
+import { MAX_SERVICE_PHOTOS, parsePhotoLayout, type PhotoLayoutEntry } from './service-photos';
 import {
   adminServiceFiltersSchema,
   categoryInputSchema,
@@ -83,6 +86,80 @@ function parseForm<T extends z.ZodType>(
     return { error: result.error.issues[0]?.message ?? 'Données invalides.' };
   }
   return { data: result.data };
+}
+
+/* ------------------------------------------------------------------ */
+/* Photos saisies dans le formulaire prestation (3 maximum)            */
+/* ------------------------------------------------------------------ */
+
+interface PreparedPhotos {
+  layout: PhotoLayoutEntry[];
+  files: { bytes: Uint8Array; mime: string; extension: 'jpg' | 'png' | 'webp' }[];
+}
+
+/* Étape sans effet de bord : limite, ordre, taille, type MIME et signature binaire de chaque
+   fichier. Renvoie null si le formulaire ne gère pas les photos (champ absent : on n'y touche pas). */
+async function preparePhotos(
+  formData: FormData,
+  existingIds: readonly string[],
+): Promise<PreparedPhotos | null> {
+  if (!formData.has('photoLayout')) return null;
+  const files = formData
+    .getAll('photos')
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
+  if (files.length > MAX_SERVICE_PHOTOS) {
+    throw new AppError(
+      'INVALID_IMAGE',
+      `${MAX_SERVICE_PHOTOS} photos maximum par prestation.`,
+      400,
+    );
+  }
+  const layout = parsePhotoLayout(formData.get('photoLayout'), {
+    fileCount: files.length,
+    existingIds,
+  });
+  if (files.length > 0 && !isStorageConfigured()) {
+    throw new AppError('STORAGE', getStorageConfigurationHint(), 503);
+  }
+  const validated: PreparedPhotos['files'] = [];
+  for (const file of files) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const result = validateImageFile({ size: file.size, type: file.type, bytes });
+    validated.push({ bytes, mime: result.mime, extension: result.extension });
+  }
+  return { layout, files: validated };
+}
+
+/* Envoie les nouveaux fichiers, applique l'ordre final en base, puis supprime du stockage les
+   objets retirés. Aucun objet orphelin si la base échoue. */
+async function commitPhotos(
+  serviceId: string,
+  prepared: PreparedPhotos,
+  alt: string,
+): Promise<{ added: number; removed: number }> {
+  const uploadedKeys: string[] = [];
+  try {
+    const keys = new Map<number, string>();
+    for (const [index, file] of prepared.files.entries()) {
+      const key = buildServiceImageKey(serviceId, file.extension);
+      await uploadImageObject({ key, body: file.bytes, contentType: file.mime });
+      uploadedKeys.push(key);
+      keys.set(index, key);
+    }
+    const removedKeys = await applyServiceImagePlan(
+      serviceId,
+      prepared.layout.map((entry) =>
+        entry.kind === 'existing'
+          ? { kind: 'existing' as const, id: entry.id }
+          : { kind: 'new' as const, key: keys.get(entry.fileIndex) as string, alt },
+      ),
+    );
+    await Promise.all(removedKeys.map((key) => deleteImageObject(key).catch(() => undefined)));
+    return { added: prepared.files.length, removed: removedKeys.length };
+  } catch (error) {
+    await Promise.all(uploadedKeys.map((key) => deleteImageObject(key).catch(() => undefined)));
+    throw error;
+  }
 }
 
 function idFrom(formData: FormData): string {
@@ -264,6 +341,8 @@ export async function adminCreateService(
 
   let created: { id: string; name: string; slug: string } | null = null;
   try {
+    // Validé AVANT de créer la prestation : un fichier refusé n'en laisse pas de moitié créée.
+    const photos = await preparePhotos(formData, []);
     const price = priceFieldsFromInput(parsed.data);
     const service = await createService({
       name: parsed.data.name,
@@ -285,6 +364,23 @@ export async function adminCreateService(
       entityId: service.id,
       metadata: { name: service.name, slug: service.slug },
     });
+    if (photos && photos.layout.length > 0) {
+      try {
+        const result = await commitPhotos(service.id, photos, service.name);
+        await logAudit({
+          userId: user.id,
+          action: 'service.image.upload',
+          entityType: 'ServiceImage',
+          metadata: { serviceId: service.id, added: result.added },
+        });
+      } catch (photoError) {
+        console.error(photoError);
+        revalidateCatalogue(service);
+        return {
+          error: `La prestation a été créée, mais ses photos n’ont pas pu être enregistrées. Ouvre-la depuis le catalogue pour les ajouter.`,
+        };
+      }
+    }
     revalidateCatalogue(service);
   } catch (error) {
     return handleError(error);
@@ -309,6 +405,7 @@ export async function adminUpdateService(
   if ('error' in parsed) return { error: parsed.error };
 
   try {
+    const photos = await preparePhotos(formData, await getServiceImageIds(id));
     const price = priceFieldsFromInput(parsed.data);
     const service = await updateService(id, {
       name: parsed.data.name,
@@ -329,6 +426,17 @@ export async function adminUpdateService(
       entityId: id,
       metadata: { name: service.name },
     });
+    if (photos) {
+      const result = await commitPhotos(id, photos, service.name);
+      if (result.added > 0 || result.removed > 0) {
+        await logAudit({
+          userId: user.id,
+          action: 'service.image.upload',
+          entityType: 'ServiceImage',
+          metadata: { serviceId: id, added: result.added, removed: result.removed },
+        });
+      }
+    }
     revalidateCatalogue(service);
     return { success: 'Prestation enregistrée.' };
   } catch (error) {

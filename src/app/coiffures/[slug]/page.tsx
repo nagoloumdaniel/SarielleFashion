@@ -28,6 +28,7 @@ import {
   getPublishedServiceBySlug,
   serviceGallery,
 } from '@/lib/catalogue';
+import { withSignedImages } from '@/lib/catalogue-images';
 import { getCachedServices } from '@/lib/public-cache';
 import { getServiceRatingSummaries, listServiceReviews } from '@/modules/avis/queries';
 import { isStorageConfigured } from '@/modules/fichiers/storage';
@@ -96,8 +97,10 @@ const REASSURANCES = [
 
 export default async function ServicePage({ params }: ServicePageProps) {
   const { slug } = await params;
-  const service = await getPublishedServiceBySlug(slug);
-  if (!service) notFound();
+  const published = await getPublishedServiceBySlug(slug);
+  if (!published) notFound();
+  // Photos du bucket privé : URL signées avant affichage.
+  const service = await withSignedImages(published);
 
   const similar = await getSimilarServices(service.category.slug, service.id);
   const [summaries, reviewPage] = await Promise.all([

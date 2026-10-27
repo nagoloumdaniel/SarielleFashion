@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { getPublishedCategories, getPublishedServices, type CatalogueQuery } from './catalogue';
 import { getSalonSettings } from '@/modules/disponibilites/queries';
+import { withSignedImages } from './catalogue-images';
 
 /* Lectures publiques mises en cache (60 s) : évite un aller-retour base de données
    (Neon) à chaque affichage de page. Invalidées par tag à chaque modification admin. */
@@ -14,7 +15,11 @@ export const getCachedCategories = unstable_cache(
 );
 
 export const getCachedServices = unstable_cache(
-  (query: CatalogueQuery) => getPublishedServices(query),
+  async (query: CatalogueQuery) => {
+    const result = await getPublishedServices(query);
+    // Photos du bucket privé : URL signées (valables 1 h, cache de 60 s).
+    return { ...result, services: await Promise.all(result.services.map(withSignedImages)) };
+  },
   ['public-services'],
   { revalidate: 60, tags: [CATALOGUE_TAG] },
 );

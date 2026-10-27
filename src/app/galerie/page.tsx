@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GalleryGrid } from '@/components/galerie/GalleryGrid';
+import { withTempPreview } from '@/components/galerie/temp-preview'; // TEMP-PREVIEW: à supprimer après vérification
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Title } from '@/components/ui/Title';
 import { listPublishedGalleryPhotos } from '@/modules/galerie/queries';
@@ -15,7 +16,8 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function GaleriePage() {
-  const photos = await listPublishedGalleryPhotos().catch(() => []);
+  // TEMP-PREVIEW: à supprimer après vérification (remplacer `withTempPreview(...)` par son argument)
+  const photos = withTempPreview(await listPublishedGalleryPhotos().catch(() => []));
 
   return (
     <main className="page-main space-y-8">
