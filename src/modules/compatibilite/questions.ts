@@ -48,6 +48,16 @@ export interface ConfiguredQuestion {
   condition: unknown;
 }
 
+/** Intitulés des questions de base (français à la source, traduits à l'affichage). */
+export const QUESTION_TEXT = {
+  hairLength: 'Quelle est la longueur actuelle de vos cheveux ?',
+  shortCut: 'Avez-vous une coupe très courte ou une zone rasée ?',
+  shortCutHelp: 'Cela peut empêcher la réalisation de certaines coiffures.',
+  hasLocs: 'Portez-vous actuellement des locs ?',
+  hairType: 'Quel est votre type de cheveux ?',
+  notProvided: 'Non renseigné',
+} as const;
+
 export const HAIR_LENGTH_OPTIONS: Array<{ value: HairLengthAnswer; label: string }> = [
   { value: 'SHORT', label: 'Cheveux courts' },
   { value: 'MEDIUM', label: 'Mi-longs' },
@@ -136,7 +146,7 @@ export function buildPublicQuestions(input: {
     if (rule.acceptedLengths.length > 0) {
       questions.push({
         key: CORE_KEYS.hairLength,
-        label: 'Quelle est la longueur actuelle de vos cheveux ?',
+        label: QUESTION_TEXT.hairLength,
         type: 'SINGLE_CHOICE',
         required: true,
         options: HAIR_LENGTH_OPTIONS.map((option) => ({ ...option })),
@@ -146,11 +156,11 @@ export function buildPublicQuestions(input: {
       });
       questions.push({
         key: CORE_KEYS.shortCut,
-        label: 'Avez-vous une coupe très courte ou une zone rasée ?',
+        label: QUESTION_TEXT.shortCut,
         type: 'BOOLEAN',
         required: false,
         options: YES_NO_OPTIONS,
-        help: 'Cela peut empêcher la réalisation de certaines coiffures.',
+        help: QUESTION_TEXT.shortCutHelp,
         condition: null,
         core: true,
       });
@@ -159,7 +169,7 @@ export function buildPublicQuestions(input: {
     if (rule.requiresLocs || rule.incompatibleLocs) {
       questions.push({
         key: CORE_KEYS.hasLocs,
-        label: 'Portez-vous actuellement des locs ?',
+        label: QUESTION_TEXT.hasLocs,
         type: 'SINGLE_CHOICE',
         required: true,
         options: LOCS_OPTIONS.map((option) => ({ ...option })),
@@ -172,7 +182,7 @@ export function buildPublicQuestions(input: {
     if (rule.acceptedHairTypes.length > 0) {
       questions.push({
         key: CORE_KEYS.hairType,
-        label: 'Quel est votre type de cheveux ?',
+        label: QUESTION_TEXT.hairType,
         type: 'SINGLE_CHOICE',
         required: true,
         options: HAIR_TYPE_OPTIONS.map((value) => ({ value, label: value })),
@@ -252,6 +262,6 @@ export const CORE_ANSWER_LABELS: Record<string, (value: unknown) => string> = {
       ? 'Oui'
       : value === false || value === 'NO'
         ? 'Non'
-        : 'Non renseigné',
+        : QUESTION_TEXT.notProvided,
   [CORE_KEYS.hairType]: (value) => String(value ?? ''),
 };

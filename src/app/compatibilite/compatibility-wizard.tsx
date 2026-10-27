@@ -11,7 +11,8 @@ import {
   Camera,
   ShieldCheck,
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/link';
+import { useI18n } from '@/i18n/client';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import type { CompatibilityRuleData } from '@/modules/compatibilite/engine';
 import {
@@ -46,11 +47,7 @@ function verdictTone(verdict: string): 'success' | 'alert' | 'accent' {
   return 'accent';
 }
 
-function verdictLabel(verdict: string): string {
-  if (verdict === 'COMPATIBLE') return 'Compatible';
-  if (verdict === 'INCOMPATIBLE') return 'Incompatible';
-  return 'À vérifier';
-}
+type Verdict = 'COMPATIBLE' | 'INCOMPATIBLE' | 'UNCERTAIN';
 
 export function QuestionField({
   question,
@@ -61,22 +58,23 @@ export function QuestionField({
   value: unknown;
   onChange: (value: unknown) => void;
 }) {
+  const { t, msg } = useI18n();
   const inputId = `question-${question.key}`;
+  const label = msg(question.label);
+  const helpText = question.help ? msg(question.help) : null;
   const describedBy = question.help ? `${inputId}-help` : undefined;
 
   const help = question.help ? (
     <p id={`${inputId}-help`} className="text-sm text-muted">
-      {question.help}
+      {helpText}
     </p>
   ) : null;
 
   if (question.type === 'PHOTO') {
     return (
       <fieldset className="rounded-[var(--radius-md)] border border-line p-4">
-        <legend className="px-2 text-sm font-semibold text-fg">{question.label}</legend>
-        <p className="text-sm text-muted">
-          Vous pourrez joindre une photo de vos cheveux juste après la vérification.
-        </p>
+        <legend className="px-2 text-sm font-semibold text-fg">{label}</legend>
+        <p className="text-sm text-muted">{t('compat.photoLater')}</p>
       </fieldset>
     );
   }
@@ -84,7 +82,7 @@ export function QuestionField({
   if (question.type === 'TEXT') {
     return (
       <Textarea
-        label={question.label}
+        label={label}
         name={inputId}
         id={inputId}
         required={question.required}
@@ -101,7 +99,7 @@ export function QuestionField({
     return (
       <fieldset className="rounded-[var(--radius-md)] border border-line p-4">
         <legend className="px-2 text-sm font-semibold text-fg">
-          {question.label}
+          {label}
           {question.required ? <span className="text-alert"> *</span> : null}
         </legend>
         <div className="grid gap-2 sm:grid-cols-2">
@@ -119,7 +117,7 @@ export function QuestionField({
                 }}
                 className="size-4"
               />
-              {option.label}
+              {msg(option.label)}
             </label>
           ))}
         </div>
@@ -132,7 +130,7 @@ export function QuestionField({
     return (
       <fieldset className="rounded-[var(--radius-md)] border border-line p-4">
         <legend className="px-2 text-sm font-semibold text-fg">
-          {question.label}
+          {label}
           {question.required ? <span className="text-alert"> *</span> : null}
         </legend>
         <div className="grid gap-2 sm:grid-cols-2">
@@ -155,7 +153,7 @@ export function QuestionField({
                 aria-describedby={describedBy}
                 className="size-4"
               />
-              {option.label}
+              {msg(option.label)}
             </label>
           ))}
         </div>
@@ -166,7 +164,7 @@ export function QuestionField({
 
   return (
     <Input
-      label={question.label}
+      label={label}
       name={inputId}
       id={inputId}
       required={question.required}
@@ -186,6 +184,7 @@ export function CompatibilityWizard({
   rule: CompatibilityRuleData | null;
   questions: PublicQuestion[];
 }) {
+  const { t, msg } = useI18n();
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [phase, setPhase] = useState<Phase>('questions');
   const [clientError, setClientError] = useState('');
@@ -233,7 +232,9 @@ export function CompatibilityWizard({
     if (missing.length > 0) {
       event.preventDefault();
       setClientError(
-        `Complétez les questions suivantes : ${missing.map((question) => question.label).join(', ')}.`,
+        t('compat.wizard.completeQuestions', {
+          list: missing.map((question) => msg(question.label)).join(', '),
+        }),
       );
     }
   };
@@ -242,11 +243,14 @@ export function CompatibilityWizard({
 
   return (
     <div className="space-y-5">
-      <ol className="flex flex-wrap items-center gap-2 text-sm" aria-label="Étapes">
+      <ol
+        className="flex flex-wrap items-center gap-2 text-sm"
+        aria-label={t('compat.wizard.stepsAria')}
+      >
         {[
-          { number: 1, label: 'Vos cheveux' },
-          { number: 2, label: 'Résultat' },
-          { number: 3, label: 'Demande' },
+          { number: 1, label: t('compat.wizard.steps.hair') },
+          { number: 2, label: t('compat.wizard.steps.result') },
+          { number: 3, label: t('compat.wizard.steps.request') },
         ].map((item) => (
           <li
             key={item.number}
@@ -276,7 +280,7 @@ export function CompatibilityWizard({
 
             className="outline-none"
           >
-            Quelques questions sur vos cheveux
+            {t('compat.wizard.questionsTitle')}
           </Title>
 
           <form
@@ -289,8 +293,7 @@ export function CompatibilityWizard({
 
             {visibleQuestions.length === 0 ? (
               <p className="rounded-[var(--radius-md)] bg-success-soft px-4 py-3 text-sm text-success">
-                Aucune restriction capillaire pour cette prestation. Vous pouvez réserver
-                directement.
+                {t('compat.wizard.noRestriction')}
               </p>
             ) : (
               visibleQuestions.map((question) => (
@@ -316,16 +319,16 @@ export function CompatibilityWizard({
                 role="alert"
                 className="rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
               >
-                {previewState.error}
+                {msg(previewState.error)}
               </p>
             ) : null}
 
             <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" icon={ShieldCheck} loading={previewPending}>
-                Vérifier ma compatibilité
+                {t('compat.wizard.verify')}
               </Button>
               <ButtonLink href={`/coiffures/${serviceSlug}`} variant="ghost" icon={ArrowLeft}>
-                Retour à la prestation
+                {t('compat.wizard.backToService')}
               </ButtonLink>
             </div>
           </form>
@@ -335,7 +338,9 @@ export function CompatibilityWizard({
       {phase === 'result' && preview ? (
         <Card>
           <div className="flex flex-wrap items-center gap-3">
-            <Badge tone={verdictTone(preview.verdict)}>{verdictLabel(preview.verdict)}</Badge>
+            <Badge tone={verdictTone(preview.verdict)}>
+              {t(`compat.wizard.verdict.${preview.verdict as Verdict}`)}
+            </Badge>
             <Title
               as="h2"
               ref={headingRef}
@@ -343,20 +348,16 @@ export function CompatibilityWizard({
 
               className="outline-none"
             >
-              {preview.verdict === 'COMPATIBLE'
-                ? 'Bonne nouvelle'
-                : preview.verdict === 'INCOMPATIBLE'
-                  ? 'Cette prestation semble inadaptée'
-                  : 'Une vérification est nécessaire'}
+              {t(`compat.wizard.resultTitle.${preview.verdict as Verdict}`)}
             </Title>
           </div>
 
           <p className="mt-4 whitespace-pre-line text-lg leading-relaxed text-fg">
-            {preview.message}
+            {msg(preview.message)}
           </p>
           {preview.conditionsNote ? (
             <p className="mt-3 rounded-[var(--radius-md)] bg-accent-soft px-4 py-3 text-sm text-fg">
-              {preview.conditionsNote}
+              {msg(preview.conditionsNote)}
             </p>
           ) : null}
 
@@ -366,7 +367,7 @@ export function CompatibilityWizard({
                 href={`/reserver?service=${encodeURIComponent(serviceSlug)}`}
                 icon={CalendarCheck}
               >
-                Réserver cette prestation
+                {t('compat.wizard.bookService')}
               </ButtonLink>
             ) : null}
 
@@ -377,18 +378,18 @@ export function CompatibilityWizard({
                 onClick={() => setPhase('contact')}
               >
                 {preview.canRequestPhotoEvaluation
-                  ? 'Envoyer une photo pour évaluation'
-                  : 'Demander une évaluation à Sarielle'}
+                  ? t('compat.wizard.sendPhoto')
+                  : t('compat.wizard.askEvaluation')}
               </Button>
             ) : null}
 
             {preview.nextStep === 'BLOCKED' ? (
               <>
                 <ButtonLink href="/coiffures" icon={Scissors}>
-                  Voir les autres coiffures
+                  {t('compat.wizard.otherStyles')}
                 </ButtonLink>
                 <ButtonLink href="/contact" variant="secondary" icon={Mail}>
-                  Contacter Sarielle
+                  {t('compat.wizard.contactSarielle')}
                 </ButtonLink>
               </>
             ) : null}
@@ -402,14 +403,14 @@ export function CompatibilityWizard({
                 setClientError('');
               }}
             >
-              Modifier mes réponses
+              {t('compat.wizard.editAnswers')}
             </Button>
           </div>
 
           {preview.verdict === 'INCOMPATIBLE' && preview.suggestions.length > 0 ? (
             <div className="mt-6 rounded-[var(--radius-md)] border border-line bg-page p-5">
               <h3 className="font-heading text-lg font-bold text-fg">
-                Ces coiffures sont compatibles avec vos réponses
+                {t('compat.wizard.suggestionsTitle')}
               </h3>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {preview.suggestions.map((suggestion) => (
@@ -428,7 +429,7 @@ export function CompatibilityWizard({
           ) : null}
 
           {preview.nextStep !== 'BOOK' ? (
-            <p className="mt-4 text-sm text-muted">Aucune réservation n’est créée à cette étape.</p>
+            <p className="mt-4 text-sm text-muted">{t('compat.wizard.noBookingYet')}</p>
           ) : null}
         </Card>
       ) : null}
@@ -442,14 +443,14 @@ export function CompatibilityWizard({
 
             className="outline-none"
           >
-            Demander l’évaluation de Sarielle
+            {t('compat.wizard.contactTitle')}
           </Title>
 
           <form action={submitAction} className="mt-6 flex flex-col gap-5">
             <input type="hidden" name="serviceSlug" value={serviceSlug} />
             <input type="hidden" name="answers" value={JSON.stringify(answers)} />
             <div className="absolute -left-[9999px]" aria-hidden="true">
-              <label htmlFor="compat-website">Site web</label>
+              <label htmlFor="compat-website">{t('compat.wizard.honeypot')}</label>
               <input
                 id="compat-website"
                 name="website"
@@ -461,22 +462,37 @@ export function CompatibilityWizard({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
-                label="Nom et prénom"
+                label={t('compat.wizard.name')}
                 name="name"
-                placeholder="Votre nom et prénom"
+                placeholder={t('common.ui.placeholders.name')}
                 required
                 autoComplete="name"
               />
-              <Input label="E-mail" name="email" type="email" required autoComplete="email" />
-              <Input label="Téléphone" name="phone" type="tel" required autoComplete="tel" />
+              <Input
+                label={t('compat.wizard.email')}
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+              />
+              <Input
+                label={t('compat.wizard.phone')}
+                name="phone"
+                type="tel"
+                required
+                autoComplete="tel"
+              />
             </div>
 
-            <Textarea label="Informations complémentaires (facultatif)" name="comment" rows={4} />
+            <Textarea label={t('compat.wizard.comment')} name="comment" rows={4} />
 
             {!photoForbidden ? (
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="compat-photos" className="text-sm font-semibold text-fg">
-                  Photos de vos cheveux {photoRequired ? '(obligatoire)' : '(facultatif)'}
+                  {t('compat.wizard.photosLabel')}{' '}
+                  {photoRequired
+                    ? t('compat.wizard.photosRequired')
+                    : t('compat.wizard.photosOptional')}
                 </label>
                 <input
                   id="compat-photos"
@@ -487,26 +503,23 @@ export function CompatibilityWizard({
                   required={photoRequired}
                   className="w-full rounded-[var(--radius-md)] border border-line bg-card px-4 py-2.5 text-sm file:mr-3 file:rounded-full file:border-0 file:bg-accent-soft file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-fg"
                 />
-                <p className="text-sm text-muted">
-                  JPEG, PNG ou WebP, 5 Mo et 3 photos maximum. Visibles par Sarielle uniquement.
-                </p>
+                <p className="text-sm text-muted">{t('compat.wizard.photosHint')}</p>
               </div>
             ) : (
               <p className="rounded-[var(--radius-md)] bg-line px-4 py-3 text-sm text-muted">
-                Cette prestation ne nécessite pas de photo.
+                {t('compat.wizard.noPhotoNeeded')}
               </p>
             )}
 
             <label className="flex items-start gap-3 text-sm">
               <input type="checkbox" name="consent" required className="mt-0.5 size-4" />
               <span>
-                J’accepte que mes informations capillaires et mes photos soient utilisées uniquement
-                pour évaluer cette prestation. Voir la{' '}
+                {t('compat.wizard.consentBefore')}{' '}
                 <Link
                   href="/confidentialite"
                   className="font-semibold text-cacao underline underline-offset-4"
                 >
-                  politique de confidentialité
+                  {t('compat.wizard.privacy')}
                 </Link>
                 .
               </span>
@@ -517,13 +530,13 @@ export function CompatibilityWizard({
                 role="alert"
                 className="rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
               >
-                {submitState.error}
+                {msg(submitState.error)}
               </p>
             ) : null}
 
             <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" icon={Send} loading={submitPending}>
-                Envoyer ma demande
+                {t('compat.wizard.send')}
               </Button>
               <Button
                 type="button"
@@ -531,7 +544,7 @@ export function CompatibilityWizard({
                 icon={ArrowLeft}
                 onClick={() => setPhase('result')}
               >
-                Retour
+                {t('compat.wizard.back')}
               </Button>
             </div>
           </form>
@@ -548,22 +561,22 @@ export function CompatibilityWizard({
             className="outline-none"
           >
             {success.status === 'COMPATIBLE'
-              ? 'Vos informations sont compatibles'
-              : 'Votre demande a bien été transmise'}
+              ? t('compat.wizard.doneCompatible')
+              : t('compat.wizard.doneReceived')}
           </Title>
-          <p className="mt-3 whitespace-pre-line text-lg text-fg">{success.message}</p>
+          <p className="mt-3 whitespace-pre-line text-lg text-fg">{msg(success.message)}</p>
 
           {success.status === 'RECEIVED' ? (
             <div className="mt-4 space-y-2 rounded-[var(--radius-md)] bg-accent-soft px-4 py-3 text-sm text-fg">
               <p>
-                Statut : <strong>en attente d’évaluation</strong>.
+                {t('compat.wizard.statusLabel')} <strong>{t('compat.wizard.statusValue')}</strong>.
               </p>
               {success.reference ? (
                 <p>
-                  Référence de votre demande : <strong>{success.reference}</strong>
+                  {t('compat.wizard.referenceLabel')} <strong>{success.reference}</strong>
                 </p>
               ) : null}
-              <p>Aucun créneau n’est réservé.</p>
+              <p>{t('compat.wizard.noSlot')}</p>
             </div>
           ) : null}
 
@@ -573,11 +586,11 @@ export function CompatibilityWizard({
                 href={`/reserver?service=${encodeURIComponent(serviceSlug)}`}
                 icon={CalendarCheck}
               >
-                Réserver cette prestation
+                {t('compat.wizard.bookService')}
               </ButtonLink>
             ) : null}
             <ButtonLink href="/coiffures" variant="secondary" icon={Scissors}>
-              Retour au catalogue
+              {t('compat.wizard.backToCatalogue')}
             </ButtonLink>
           </div>
         </Card>

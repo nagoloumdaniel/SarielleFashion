@@ -4,6 +4,7 @@ import { CalendarCheck } from 'lucide-react';
 import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { useI18n } from '@/i18n/client';
 import { getDeviceTimezone, utcToDeviceParts } from '@/lib/dates';
 import {
   confirmWaitlistBookingAction,
@@ -25,6 +26,7 @@ export function ConfirmForm({
   defaultEmail: string;
   defaultPhone: string;
 }) {
+  const { t, msg } = useI18n();
   const [state, formAction, pending] = useActionState<ConfirmWaitlistState, FormData>(
     confirmWaitlistBookingAction,
     {},
@@ -36,7 +38,8 @@ export function ConfirmForm({
         role="status"
         className="rounded-[var(--radius-md)] border border-success bg-success-soft p-6 text-success"
       >
-        {state.success} {state.reference ? `Référence : ${state.reference}.` : ''}
+        {msg(state.success)}{' '}
+        {state.reference ? t('waitlist.confirm.reference', { reference: state.reference }) : ''}
       </p>
     );
   }
@@ -56,21 +59,33 @@ export function ConfirmForm({
       className="flex flex-col gap-4"
     >
       <Input
-        label="Nom et prénom"
+        label={t('waitlist.confirm.name')}
         name="name"
-        placeholder="Votre nom et prénom"
+        placeholder={t('common.ui.placeholders.name')}
         required
         defaultValue={defaultName}
       />
-      <Input label="E-mail" name="email" type="email" required defaultValue={defaultEmail} />
-      <Input label="Téléphone" name="phone" type="tel" required defaultValue={defaultPhone} />
+      <Input
+        label={t('waitlist.confirm.email')}
+        name="email"
+        type="email"
+        required
+        defaultValue={defaultEmail}
+      />
+      <Input
+        label={t('waitlist.confirm.phone')}
+        name="phone"
+        type="tel"
+        required
+        defaultValue={defaultPhone}
+      />
       {state.error ? (
         <p role="alert" className="text-sm font-medium text-alert">
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
       <Button type="submit" icon={CalendarCheck} loading={pending}>
-        Confirmer ma réservation
+        {t('waitlist.confirm.submit')}
       </Button>
     </form>
   );

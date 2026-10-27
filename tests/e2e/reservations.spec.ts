@@ -342,9 +342,9 @@ test.describe('Réservations, annulations et calendrier', () => {
     await expect(page.getByText(/70[\s  ]*€/)).toBeVisible();
 
     await page.getByRole('button', { name: 'Confirmer ma réservation' }).click();
-    await expect(page.getByRole('heading', { name: 'Votre rendez-vous est confirmé' })).toBeVisible(
-      { timeout: 20_000 },
-    );
+    await expect(page.getByRole('heading', { name: 'Ton rendez-vous est confirmé' })).toBeVisible({
+      timeout: 20_000,
+    });
     await expect(page.getByText(/AP-/)).toBeVisible();
 
     await page.screenshot({
@@ -380,7 +380,7 @@ test.describe('Réservations, annulations et calendrier', () => {
     await page.getByLabel(/Motif/).fill('Empêchement personnel');
     await page.getByRole('button', { name: 'Confirmer l’annulation' }).click();
     await expect(page.getByText(/n’est plus actif/)).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(/Annulée par la cliente/).first()).toBeVisible();
+    await expect(page.getByText(/Annulé par toi/).first()).toBeVisible();
 
     const cancelled = await db.appointment.findUnique({ where: { id: appointment!.id } });
     expect(cancelled?.status).toBe('CANCELLED_BY_CUSTOMER');
@@ -555,8 +555,8 @@ test.describe('Réservations, annulations et calendrier', () => {
     await expect
       .poll(
         async () => {
-          const successA = await pageA.getByText('Votre rendez-vous est confirmé').count();
-          const successB = await pageB.getByText('Votre rendez-vous est confirmé').count();
+          const successA = await pageA.getByText('Ton rendez-vous est confirmé').count();
+          const successB = await pageB.getByText('Ton rendez-vous est confirmé').count();
           return successA + successB;
         },
         { timeout: 30_000 },
@@ -572,7 +572,7 @@ test.describe('Réservations, annulations et calendrier', () => {
     });
     expect(raceAppointments).toBe(1);
 
-    const failedPage = (await pageA.getByText('Votre rendez-vous est confirmé').count())
+    const failedPage = (await pageA.getByText('Ton rendez-vous est confirmé').count())
       ? pageB
       : pageA;
     await expect(failedPage.getByText(/n’est plus disponible/)).toBeVisible();

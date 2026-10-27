@@ -1,13 +1,18 @@
 import type { Metadata } from 'next';
 import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
+import { getI18n } from '@/i18n/server';
 
-export const metadata: Metadata = {
-  title: 'Page introuvable',
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getI18n();
+  return {
+    title: t('errors.notFound.title'),
+    robots: { index: false, follow: false },
+  };
+}
 
-export default function NotFound() {
+export default async function NotFound() {
+  const { t } = await getI18n();
   return (
     <main
       data-fullscreen
@@ -20,18 +25,15 @@ export default function NotFound() {
         404
       </p>
       <Title as="h1" size="display" className="mt-2">
-        Page introuvable
+        {t('errors.notFound.title')}
       </Title>
-      <p className="mt-4 max-w-md text-lg text-muted">
-        Cette page n’existe pas ou n’est plus disponible. Le catalogue reste accessible pour
-        découvrir les prestations de Sarielle.
-      </p>
+      <p className="mt-4 max-w-md text-lg text-muted">{t('errors.notFound.message')}</p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <ButtonLink href="/coiffures" className="sm:w-48">
-          Voir le catalogue
+          {t('errors.notFound.catalogue')}
         </ButtonLink>
         <ButtonLink href="/" variant="secondary" className="sm:w-48">
-          Retour à l’accueil
+          {t('errors.notFound.home')}
         </ButtonLink>
       </div>
     </main>

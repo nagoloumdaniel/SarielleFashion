@@ -9,6 +9,7 @@ import { parseInput } from '@/lib/errors';
 import { getClientIp } from '@/lib/client-ip';
 import { rateLimit } from '@/lib/rate-limit';
 import { adminNotificationRecipient } from '@/modules/notifications/service';
+import { getLocale } from '@/i18n/server';
 import { contactSchema } from './schema';
 
 type ContactInput = z.infer<typeof contactSchema>;
@@ -18,6 +19,7 @@ export async function createConversation(
   formData: FormData,
 ): Promise<{ ok: boolean; error?: string }> {
   const ip = await getClientIp();
+  const locale = await getLocale();
 
   // Rate limit : 5 envois par IP par fenêtre de 60 secondes.
   const limit = await rateLimit(`contact:${ip}`, { max: 5, windowMs: 60_000 });
@@ -63,6 +65,7 @@ export async function createConversation(
           source: 'CONTACT',
           status: 'NEW',
           lastMessageAt: new Date(),
+          locale,
           messages: {
             create: {
               author: 'CUSTOMER',
@@ -102,7 +105,8 @@ export async function createConversation(
             idempotencyKey: `conversation:${conversation.id}:contact:client`,
             recipient: customer.email,
             templateKey: 'contact_received',
-            payload,
+            // Langue du client : les e-mails qui lui sont destinés sont rédigés dans cette langue.
+            payload: { ...payload, locale },
           },
         ],
         skipDuplicates: true,

@@ -1,10 +1,13 @@
 import { ImageResponse } from 'next/og';
+import { getI18n } from '@/i18n/server';
 
 export const alt = 'Sarielle Fashion, coiffure, make-up, lace et cils à Clausthal-Zellerfeld';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default function OpenGraphImage() {
+/* Texte dans la langue de la requête (x-locale) : /opengraph-image (fr) et /de/opengraph-image (de). */
+export default async function OpenGraphImage() {
+  const { t } = await getI18n();
   return new ImageResponse(
     <div
       style={{
@@ -45,11 +48,9 @@ export default function OpenGraphImage() {
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{ fontSize: 74, lineHeight: 1.08, fontWeight: 700, maxWidth: 900 }}>
-          Ton prochain look. Un style qui te ressemble.
+          {t('common.og.headline')}
         </div>
-        <div style={{ fontSize: 30, color: '#67494c' }}>
-          Réservation en ligne · Déplacement possible · Clausthal-Zellerfeld
-        </div>
+        <div style={{ fontSize: 30, color: '#67494c' }}>{t('common.og.details')}</div>
       </div>
       <div
         style={{
@@ -62,7 +63,7 @@ export default function OpenGraphImage() {
           color: '#c62828',
         }}
       >
-        <span>Coiffures protectrices et personnalisées</span>
+        <span>{t('common.og.footer')}</span>
         <span style={{ color: '#271719', fontWeight: 700 }}>Sarielle Fashion</span>
       </div>
     </div>,

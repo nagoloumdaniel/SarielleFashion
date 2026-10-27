@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import { AppError } from '@/lib/errors';
 import { deletePrivateImages } from '@/modules/fichiers/private-images';
+import { DEFAULT_LOCALE, isLocale, localePath, type Locale } from '@/i18n/config';
 import { buildReviewTokenExpiry, isReviewTokenValid, isValidRating } from './engine';
 
 /* ============================================================
@@ -26,11 +27,14 @@ export async function createReviewRequest(
     customerEmail: string;
     customerName: string;
     serviceName: string;
+    /** Langue du rendez-vous (appointment.locale) : langue de l'e-mail et du lien d'avis. */
+    locale?: string | null;
   },
 ): Promise<void> {
   const existing = await tx.review.findUnique({ where: { appointmentId: appointment.id } });
   if (existing) return;
 
+  const locale: Locale = isLocale(appointment.locale) ? appointment.locale : DEFAULT_LOCALE;
   const token = randomBytes(32).toString('hex');
   const tokenExpiresAt = buildReviewTokenExpiry(appointment.endsAt);
   await tx.review.create({
@@ -39,6 +43,7 @@ export async function createReviewRequest(
       customerId: appointment.customerId,
       serviceId: appointment.serviceId,
       authorName: appointment.customerName,
+      locale,
       token,
       tokenExpiresAt,
     },
@@ -52,9 +57,10 @@ export async function createReviewRequest(
         templateKey: 'review_request',
         payload: {
           kind: 'review',
+          locale,
           customerName: appointment.customerName,
           serviceName: appointment.serviceName,
-          reviewUrl: `${appBaseUrl()}/avis/${token}`,
+          reviewUrl: `${appBaseUrl()}${localePath(locale, `/avis/${token}`)}`,
         } as Prisma.InputJsonValue,
       },
     ],
@@ -69,6 +75,8 @@ export async function createPublicReview(input: {
   rating: number;
   comment: string;
   photoKeys: string[];
+  /** Langue de l'interface au moment de l'avis. */
+  locale?: Locale;
 }): Promise<{ id: string; slug: string }> {
   if (!isValidRating(input.rating)) throw new AppError('VALIDATION', 'Note invalide.', 400);
   const service = await db.service.findFirst({
@@ -84,6 +92,7 @@ export async function createPublicReview(input: {
       rating: input.rating,
       comment: input.comment || null,
       verified: false,
+      locale: input.locale ?? DEFAULT_LOCALE,
       submittedAt: new Date(),
       photos: { create: input.photoKeys.map((key, order) => ({ key, order })) },
     },

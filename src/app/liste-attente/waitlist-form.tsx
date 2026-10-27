@@ -5,10 +5,12 @@ import { useActionState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { useI18n } from '@/i18n/client';
 import { getDeviceTimezone, deviceTimeToUtc } from '@/lib/dates';
 import { joinWaitlistAction, type WaitlistActionState } from '@/modules/liste-attente/actions';
 
 export function WaitlistForm({ services }: { services: { id: string; name: string }[] }) {
+  const { t, msg } = useI18n();
   const [state, formAction, pending] = useActionState<WaitlistActionState, FormData>(
     joinWaitlistAction,
     {},
@@ -20,7 +22,7 @@ export function WaitlistForm({ services }: { services: { id: string; name: strin
         role="status"
         className="rounded-[var(--radius-md)] border border-success bg-success-soft p-6 text-success"
       >
-        {state.success}
+        {msg(state.success)}
       </p>
     );
   }
@@ -40,18 +42,23 @@ export function WaitlistForm({ services }: { services: { id: string; name: strin
       className="flex flex-col gap-4"
     >
       <Select
-        label="Prestation souhaitée"
+        label={t('waitlist.form.service')}
         name="serviceId"
         required
         options={services.map((service) => ({ value: service.id, label: service.name }))}
       />
       <div className="flex flex-wrap gap-4">
-        <Input label="Date souhaitée" name="date" type="date" required />
-        <Input label="Heure souhaitée" name="time" type="time" required />
+        <Input label={t('waitlist.form.date')} name="date" type="date" required />
+        <Input label={t('waitlist.form.time')} name="time" type="time" required />
       </div>
-      <Input label="Nom et prénom" name="name" placeholder="Votre nom et prénom" required />
-      <Input label="E-mail" name="email" type="email" required />
-      <Input label="Téléphone" name="phone" type="tel" required />
+      <Input
+        label={t('waitlist.form.name')}
+        name="name"
+        placeholder={t('common.ui.placeholders.name')}
+        required
+      />
+      <Input label={t('waitlist.form.email')} name="email" type="email" required />
+      <Input label={t('waitlist.form.phone')} name="phone" type="tel" required />
       <input
         type="text"
         name="website"
@@ -62,11 +69,11 @@ export function WaitlistForm({ services }: { services: { id: string; name: strin
       />
       {state.error ? (
         <p role="alert" className="text-sm font-medium text-alert">
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
       <Button type="submit" icon={Bell} loading={pending}>
-        Rejoindre la liste d’attente
+        {t('waitlist.form.submit')}
       </Button>
     </form>
   );

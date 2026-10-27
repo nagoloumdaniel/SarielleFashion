@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useT } from '@/i18n/client';
 import { useScrollLock } from './useScrollLock';
 
 const FOCUSABLE =
@@ -27,6 +28,7 @@ export function Modal({
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg';
 }) {
+  const t = useT();
   const panelRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -106,8 +108,8 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fermer"
-            title="Fermer"
+            aria-label={t('common.ui.modal.close')}
+            title={t('common.ui.modal.close')}
             className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-muted transition hover:bg-accent-soft hover:text-fg"
           >
             <X aria-hidden="true" className="size-5" />

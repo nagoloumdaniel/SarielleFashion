@@ -3,12 +3,14 @@
 import { CircleCheck, Send, TriangleAlert } from 'lucide-react';
 import { useActionState, useEffect, useRef } from 'react';
 
+import { useI18n } from '@/i18n/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { createConversation } from './actions';
 
 export function ContactForm() {
+  const { t, msg } = useI18n();
   const [state, formAction, isPending] = useActionState(createConversation, null);
   const successRef = useRef<HTMLDivElement>(null);
 
@@ -29,11 +31,10 @@ export function ContactForm() {
           <CircleCheck aria-hidden="true" className="size-6" />
         </span>
         <div className="space-y-2">
-          <h2 className="font-heading text-2xl font-bold text-fg">Merci, c’est bien reçu</h2>
-          <p className="font-medium text-fg">
-            Message envoyé. Sarielle vous répond par e-mail sous 24 heures ouvrées (pensez à
-            vérifier vos courriers indésirables).
-          </p>
+          <h2 className="font-heading text-2xl font-bold text-fg">
+            {t('contact.form.success.title')}
+          </h2>
+          <p className="font-medium text-fg">{t('contact.form.success.text')}</p>
         </div>
         <Button
           type="button"
@@ -41,7 +42,7 @@ export function ContactForm() {
           icon={Send}
           onClick={() => window.location.reload()}
         >
-          Envoyer un autre message
+          {t('contact.form.success.again')}
         </Button>
       </div>
     );
@@ -63,30 +64,30 @@ export function ContactForm() {
         style={{ display: 'none' }}
       />
 
-      <h2 className="font-heading text-xl font-bold text-fg">Votre message</h2>
+      <h2 className="font-heading text-xl font-bold text-fg">{t('contact.form.title')}</h2>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Input
-          label="Nom"
+          label={t('contact.form.name')}
           name="name"
-          placeholder="Votre nom et prénom"
+          placeholder={t('contact.form.namePlaceholder')}
           required
           minLength={2}
           maxLength={100}
           autoComplete="name"
         />
         <Input
-          label="E-mail"
+          label={t('contact.form.email')}
           name="email"
           type="email"
-          placeholder="vous@exemple.com"
+          placeholder={t('contact.form.emailPlaceholder')}
           required
           maxLength={200}
           autoComplete="email"
         />
         <div className="sm:col-span-2">
           <Input
-            label="Téléphone (facultatif)"
+            label={t('contact.form.phone')}
             name="phone"
             type="tel"
             placeholder="+49 151 23456789"
@@ -96,9 +97,9 @@ export function ContactForm() {
         </div>
         <div className="sm:col-span-2">
           <Input
-            label="Sujet"
+            label={t('contact.form.subject')}
             name="subject"
-            placeholder="Objet de votre message"
+            placeholder={t('contact.form.subjectPlaceholder')}
             required
             minLength={3}
             maxLength={200}
@@ -106,15 +107,15 @@ export function ContactForm() {
         </div>
         <div className="sm:col-span-2">
           <Textarea
-            label="Message"
+            label={t('contact.form.message')}
             name="message"
-            placeholder="Écrivez votre message ici…"
+            placeholder={t('contact.form.messagePlaceholder')}
             required
             minLength={10}
             maxLength={2000}
             rows={5}
             autoComplete="off"
-            hint="Précisez la coiffure ou la date visée si vous en avez une."
+            hint={t('contact.form.messageHint')}
           />
         </div>
       </div>
@@ -125,12 +126,12 @@ export function ContactForm() {
           className="flex items-start gap-2 rounded-[var(--radius-md)] bg-alert-soft px-4 py-3 text-sm font-medium text-alert"
         >
           <TriangleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-          {state.error}
+          {msg(state.error)}
         </p>
       ) : null}
 
       <Button type="submit" icon={Send} loading={isPending} className="w-full sm:w-auto">
-        {isPending ? 'Envoi en cours...' : 'Envoyer le message'}
+        {isPending ? t('contact.form.sending') : t('contact.form.send')}
       </Button>
     </form>
   );

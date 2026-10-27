@@ -1,13 +1,17 @@
+'use client';
+
 import { ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { useT } from '@/i18n/client';
+import { Link } from '@/i18n/link';
 import { Fragment } from 'react';
 
 type Crumb = { label: string; href?: string };
 
 /* Fil d'Ariane unique pour les pages publiques : dernier élément = page courante. */
 export function Breadcrumb({ items }: { items: Crumb[] }) {
+  const t = useT();
   return (
-    <nav aria-label="Fil d'Ariane" className="text-sm text-muted">
+    <nav aria-label={t('common.breadcrumb')} className="text-sm text-muted">
       <ol className="flex flex-wrap items-center gap-2">
         {items.map((item, index) => (
           <Fragment key={`${item.label}-${index}`}>

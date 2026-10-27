@@ -7,6 +7,8 @@ import { requireAdmin } from '@/modules/auth/guards';
 import { getClientIp } from '@/lib/client-ip';
 import { rateLimit } from '@/lib/rate-limit';
 import { AppError } from '@/lib/errors';
+import { getLocale } from '@/i18n/server';
+import { localePath } from '@/i18n/config';
 import { deviceTimeToUtc } from '@/lib/dates';
 import { weekdayOfDate } from '@/modules/disponibilites/engine';
 import { assessmentAnswersSchema } from '@/modules/compatibilite/schemas';
@@ -161,6 +163,7 @@ export async function submitBooking(
   _prev: BookingState,
   formData: FormData,
 ): Promise<BookingState> {
+  const locale = await getLocale();
   const ip = await getClientIp();
   const limit = await rateLimit(`booking:submit:${ip}`, { max: 20, windowMs: 15 * 60_000 });
   if (!limit.allowed) {
@@ -210,6 +213,7 @@ export async function submitBooking(
       promoCode: parsed.data.promoCode,
       homeService: parsed.data.homeService,
       homeAddress: parsed.data.homeAddress,
+      locale,
     });
     revalidateBookingPaths(booking.appointmentId);
     return {
@@ -224,7 +228,7 @@ export async function submitBooking(
         homeService: booking.homeService,
         travelFeeCents: booking.travelFeeCents,
         serviceName: booking.serviceName,
-        cancelUrl: `/annulation/${booking.cancelToken}`,
+        cancelUrl: localePath(locale, `/annulation/${booking.cancelToken}`),
       },
     };
   } catch (error) {

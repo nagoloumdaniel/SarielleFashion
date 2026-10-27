@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useState, type ChangeEvent, type InputHTMLAttributes } from 'react';
+import { useT } from '@/i18n/client';
 import { DateField } from './DateField';
 import { DateTimeField } from './DateTimeField';
 import { Field, autoPlaceholder } from './Field';
@@ -49,6 +50,7 @@ function autoIcon(type: string | undefined, name: string | undefined): LucideIco
 /* Champ texte avec icône. Les types date / heure / date-heure utilisent les sélecteurs
    personnalisés (calendrier, menu d'heures) à la place des contrôles natifs. */
 export function Input({ label, error, hint, id, required, icon, type, ...rest }: InputProps) {
+  const t = useT();
   const [visible, setVisible] = useState(false);
   if (type === 'date') {
     return (
@@ -120,7 +122,7 @@ export function Input({ label, error, hint, id, required, icon, type, ...rest }:
             rest.placeholder ??
             (type && /^(checkbox|radio|file|hidden|range|color)$/.test(type)
               ? undefined
-              : autoPlaceholder(label, type, rest.name))
+              : autoPlaceholder(t, label, type, rest.name))
           }
           type={isPassword && visible ? 'text' : type}
           id={inputId}
@@ -135,7 +137,7 @@ export function Input({ label, error, hint, id, required, icon, type, ...rest }:
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+            aria-label={visible ? t('common.ui.hidePassword') : t('common.ui.showPassword')}
             aria-pressed={visible}
             className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-cacao hover:bg-accent-soft"
           >

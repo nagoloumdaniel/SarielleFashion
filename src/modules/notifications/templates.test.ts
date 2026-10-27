@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { notificationTemplateExists, renderNotification } from './templates';
+import { notificationTemplateExists, payloadLocale, renderNotification } from './templates';
 
 const appointment = {
   kind: 'appointment',
@@ -257,5 +257,170 @@ describe('renderNotification : coiffure à domicile', () => {
   it('should show a free travel fee explicitly instead of an empty amount', () => {
     const rendered = renderNotification('booking_confirmed', { ...home, travelFeeCents: 0 });
     expect(rendered?.html).toContain('Offerts');
+  });
+});
+
+/* ---------- Allemand (payload.locale = 'de') ---------- */
+const FRENCH_LEFTOVERS =
+  /\b(bonjour|ton rendez-vous|ta r[ée]servation|tu peux|merci pour|paiement sur place|réserver|annul[ée]|créneau|prestation)\b/i;
+
+const de = (extra: object) => ({ ...extra, locale: 'de' });
+
+const CUSTOMER_CASES: Array<[string, object]> = [
+  ['booking_received', de(appointment)],
+  [
+    'booking_confirmed',
+    de({ ...appointment, cancelUrl: 'https://example.test/de/annulation/abc' }),
+  ],
+  ['booking_cancelled_customer', de(appointment)],
+  ['booking_cancelled_admin', de(appointment)],
+  ['booking_rescheduled', de(appointment)],
+  ['booking_reminder', de(appointment)],
+  [
+    'contact_received',
+    de({ kind: 'conversation', customerName: 'Amina', subject: 'Frage', message: 'Hallo' }),
+  ],
+  [
+    'conversation_reply',
+    de({ kind: 'conversation', customerName: 'Amina', subject: 'Frage', message: 'Antwort' }),
+  ],
+  [
+    'custom_request_received',
+    de({ kind: 'custom', requestId: 'r1', requesterName: 'Amina', description: 'Box Braids' }),
+  ],
+  [
+    'custom_request_decision',
+    de({
+      kind: 'custom',
+      requestId: 'r1',
+      requesterName: 'Amina',
+      description: 'x',
+      adminReply: 'Gern!',
+      estimatedPriceCents: 4550,
+      proposedServiceName: 'Box Braids',
+      proposedSlot: '2026-11-03T09:00:00.000Z',
+    }),
+  ],
+  [
+    'waitlist_slot_available',
+    de({
+      kind: 'waitlist',
+      customerName: 'Amina',
+      serviceName: 'Tresses BOX',
+      startsAt: '2026-10-22T08:00:00.000Z',
+      confirmUrl: 'https://example.test/de/liste-attente/tok',
+      expiresAt: '2026-10-21T08:00:00.000Z',
+    }),
+  ],
+  [
+    'review_request',
+    de({
+      kind: 'review',
+      customerName: 'Amina',
+      serviceName: 'Tresses BOX',
+      reviewUrl: 'https://example.test/de/avis/tok',
+    }),
+  ],
+  ...(['ACCEPTED', 'CONDITIONAL', 'REFUSED', 'INFO_REQUESTED'] as const).map(
+    (decision): [string, object] => [
+      'assessment_decision',
+      de({
+        kind: 'assessment',
+        customerName: 'Amina',
+        serviceName: 'Tresses BOX',
+        decision,
+        message: 'Nachricht',
+      }),
+    ],
+  ),
+];
+
+describe('renderNotification (de)', () => {
+  it.each(CUSTOMER_CASES)('renders %s in German without French leftovers', (key, payload) => {
+    const fr = renderNotification(key, { ...payload, locale: 'fr' });
+    const rendered = renderNotification(key, payload);
+    expect(rendered).not.toBeNull();
+    expect(rendered?.subject).not.toBe(fr?.subject);
+    expect(rendered?.html).toContain('<html lang="de">');
+    for (const part of [rendered?.subject, rendered?.html, rendered?.text]) {
+      expect(part).not.toMatch(FRENCH_LEFTOVERS);
+    }
+    expect(rendered?.text).toMatch(/Hallo|Erinnerung|Bewertung|Deine|Dein/);
+  });
+
+  it('defaults to French when locale is absent or unknown', () => {
+    expect(renderNotification('booking_confirmed', appointment)?.subject).toBe(
+      'Ton rendez-vous est confirmé',
+    );
+    expect(renderNotification('booking_confirmed', { ...appointment, locale: 'xx' })?.subject).toBe(
+      'Ton rendez-vous est confirmé',
+    );
+    expect(payloadLocale({ locale: 'de' })).toBe('de');
+    expect(payloadLocale(null)).toBe('fr');
+  });
+
+  it('uses German dates, informal tone and on-site payment wording', () => {
+    const rendered = renderNotification('booking_confirmed', de(appointment));
+    expect(rendered?.subject).toBe('Dein Termin ist bestätigt');
+    expect(rendered?.html).toContain('Donnerstag, 22. Oktober 2026');
+    expect(rendered?.html).toContain('Bezahlung vor Ort, bar oder per Überweisung');
+    expect(rendered?.html).not.toMatch(/\bSie\b|\bIhr/);
+    expect(rendered?.html).toContain('Amina &lt;Test&gt;');
+  });
+
+  it('uses German default policies unless Sarielle wrote her own', () => {
+    const ctx = {
+      cancellationPolicy: 'Tu peux annuler jusqu’à 30 minutes avant.',
+      bookingPolicy: 'Texte FR',
+      raw: { cancellationPolicy: null, bookingPolicy: null, minCancelNoticeMinutes: 90 },
+    };
+    const rendered = renderNotification('booking_confirmed', de(appointment), ctx);
+    expect(rendered?.html).toContain('1 Std. 30 Min.');
+    expect(rendered?.html).not.toContain('Texte FR');
+    const custom = renderNotification('booking_confirmed', de(appointment), {
+      ...ctx,
+      raw: { cancellationPolicy: 'Eigene Regel', bookingPolicy: null, minCancelNoticeMinutes: 30 },
+    });
+    expect(custom?.html).toContain('Eigene Regel');
+  });
+
+  it('formats euros the German way and keeps /de links built from paths', () => {
+    const rendered = renderNotification(
+      'custom_request_decision',
+      CUSTOMER_CASES.find(([k]) => k === 'custom_request_decision')![1],
+    );
+    expect(rendered?.html).toMatch(/45,50\s€/);
+    expect(rendered?.html).toContain('/de/reserver');
+    const home = renderNotification(
+      'booking_confirmed',
+      de({ ...appointment, homeService: true, homeAddress: 'Weg 1', travelFeeCents: 1500 }),
+    );
+    expect(home?.html).toMatch(/15\s€/);
+    expect(home?.text).toContain('Anfahrtskosten');
+  });
+
+  it('keeps admin emails in French whatever the locale', () => {
+    const rendered = renderNotification('admin_new_booking', de(appointment));
+    expect(rendered?.subject).toContain('Nouvelle réservation');
+  });
+
+  it('has a German rendering for every customer template', () => {
+    const customerKeys = [
+      'booking_received',
+      'booking_confirmed',
+      'booking_cancelled_customer',
+      'booking_cancelled_admin',
+      'booking_rescheduled',
+      'booking_reminder',
+      'contact_received',
+      'conversation_reply',
+      'custom_request_received',
+      'custom_request_decision',
+      'waitlist_slot_available',
+      'review_request',
+      'assessment_decision',
+    ];
+    const covered = new Set(CUSTOMER_CASES.map(([k]) => k));
+    for (const key of customerKeys) expect(covered.has(key), key).toBe(true);
   });
 });

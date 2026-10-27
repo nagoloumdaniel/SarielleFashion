@@ -1,7 +1,11 @@
+import { categoryLabel } from '@/lib/catalogue';
 import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Link } from '@/i18n/link';
+import { I18nScope } from '@/i18n/client';
+import { getI18n } from '@/i18n/server';
+import { pageMetadata } from '@/i18n/metadata';
 import {
   getCompatibilityServiceBySlug,
   listPublishedServicesForCompatibility,
@@ -13,12 +17,10 @@ import { Badge } from '@/components/ui/Badge';
 import { CompatibilityWizard } from './compatibility-wizard';
 import { Title } from '@/components/ui/Title';
 
-export const metadata: Metadata = {
-  title: 'Compatibilité capillaire',
-  description:
-    'Vérifiez en quelques questions si votre longueur de cheveux et votre situation capillaire permettent la prestation choisie. Sarielle peut aussi évaluer une photo.',
-  alternates: { canonical: '/compatibilite' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, messages } = await getI18n();
+  return pageMetadata({ locale, path: '/compatibilite', ...messages.compat.meta });
+}
 
 function firstValue(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
@@ -30,31 +32,34 @@ export default async function CompatibilitePage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
+  const { locale, t, messages } = await getI18n();
   const slug = firstValue(params.service).trim();
 
   if (slug === '') {
     const services = await listPublishedServicesForCompatibility();
     return (
       <main className="page-main space-y-8">
-        <Breadcrumb items={[{ label: 'Accueil', href: '/' }, { label: 'Compatibilité' }]} />
+        <Breadcrumb
+          items={[{ label: t('nav.home'), href: '/' }, { label: t('compat.breadcrumb') }]}
+        />
 
         <header className="max-w-3xl">
           <Title as="h1" size="display" className="">
-            Vérifiez la compatibilité de votre coiffure
+            {t('compat.pickH1')}
           </Title>
         </header>
 
         {services.length === 0 ? (
           <EmptyState
-            title="Catalogue en cours de mise à jour"
-            message="Aucune prestation publiée pour le moment. Revenez très bientôt."
-            actionLabel="Voir le catalogue"
+            title={t('compat.empty.title')}
+            message={t('compat.empty.message')}
+            actionLabel={t('compat.empty.action')}
             actionHref="/coiffures"
           />
         ) : (
           <section aria-labelledby="choix-prestation" className="space-y-4">
             <Title as="h2" id="choix-prestation" className="">
-              Choisissez votre prestation
+              {t('compat.pickH2')}
             </Title>
             <ul className="grid gap-3 sm:grid-cols-2">
               {services.map((service) => (
@@ -65,7 +70,9 @@ export default async function CompatibilitePage({
                   >
                     <span>
                       <span className="block font-semibold text-fg">{service.name}</span>
-                      <span className="text-sm text-muted">{service.categoryName}</span>
+                      <span className="text-sm text-muted">
+                        {categoryLabel(locale, service.categorySlug, service.categoryName)}
+                      </span>
                     </span>
                     <ArrowRight aria-hidden="true" className="size-4 text-cacao" />
                   </Link>
@@ -87,28 +94,31 @@ export default async function CompatibilitePage({
     <main className="page-main space-y-8">
       <Breadcrumb
         items={[
-          { label: 'Accueil', href: '/' },
-          { label: 'Coiffures', href: '/coiffures' },
+          { label: t('nav.home'), href: '/' },
+          { label: t('compat.breadcrumbCatalogue'), href: '/coiffures' },
           { label: service.name, href: `/coiffures/${service.slug}` },
-          { label: 'Compatibilité' },
+          { label: t('compat.breadcrumb') },
         ]}
       />
 
       <header className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="neutral">{service.categoryName}</Badge>
-          <Badge tone="accent">Compatibilité capillaire</Badge>
+          <Badge tone="neutral">
+            {categoryLabel(locale, service.categorySlug, service.categoryName)}
+          </Badge>
+          <Badge tone="accent">{t('compat.badge')}</Badge>
         </div>
         <Title as="h1" size="display" className="">
-          Votre coiffure est-elle compatible ?
+          {t('compat.h1')}
         </Title>
         <p className="max-w-2xl text-muted">
-          Questions utiles pour <strong>{service.name}</strong>. Aucune réservation n’est créée à
-          cette étape.
+          {t('compat.introBefore')} <strong>{service.name}</strong>. {t('compat.introAfter')}
         </p>
       </header>
 
-      <CompatibilityWizard serviceSlug={service.slug} rule={service.rule} questions={questions} />
+      <I18nScope messages={{ compat: messages.compat }}>
+        <CompatibilityWizard serviceSlug={service.slug} rule={service.rule} questions={questions} />
+      </I18nScope>
     </main>
   );
 }

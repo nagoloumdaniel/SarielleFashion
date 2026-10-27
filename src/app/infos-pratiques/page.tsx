@@ -3,52 +3,24 @@ import type { Metadata } from 'next';
 import { Breadcrumb } from '@/components/shared/Breadcrumb';
 import { ButtonLink } from '@/components/ui/Button';
 import { Title } from '@/components/ui/Title';
-import { formatOpeningHours } from '@/modules/parametres/hours';
+import { formatOpeningHoursLocale } from '@/i18n/hours';
+import { formatEuro } from '@/i18n/format';
+import { pageMetadata } from '@/i18n/metadata';
+import { getI18n } from '@/i18n/server';
 import { getCachedSalonSettings } from '@/lib/public-cache';
 import { DEFAULT_SALON_SETTINGS, type SalonSettingsData } from '@/modules/disponibilites/queries';
 import { resolveBookingPolicy, splitParagraphs } from '@/modules/parametres/policies';
-import { formatNoticeDelay } from '@/modules/reservations/policy';
-import { homeServiceSentence } from '@/modules/parametres/home-service';
-import { PAYMENT_SENTENCE } from '@/modules/parametres/payment';
 
-export const metadata: Metadata = {
-  title: 'Informations pratiques',
-  description:
-    "Horaires, préparation du rendez-vous et politique d'annulation de Sarielle Fashion.",
-  alternates: { canonical: '/infos-pratiques' },
-};
-
-const preparation = [
-  'Viens avec des cheveux propres, démêlés et séchés.',
-  'Si tu portes une coiffure existante, ne la défais pas la veille.',
-  'Apporte une photo ou une inspiration du résultat souhaité si tu en as une.',
-];
-
-function buildCancellationRules(minutes: number) {
-  const delay = minutes > 0 ? formatNoticeDelay(minutes) : 'le délai prévu';
-  return [
-    {
-      label: 'Annulation à temps',
-      description: `Tu peux annuler ton rendez-vous gratuitement en ligne jusqu’à ${delay} avant l’heure convenue, via le lien sécurisé reçu par e-mail.`,
-    },
-    {
-      label: 'Annulation tardive',
-      description: `Passé le délai de ${delay}, le lien d’annulation ne fonctionne plus et le créneau ne peut plus être proposé à d’autres personnes. Contacte Sarielle directement pour étudier ta situation.`,
-    },
-    {
-      label: 'Absence',
-      description:
-        'En cas d’absence sans préavis, Sarielle se réserve le droit de demander un acompte pour toute réservation ultérieure.',
-    },
-    {
-      label: 'Annulation par Sarielle',
-      description:
-        'Si Sarielle doit annuler pour un motif personnel (maladie, urgence), je te contacte sans délai et un nouveau rendez-vous t’est proposé en priorité, sans frais.',
-    },
-  ];
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, messages } = await getI18n();
+  return pageMetadata({
+    locale,
+    path: '/infos-pratiques',
+    title: messages.info.meta.title,
+    description: messages.info.meta.description,
+  });
 }
 
-const DEFAULT_ADDRESS = 'Clausthal-Zellerfeld\nAllemagne';
 const DEFAULT_CONTACT_EMAIL = 'sarielletalla@gmail.com';
 
 async function loadSettings(): Promise<SalonSettingsData> {
@@ -61,24 +33,53 @@ async function loadSettings(): Promise<SalonSettingsData> {
 }
 
 export default async function InfosPratiquesPage() {
+  const { t, locale, messages } = await getI18n();
   const settings = await loadSettings();
-  const addressLines = (settings.address?.trim() || DEFAULT_ADDRESS)
+
+  /* Délai d'annulation lisible : « 30 minutes », « 1 heure », « 1 h 30 » (fr) / « 1 Std. 30 Min. » (de). */
+  const formatDelay = (minutes: number): string => {
+    const total = Math.max(0, Math.round(minutes));
+    if (total < 60) return t('info.delay.minutes', { count: total });
+    const hours = Math.floor(total / 60);
+    const rest = total % 60;
+    if (rest === 0) return t('info.delay.hours', { count: hours });
+    return t('info.delay.hoursMinutes', { h: hours, m: String(rest).padStart(2, '0') });
+  };
+
+  const addressLines = (settings.address?.trim() || messages.info.contact.defaultAddress)
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  const hoursLines = formatOpeningHours(settings.openingHours);
+  const hoursLines = formatOpeningHoursLocale(settings.openingHours, locale);
   const customCancellation = settings.cancellationPolicy?.trim() ?? '';
+  const delay =
+    settings.minCancelNoticeMinutes > 0
+      ? formatDelay(settings.minCancelNoticeMinutes)
+      : t('info.cancellation.noDelay');
   const cancellationRules = customCancellation
     ? null
-    : buildCancellationRules(settings.minCancelNoticeMinutes);
-  const bookingParagraphs = splitParagraphs(resolveBookingPolicy(settings.bookingPolicy));
+    : (['onTime', 'late', 'absence', 'bySarielle'] as const).map((key) => ({
+        label: messages.info.cancellation[key].label,
+        description: messages.info.cancellation[key].description.replace('{delay}', delay),
+      }));
+  // Texte saisi par Sarielle : conservé tel quel ; sinon texte par défaut dans la langue de la page.
+  const bookingParagraphs = splitParagraphs(
+    settings.bookingPolicy?.trim()
+      ? resolveBookingPolicy(settings.bookingPolicy)
+      : messages.info.booking.defaultPolicy,
+  );
+  const homeServiceText =
+    settings.travelFeeCents > 0
+      ? t('info.homeService.withFee', { fee: formatEuro(locale, settings.travelFeeCents) })
+      : t('info.homeService.free');
+
   return (
     <main className="page-main space-y-12">
-      <Breadcrumb items={[{ label: 'Accueil', href: '/' }, { label: 'Informations pratiques' }]} />
+      <Breadcrumb items={[{ label: t('nav.home'), href: '/' }, { label: t('info.title') }]} />
 
       <header className="max-w-3xl">
         <Title as="h1" size="display" className="">
-          Informations pratiques
+          {t('info.title')}
         </Title>
       </header>
 
@@ -86,10 +87,10 @@ export default async function InfosPratiquesPage() {
       <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div className="space-y-6 rounded-2xl bg-card p-8 shadow-soft">
           <Title as="h2" className="">
-            Coordonnées
+            {t('info.contact.title')}
           </Title>
           <p className="text-muted">
-            <span className="font-semibold text-fg">Adresse</span>
+            <span className="font-semibold text-fg">{t('info.contact.address')}</span>
             <br />
             {addressLines.map((line, index) => (
               <span key={line}>
@@ -100,39 +101,37 @@ export default async function InfosPratiquesPage() {
           </p>
           {settings.homeServiceEnabled ? (
             <p className="text-muted">
-              <span className="font-semibold text-fg">Coiffure à domicile</span>
+              <span className="font-semibold text-fg">{t('info.contact.homeService')}</span>
               <br />
-              {homeServiceSentence(settings.travelFeeCents)}
+              {homeServiceText}
             </p>
           ) : null}
           <p className="text-muted">
-            <span className="font-semibold text-fg">E-mail</span>
+            <span className="font-semibold text-fg">{t('info.contact.email')}</span>
             <br />
             {settings.contactEmail || DEFAULT_CONTACT_EMAIL}
           </p>
         </div>
         <div className="space-y-6 rounded-2xl bg-card p-8 shadow-soft">
           <Title as="h2" className="">
-            Horaires
+            {t('info.hours.title')}
           </Title>
           {hoursLines.map((line) => (
             <p key={line} className="text-muted">
               {line}
             </p>
           ))}
-          <p className="text-muted">
-            Sur réservation uniquement. Merci d&apos;être à l&apos;heure.
-          </p>
+          <p className="text-muted">{t('info.hours.note')}</p>
         </div>
       </section>
 
       {/* Préparation */}
       <section className="space-y-6">
         <Title as="h2" className="">
-          Préparer ton rendez-vous
+          {t('info.preparation.title')}
         </Title>
         <ul className="max-w-3xl space-y-3">
-          {preparation.map((item) => (
+          {messages.info.preparation.items.map((item) => (
             <li key={item} className="flex items-start gap-3 text-muted">
               <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-accent" />
               <span>{item}</span>
@@ -144,18 +143,18 @@ export default async function InfosPratiquesPage() {
       {/* Paiement : toujours sur place, espèces ou virement */}
       <section className="space-y-6">
         <Title as="h2" className="">
-          Paiement
+          {t('info.payment.title')}
         </Title>
         <div className="flex max-w-3xl items-start gap-3 border-l-4 border-accent pl-5">
           <HandCoins aria-hidden="true" className="mt-1 size-5 shrink-0 text-accent" />
-          <p className="leading-relaxed text-muted">{PAYMENT_SENTENCE}</p>
+          <p className="leading-relaxed text-muted">{t('info.payment.sentence')}</p>
         </div>
       </section>
 
       {/* Conditions de réservation (paramètre « bookingPolicy » ou texte par défaut) */}
       <section className="space-y-6">
         <Title as="h2" className="">
-          Conditions de réservation
+          {t('info.booking.title')}
         </Title>
         <div className="max-w-3xl space-y-3 border-l-4 border-accent pl-5">
           {bookingParagraphs.map((paragraph) => (
@@ -169,7 +168,7 @@ export default async function InfosPratiquesPage() {
       {/* Politique d'annulation (paramètre « cancellationPolicy » ou règles par défaut) */}
       <section className="space-y-6">
         <Title as="h2" className="">
-          Politique d&apos;annulation
+          {t('info.cancellation.title')}
         </Title>
         {cancellationRules ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -193,14 +192,14 @@ export default async function InfosPratiquesPage() {
 
       <section className="rounded-2xl bg-page p-8 text-center md:p-10">
         <Title as="h2" className="">
-          Une question ?
+          {t('info.question.title')}
         </Title>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <ButtonLink href="/contact" icon={Mail}>
-            Nous contacter
+            {t('info.question.contact')}
           </ButtonLink>
           <ButtonLink href="/coiffures" variant="secondary" icon={CalendarCheck}>
-            Réserver un créneau
+            {t('info.question.book')}
           </ButtonLink>
         </div>
       </section>

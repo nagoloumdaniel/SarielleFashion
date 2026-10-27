@@ -3,6 +3,7 @@
 import { Maximize2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useI18n } from '@/i18n/client';
 import { Lightbox } from '@/components/ui/Lightbox';
 import { IMAGE_BLUR_DATA_URL } from '@/lib/image-placeholder';
 
@@ -18,7 +19,7 @@ export type GalleryGridPhoto = {
    (clavier : Entrée, flèches, Échap). Pas de zoom au survol (DESIGN-RULES). */
 export function GalleryGrid({
   photos,
-  label = 'Réalisations',
+  label,
   compact = false,
 }: {
   photos: GalleryGridPhoto[];
@@ -26,11 +27,12 @@ export function GalleryGrid({
   /** Accueil : 3 colonnes dès `sm`, pas de légende sous la photo. */
   compact?: boolean;
 }) {
+  const { t } = useI18n();
   const [opened, setOpened] = useState<number | null>(null);
   return (
     <>
       <ul
-        aria-label={label}
+        aria-label={label ?? t('common.ui.gallery.gridLabel')}
         className={`grid gap-3 sm:gap-4 ${
           compact ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
         }`}
@@ -40,7 +42,7 @@ export function GalleryGrid({
             <button
               type="button"
               onClick={() => setOpened(index)}
-              aria-label={`Agrandir : ${photo.alt}`}
+              aria-label={t('common.ui.gallery.enlarge', { alt: photo.alt })}
               className="group relative block aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-lg)] bg-line text-left shadow-soft"
             >
               <Image

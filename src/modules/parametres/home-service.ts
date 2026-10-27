@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { formatEuro } from '@/modules/reservations/format';
+import { DEFAULT_LOCALE, type Locale } from '@/i18n/config';
+import { formatEuro } from '@/i18n/format';
+import { MESSAGES } from '@/i18n/messages';
+import { createTranslator } from '@/i18n/translate';
 
 /* ============================================================
  * Réglage « Coiffure à domicile » (dashboard > Paramètres).
@@ -38,13 +41,22 @@ export const homeServiceSettingsSchema = z.object({
 export type HomeServiceSettingsInput = z.infer<typeof homeServiceSettingsSchema>;
 
 /** Montant annoncé au public : « à partir de 15 € » (montant fixe, à la charge de la cliente). */
-export function travelFeeFromLabel(travelFeeCents: number): string {
-  return `à partir de ${formatEuro(travelFeeCents)}`;
+export function travelFeeFromLabel(
+  travelFeeCents: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return createTranslator(locale, MESSAGES[locale])('catalogue.travel.from', {
+    fee: formatEuro(locale, travelFeeCents),
+  });
 }
 
 /** Phrase publique (FAQ, infos pratiques) : l'option est présentée comme possible, jamais obligatoire. */
-export function homeServiceSentence(travelFeeCents: number): string {
+export function homeServiceSentence(
+  travelFeeCents: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const t = createTranslator(locale, MESSAGES[locale]);
   return travelFeeCents > 0
-    ? `Coiffure à domicile possible en option, frais de déplacement à ta charge : ${travelFeeFromLabel(travelFeeCents)}.`
-    : 'Coiffure à domicile possible en option, sans frais de déplacement.';
+    ? t('catalogue.travel.sentenceWith', { fee: travelFeeFromLabel(travelFeeCents, locale) })
+    : t('catalogue.travel.sentenceFree');
 }
