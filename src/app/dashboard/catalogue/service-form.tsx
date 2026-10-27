@@ -2,6 +2,7 @@
 
 import { Clock, FolderOpen, Hash, Link2, Plus, Save, Scissors, Tag, Wallet } from 'lucide-react';
 import { useState } from 'react';
+import { PhotoSlotsField, type ExistingPhoto } from '@/components/shared/PhotoSlotsField';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -46,11 +47,18 @@ export function ServiceForm({
   categories,
   initial,
   submitLabel,
+  photos = [],
+  storageReady = true,
+  storageHint,
 }: {
   action: (prev: CatalogueActionState, formData: FormData) => Promise<CatalogueActionState>;
   categories: CategoryOption[];
   initial?: AdminServiceCore;
   submitLabel: string;
+  /** Photos déjà enregistrées (édition), avec URL signée. */
+  photos?: ExistingPhoto[];
+  storageReady?: boolean;
+  storageHint?: string;
 }) {
   const { state, onSubmit, pending } = useFormAction(action);
   const [name, setName] = useState(initial?.name ?? '');
@@ -193,6 +201,15 @@ export function ServiceForm({
           hint="Les plus petits nombres apparaissent en premier."
         />
       </div>
+
+      {/* key : repart de l'état serveur après un enregistrement (nouveaux ids de photos). */}
+      <PhotoSlotsField
+        key={photos.map((photo) => photo.id).join(',')}
+        initial={photos}
+        pending={pending}
+        storageReady={storageReady}
+        storageHint={storageHint}
+      />
 
       <FormError message={state.error} />
 

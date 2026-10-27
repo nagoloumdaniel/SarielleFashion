@@ -33,6 +33,7 @@ import {
   photoPolicyLabel as photoPolicyText,
   serviceGallery,
 } from '@/lib/catalogue';
+import { withSignedImages } from '@/lib/catalogue-images';
 import { getCachedServices } from '@/lib/public-cache';
 import { getServiceRatingSummaries, listServiceReviews } from '@/modules/avis/queries';
 import { isStorageConfigured } from '@/modules/fichiers/storage';

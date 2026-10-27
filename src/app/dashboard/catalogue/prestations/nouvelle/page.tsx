@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { requireAdmin } from '@/modules/auth/guards';
 import { listCategoryOptions } from '@/lib/catalogue-admin';
 import { adminCreateService } from '@/modules/catalogue/actions';
+import { getStorageConfigurationHint, isStorageConfigured } from '@/modules/fichiers/storage';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { BackButton } from '@/components/shared/BackButton';
 import { ButtonLink } from '@/components/ui/Button';
@@ -47,6 +48,8 @@ export default async function NewServicePage() {
               active: category.active,
             }))}
             submitLabel="Créer la prestation"
+            storageReady={isStorageConfigured()}
+            storageHint={getStorageConfigurationHint()}
           />
         </Card>
       )}

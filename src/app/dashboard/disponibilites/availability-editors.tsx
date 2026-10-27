@@ -135,6 +135,11 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     data.set('weekday', String(weekday));
+    // Jour fermé : les champs désactivés ne sont pas postés ; le serveur exige des heures valides.
+    if (!active) {
+      data.set('start', '09:00');
+      data.set('end', '18:00');
+    }
     run(adminSaveWeeklyRule, data);
   }
 
@@ -160,20 +165,34 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
           active ? '' : 'opacity-50'
         } ${active ? '' : 'grayscale'}`}
       >
-        <Input
-          label="Début"
-          name="start"
-          type="time"
-          defaultValue={timeValue(rule?.startMinute ?? 540)}
-        />
-        <Input
-          label="Fin"
-          name="end"
-          type="time"
-          defaultValue={timeValue(rule?.endMinute ?? 1080)}
-        />
-        <Button type="submit" variant="secondary" icon={Save} iconOnly loading={pending}>
-          {`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+        <div className={`min-w-0 transition-opacity ${active ? '' : 'opacity-50 grayscale'}`}>
+          <Input
+            label="Début"
+            name="start"
+            type="time"
+            disabled={!active}
+            defaultValue={timeValue(rule?.startMinute ?? 540)}
+          />
+        </div>
+        <div className={`min-w-0 transition-opacity ${active ? '' : 'opacity-50 grayscale'}`}>
+          <Input
+            label="Fin"
+            name="end"
+            type="time"
+            disabled={!active}
+            defaultValue={timeValue(rule?.endMinute ?? 1080)}
+          />
+        </div>
+        <Button
+          type="submit"
+          variant="secondary"
+          icon={Save}
+          loading={pending}
+          aria-label={`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+          title={`Enregistrer ${WEEKDAYS[weekday]?.toLowerCase()}`}
+          className="col-span-2 w-full sm:col-span-1 sm:size-10 sm:w-10 sm:px-0"
+        >
+          <span className="sm:sr-only">Enregistrer</span>
         </Button>
       </fieldset>
     </form>

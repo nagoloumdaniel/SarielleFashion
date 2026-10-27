@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import type { AnswerType, HairLength, PhotoPolicy, ServiceStatus } from '@prisma/client';
 import { isPermutation, OPTION_ORDER_BY } from '@/modules/catalogue/ordering';
+import { MAX_SERVICE_PHOTOS } from '@/modules/catalogue/service-photos';
 import { db } from './db';
 import { paginate } from './pagination';
 import { AppError } from './errors';
@@ -619,7 +620,7 @@ export async function deleteServiceOption(optionId: string) {
 /* Photos de prestation (P4.4, P4.5)                                   */
 /* ------------------------------------------------------------------ */
 
-export const MAX_SERVICE_IMAGES = 8;
+export const MAX_SERVICE_IMAGES = MAX_SERVICE_PHOTOS;
 
 export async function addServiceImage(serviceId: string, key: string, alt: string) {
   const service = await db.service.findUnique({ where: { id: serviceId }, select: { id: true } });
@@ -648,6 +649,58 @@ export async function addServiceImage(serviceId: string, key: string, alt: strin
       isPrimary: count === 0,
     },
   });
+}
+
+/** Identifiants des photos déjà enregistrées d'une prestation. */
+export async function getServiceImageIds(serviceId: string): Promise<string[]> {
+  const images = await db.serviceImage.findMany({ where: { serviceId }, select: { id: true } });
+  return images.map((image) => image.id);
+}
+
+export type ServiceImagePlan =
+  { kind: 'existing'; id: string } | { kind: 'new'; key: string; alt: string };
+
+/**
+ * Applique d'un coup la liste finale des photos (formulaire prestation) : supprime celles qui
+ * ne sont plus dans la liste, crée les nouvelles, réécrit l'ordre (la première = principale).
+ * Une seule transaction ; renvoie les clés des objets retirés, à supprimer du stockage ensuite.
+ */
+export async function applyServiceImagePlan(
+  serviceId: string,
+  plan: ServiceImagePlan[],
+): Promise<string[]> {
+  if (plan.length > MAX_SERVICE_IMAGES) {
+    throw new AppError('LIMIT', `${MAX_SERVICE_IMAGES} photos maximum par prestation.`, 409);
+  }
+  const current = await db.serviceImage.findMany({
+    where: { serviceId },
+    select: { id: true, key: true },
+  });
+  const kept = new Set(plan.flatMap((entry) => (entry.kind === 'existing' ? [entry.id] : [])));
+  const removed = current.filter((image) => !kept.has(image.id));
+
+  await db.$transaction([
+    db.serviceImage.deleteMany({
+      where: { serviceId, id: { in: removed.map((image) => image.id) } },
+    }),
+    ...plan.map((entry, index) =>
+      entry.kind === 'existing'
+        ? db.serviceImage.update({
+            where: { id: entry.id },
+            data: { order: index, isPrimary: index === 0 },
+          })
+        : db.serviceImage.create({
+            data: {
+              serviceId,
+              key: entry.key,
+              alt: entry.alt,
+              order: index,
+              isPrimary: index === 0,
+            },
+          }),
+    ),
+  ]);
+  return removed.map((image) => image.key);
 }
 
 export async function getServiceImage(imageId: string) {
