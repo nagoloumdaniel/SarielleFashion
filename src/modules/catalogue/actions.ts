@@ -196,7 +196,6 @@ export async function adminCreateCategory(
   try {
     const category = await createCategory({
       name: parsed.data.name,
-      slug: parsed.data.slug,
       description: parsed.data.description || undefined,
       order: parsed.data.order,
       active: parsed.data.active,
@@ -231,7 +230,6 @@ export async function adminUpdateCategory(
   try {
     const category = await updateCategory(id, {
       name: parsed.data.name,
-      slug: parsed.data.slug,
       description: parsed.data.description,
       order: parsed.data.order,
       active: parsed.data.active,
@@ -346,7 +344,6 @@ export async function adminCreateService(
     const price = priceFieldsFromInput(parsed.data);
     const service = await createService({
       name: parsed.data.name,
-      slug: parsed.data.slug,
       description: parsed.data.description || null,
       categoryId: parsed.data.categoryId,
       priceFromCents: price.priceFromCents,
@@ -409,7 +406,6 @@ export async function adminUpdateService(
     const price = priceFieldsFromInput(parsed.data);
     const service = await updateService(id, {
       name: parsed.data.name,
-      slug: parsed.data.slug,
       description: parsed.data.description || null,
       categoryId: parsed.data.categoryId,
       priceFromCents: price.priceFromCents,

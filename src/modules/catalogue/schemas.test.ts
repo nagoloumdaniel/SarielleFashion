@@ -10,7 +10,6 @@ import {
 
 const validService = {
   name: 'Tresses collées',
-  slug: 'tresses-collees',
   description: 'Une pose soignée.',
   categoryId: 'cm0category0000000000000000',
   priceMode: 'FROM',
@@ -68,9 +67,10 @@ describe('serviceInputSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('should reject an invalid slug', () => {
+  it('should ignore a slug sent by the client (generated server side)', () => {
     const result = serviceInputSchema.safeParse({ ...validService, slug: 'Tresses Collées' });
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+    if (result.success) expect('slug' in result.data).toBe(false);
   });
 
   it('should reject a missing category', () => {
@@ -104,7 +104,6 @@ describe('categoryInputSchema', () => {
   it('should accept a category with checked active', () => {
     const result = categoryInputSchema.safeParse({
       name: 'Tresses',
-      slug: 'tresses',
       description: '',
       order: '2',
       active: 'on',
@@ -116,7 +115,6 @@ describe('categoryInputSchema', () => {
   it('should treat a missing checkbox as inactive', () => {
     const result = categoryInputSchema.safeParse({
       name: 'Tresses',
-      slug: 'tresses',
       order: '2',
     });
     expect(result.success).toBe(true);

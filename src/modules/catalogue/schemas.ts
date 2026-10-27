@@ -59,12 +59,6 @@ export const categoryInputSchema = z.object({
     .trim()
     .min(2, 'Le nom doit contenir au moins 2 caractères.')
     .max(80, 'Le nom est trop long (80 caractères max).'),
-  slug: z
-    .string()
-    .trim()
-    .min(2, 'Le slug doit contenir au moins 2 caractères.')
-    .max(80, 'Le slug est trop long (80 caractères max).')
-    .regex(/^[a-z0-9-]+$/, 'Slug invalide : lettres minuscules, chiffres et tirets uniquement.'),
   description: z.preprocess(
     (value) => (typeof value === 'string' ? value : ''),
     z.string().trim().max(500, 'La description est trop longue (500 caractères max).').default(''),
@@ -88,12 +82,6 @@ export const orderedIdsSchema = z
 export const serviceInputSchema = z
   .object({
     name: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères.').max(120),
-    slug: z
-      .string()
-      .trim()
-      .min(2, 'Le slug doit contenir au moins 2 caractères.')
-      .max(120)
-      .regex(/^[a-z0-9-]+$/, 'Slug invalide : lettres minuscules, chiffres et tirets uniquement.'),
     description: z.preprocess(
       (value) => (typeof value === 'string' ? value : ''),
       z

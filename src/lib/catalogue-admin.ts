@@ -4,6 +4,7 @@ import { isPermutation, OPTION_ORDER_BY } from '@/modules/catalogue/ordering';
 import { MAX_SERVICE_PHOTOS } from '@/modules/catalogue/service-photos';
 import { db } from './db';
 import { paginate } from './pagination';
+import { uniqueSlug } from './slug';
 import { AppError } from './errors';
 
 /* ============================================================
@@ -80,18 +81,18 @@ export async function categorySlugExists(slug: string, excludeId?: string): Prom
 
 export async function createCategory(data: {
   name: string;
-  slug: string;
   description?: string;
   order: number;
   active: boolean;
 }) {
-  if (await categorySlugExists(data.slug)) {
-    throw new AppError('DUPLICATE', 'Cette catégorie existe déjà.', 409);
-  }
+  // Slug généré depuis le nom, unique (suffixe -2, -3…).
+  const slug = await uniqueSlug(data.name, (candidate) => categorySlugExists(candidate), {
+    fallback: 'categorie',
+  });
   return db.category.create({
     data: {
       name: data.name,
-      slug: data.slug,
+      slug,
       description: data.description ?? null,
       order: data.order,
       active: data.active,
@@ -103,7 +104,6 @@ export async function updateCategory(
   id: string,
   data: {
     name?: string;
-    slug?: string;
     description?: string;
     order?: number;
     active?: boolean;
@@ -112,17 +112,19 @@ export async function updateCategory(
   const category = await db.category.findUnique({ where: { id } });
   if (!category) throw new AppError('NOT_FOUND', 'Catégorie introuvable.', 404);
 
-  if (data.slug != null && data.slug !== category.slug) {
-    if (await categorySlugExists(data.slug, id)) {
-      throw new AppError('DUPLICATE', 'Cette catégorie existe déjà.', 409);
-    }
-  }
+  // Nom modifié : le slug suit (URL publique mise à jour) ; nom identique : slug conservé.
+  const slug =
+    data.name != null && data.name !== category.name
+      ? await uniqueSlug(data.name, (candidate) => categorySlugExists(candidate, id), {
+          fallback: 'categorie',
+        })
+      : undefined;
 
   return db.category.update({
     where: { id },
     data: {
       ...(data.name != null ? { name: data.name } : {}),
-      ...(data.slug != null ? { slug: data.slug } : {}),
+      ...(slug != null ? { slug } : {}),
       ...(data.description != null ? { description: data.description } : {}),
       ...(data.order != null ? { order: data.order } : {}),
       ...(data.active != null ? { active: data.active } : {}),
@@ -199,7 +201,6 @@ export interface AdminServiceFilters {
 
 export interface ServiceWriteInput {
   name: string;
-  slug: string;
   description?: string | null;
   categoryId: string;
   priceFromCents: number | null;
@@ -494,13 +495,14 @@ async function assertCategoryExists(categoryId: string) {
 
 export async function createService(data: ServiceWriteInput) {
   await assertCategoryExists(data.categoryId);
-  if (await serviceSlugExists(data.slug)) {
-    throw new AppError('DUPLICATE', 'Cette prestation existe déjà.', 409);
-  }
+  const slug = await uniqueSlug(data.name, (candidate) => serviceSlugExists(candidate), {
+    maxLength: 120,
+    fallback: 'prestation',
+  });
   return db.service.create({
     data: {
       name: data.name,
-      slug: data.slug,
+      slug,
       description: data.description ?? null,
       categoryId: data.categoryId,
       priceFromCents: data.priceFromCents,
@@ -514,17 +516,22 @@ export async function createService(data: ServiceWriteInput) {
 }
 
 export async function updateService(id: string, data: ServiceWriteInput) {
-  const service = await db.service.findUnique({ where: { id }, select: { id: true, slug: true } });
+  const service = await db.service.findUnique({ where: { id }, select: { id: true, name: true } });
   if (!service) throw new AppError('NOT_FOUND', 'Prestation introuvable.', 404);
   await assertCategoryExists(data.categoryId);
-  if (data.slug !== service.slug && (await serviceSlugExists(data.slug, id))) {
-    throw new AppError('DUPLICATE', 'Cette prestation existe déjà.', 409);
-  }
+  // Nom modifié : le slug suit (URL publique mise à jour) ; nom identique : slug conservé.
+  const slug =
+    data.name !== service.name
+      ? await uniqueSlug(data.name, (candidate) => serviceSlugExists(candidate, id), {
+          maxLength: 120,
+          fallback: 'prestation',
+        })
+      : undefined;
   return db.service.update({
     where: { id },
     data: {
       name: data.name,
-      slug: data.slug,
+      ...(slug != null ? { slug } : {}),
       description: data.description ?? null,
       categoryId: data.categoryId,
       priceFromCents: data.priceFromCents,
