@@ -9,7 +9,6 @@ export const home = {
       'Ton prochain look. Un style qui te ressemble. Réserve ton rendez-vous en ligne.',
   },
   hero: {
-    badge: 'Clausthal-Zellerfeld · déplacement possible',
     title: 'Ton prochain look. Un style qui te ressemble.',
     text: 'Coiffure, make-up, pose de lace et de cils. Je prends soin de toi, avec une seule priorité : ta satisfaction.',
     reserve: 'Réserver',
