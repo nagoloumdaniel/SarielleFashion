@@ -78,3 +78,6 @@
 - **Avis et galerie (consignes cliente)** :
   - Avis publiés immédiatement, sans modération ; l'admin les supprime (`useConfirm`). Étoiles 1-5 (`StarRatingInput`, `Stars`), commentaire facultatif, 3 photos max, badge « Client vérifié » pour les avis par lien e-mail. Moyenne + nombre d'avis sur `PrestationCard` et la fiche (masqués sans avis, jamais de note inventée). Tutoiement.
   - Galerie : `/galerie` (grille + `Lightbox` accessible clavier), pas de zoom au survol. Dashboard : ajout direct, légende/prestation facultatives, plus de consentement.
+- **Admin : slug et placeholders** :
+  - Aucun champ « Slug » dans les formulaires admin : le slug est généré automatiquement côté serveur depuis le nom (`src/lib/slug.ts`, unique avec suffixe `-2`, `-3`), régénéré seulement si le nom change.
+  - Placeholders adaptés au champ (ex. « Ex. Robe wax sur mesure », « Ex. Robes », « Ex. Retouche ») : jamais « Votre nom et prénom » sur un nom d'élément (prestation, catégorie, option, promotion, boutique). `autoPlaceholder` ne le propose que pour `fullname` / `customerName` / `requesterName` ; les formulaires publics le passent explicitement. Noms d'élément : `autoComplete="off"` et icône adaptée (pas l'icône utilisateur).

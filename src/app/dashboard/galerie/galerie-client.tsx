@@ -227,6 +227,7 @@ function EditForm({
       <Input
         label="Légende (facultatif)"
         name="alt"
+        placeholder="Ex. Tresses collées avec finition dorée"
         icon={Type}
         maxLength={200}
         defaultValue={photo.alt}

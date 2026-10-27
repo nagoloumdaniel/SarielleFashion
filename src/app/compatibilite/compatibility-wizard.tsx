@@ -460,7 +460,13 @@ export function CompatibilityWizard({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input label="Nom et prénom" name="name" required autoComplete="name" />
+              <Input
+                label="Nom et prénom"
+                name="name"
+                placeholder="Votre nom et prénom"
+                required
+                autoComplete="name"
+              />
               <Input label="E-mail" name="email" type="email" required autoComplete="email" />
               <Input label="Téléphone" name="phone" type="tel" required autoComplete="tel" />
             </div>

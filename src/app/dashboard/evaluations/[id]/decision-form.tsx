@@ -109,6 +109,7 @@ export function DecisionForm({
 
       <Textarea
         label="Message pour la cliente"
+        placeholder="Ex. Voici mon évaluation et la suite proposée."
         required
         rows={4}
         minLength={3}
@@ -119,6 +120,7 @@ export function DecisionForm({
       />
       <Textarea
         label="Note interne (facultatif)"
+        placeholder="Ex. Rappeler la cliente avant le rendez-vous."
         rows={2}
         maxLength={1000}
         value={note}

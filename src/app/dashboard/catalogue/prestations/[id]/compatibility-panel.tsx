@@ -130,6 +130,7 @@ export function CompatibilityPanel({
         <Textarea
           label="Conditions particulières (facultatif)"
           name="conditionsNote"
+          placeholder="Ex. Pose possible uniquement sur cheveux démêlés."
           defaultValue={rule?.conditionsNote ?? ''}
           hint="Affichées à la cliente et à Sarielle, par exemple un soin préalable ou un temps supplémentaire."
           rows={2}
@@ -137,6 +138,7 @@ export function CompatibilityPanel({
         <Textarea
           label="Message si la prestation est incompatible"
           name="incompatibleMessage"
+          placeholder="Ex. Cette prestation n’est pas adaptée à ta situation."
           defaultValue={rule?.incompatibleMessage ?? ''}
           hint="Expliquez pourquoi et proposez une alternative. Vide : message par défaut."
           rows={3}
@@ -144,6 +146,7 @@ export function CompatibilityPanel({
         <Textarea
           label="Message si la compatibilité est incertaine"
           name="uncertainMessage"
+          placeholder="Ex. Je confirmerai avec toi après avoir vu tes photos."
           defaultValue={rule?.uncertainMessage ?? ''}
           hint="Par exemple : envoyez une photo pour que Sarielle confirme."
           rows={3}

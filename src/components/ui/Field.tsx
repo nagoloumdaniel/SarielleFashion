@@ -56,7 +56,9 @@ export function autoPlaceholder(label: string, type?: string, name?: string): st
   if (type === 'search') return 'Rechercher…';
   if (type === 'url') return 'https://';
   if (type === 'number') return /price|prix|amount|value|montant/i.test(n) ? 'Ex. 15000' : 'Ex. 0';
-  if (/^(name|nom|fullname|customerName|requesterName)$/i.test(n)) return 'Votre nom et prénom';
+  // Uniquement pour les vrais champs personne : un `name` générique (prestation, catégorie…)
+  // reçoit un placeholder explicite ou, à défaut, un texte dérivé du libellé.
+  if (/^(fullname|customerName|requesterName)$/i.test(n)) return 'Votre nom et prénom';
   if (/subject|objet/i.test(n)) return 'Objet de votre message';
   const clean = label
     .replace(/\s*\((facultatif|obligatoire)\)\s*/gi, ' ')

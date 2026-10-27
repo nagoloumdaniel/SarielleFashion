@@ -49,7 +49,7 @@ export function WaitlistForm({ services }: { services: { id: string; name: strin
         <Input label="Date souhaitée" name="date" type="date" required />
         <Input label="Heure souhaitée" name="time" type="time" required />
       </div>
-      <Input label="Nom et prénom" name="name" required />
+      <Input label="Nom et prénom" name="name" placeholder="Votre nom et prénom" required />
       <Input label="E-mail" name="email" type="email" required />
       <Input label="Téléphone" name="phone" type="tel" required />
       <input

@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, FolderOpen, Hash, Link2, Plus, Save, Scissors, Tag, Wallet } from 'lucide-react';
+import { Clock, FolderOpen, Hash, Plus, Save, Scissors, Tag, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { PhotoSlotsField, type ExistingPhoto } from '@/components/shared/PhotoSlotsField';
 import { Button } from '@/components/ui/Button';
@@ -23,16 +23,6 @@ interface CategoryOption {
   id: string;
   name: string;
   active: boolean;
-}
-
-function slugify(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 120);
 }
 
 const PRICE_HINTS: Record<PriceMode, string> = {
@@ -61,9 +51,6 @@ export function ServiceForm({
   storageHint?: string;
 }) {
   const { state, onSubmit, pending } = useFormAction(action);
-  const [name, setName] = useState(initial?.name ?? '');
-  const [slug, setSlug] = useState(initial?.slug ?? '');
-  const [slugTouched, setSlugTouched] = useState(Boolean(initial?.id));
   const [priceMode, setPriceMode] = useState<PriceMode>(() =>
     initial ? priceModeFromService(initial) : 'FROM',
   );
@@ -75,37 +62,21 @@ export function ServiceForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       {initial?.id ? <input type="hidden" name="id" value={initial.id} /> : null}
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <Input
-          label="Nom de la prestation"
-          name="name"
-          icon={Scissors}
-          required
-          value={name}
-          onChange={(event) => {
-            const next = event.target.value;
-            setName(next);
-            if (!slugTouched) setSlug(slugify(next));
-          }}
-        />
-        <Input
-          label="Slug"
-          name="slug"
-          icon={Link2}
-          required
-          value={slug}
-          onChange={(event) => {
-            setSlugTouched(true);
-            setSlug(event.target.value);
-          }}
-          hint="Utilisé dans l'URL publique, par exemple /coiffures/pose-de-lace."
-        />
-      </div>
+      <Input
+        label="Nom de la prestation"
+        name="name"
+        icon={Scissors}
+        placeholder="Ex. Robe wax sur mesure"
+        autoComplete="off"
+        required
+        defaultValue={initial?.name ?? ''}
+      />
 
       <Textarea
         label="Description"
         name="description"
         defaultValue={initial?.description ?? ''}
+        placeholder="Ex. Pose soignée, rendu naturel, durée de tenue et conseils d'entretien."
         hint="Décrivez la prestation, le rendu attendu et les conseils d'entretien."
         rows={4}
       />
@@ -161,7 +132,8 @@ export function ServiceForm({
             step={1}
             required
             defaultValue={fromDefault}
-            hint={`Exemple : 15000. ${PRICE_HINTS[priceMode]}`}
+            placeholder="Ex. 45"
+            hint={`Exemple : 45. ${PRICE_HINTS[priceMode]}`}
           />
           {priceMode === 'RANGE' ? (
             <Input
@@ -172,6 +144,7 @@ export function ServiceForm({
               min={0}
               step={1}
               defaultValue={toDefault}
+              placeholder="Ex. 80"
               hint="Laissez vide si le prix exact reste à confirmer."
             />
           ) : null}
@@ -187,6 +160,7 @@ export function ServiceForm({
           inputMode="numeric"
           min={1}
           max={480}
+          placeholder="Ex. 120"
           defaultValue={initial?.durationMinutes ?? ''}
           hint="Facultative si la durée dépend de la longueur des cheveux."
         />
@@ -197,6 +171,7 @@ export function ServiceForm({
           type="number"
           inputMode="numeric"
           min={0}
+          placeholder="Ex. 0"
           defaultValue={String(initial?.order ?? 0)}
           hint="Les plus petits nombres apparaissent en premier."
         />

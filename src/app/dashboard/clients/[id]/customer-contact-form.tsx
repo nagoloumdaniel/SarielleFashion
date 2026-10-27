@@ -46,10 +46,18 @@ export function CustomerContactForm({
       className="mt-3 flex flex-col gap-3"
     >
       <input type="hidden" name="customerId" value={customerId} />
-      <Input label="Nom" name="name" defaultValue={name} required maxLength={100} />
+      <Input
+        label="Nom"
+        name="name"
+        placeholder="Nom et prénom du client"
+        defaultValue={name}
+        required
+        maxLength={100}
+      />
       <Input
         label="E-mail"
         name="email"
+        placeholder="client@exemple.com"
         type="email"
         defaultValue={email}
         required

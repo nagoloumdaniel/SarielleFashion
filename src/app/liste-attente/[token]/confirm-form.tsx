@@ -55,7 +55,13 @@ export function ConfirmForm({
       }}
       className="flex flex-col gap-4"
     >
-      <Input label="Nom et prénom" name="name" required defaultValue={defaultName} />
+      <Input
+        label="Nom et prénom"
+        name="name"
+        placeholder="Votre nom et prénom"
+        required
+        defaultValue={defaultName}
+      />
       <Input label="E-mail" name="email" type="email" required defaultValue={defaultEmail} />
       <Input label="Téléphone" name="phone" type="tel" required defaultValue={defaultPhone} />
       {state.error ? (

@@ -97,6 +97,8 @@ function QuestionForm({
         label="Question posée à la cliente"
         name="label"
         icon={MessageCircleQuestion}
+        placeholder="Ex. Quelle est la longueur de tes cheveux ?"
+        autoComplete="off"
         required
         autoFocus
         defaultValue={initial?.label ?? ''}
@@ -107,6 +109,8 @@ function QuestionForm({
           label="Clé technique"
           name="key"
           icon={KeyRound}
+          placeholder="Ex. longueur_actuelle"
+          autoComplete="off"
           required
           defaultValue={initial?.key ?? ''}
           hint="Minuscules, chiffres, tirets bas. Ex. longueur_actuelle."
@@ -126,6 +130,7 @@ function QuestionForm({
           label="Choix proposés"
           name="options"
           icon={List}
+          placeholder="Ex. Courts, Mi-longs, Longs"
           defaultValue={initial?.options?.join(', ') ?? ''}
           hint="Séparez les choix par des virgules."
         />
@@ -154,6 +159,7 @@ function QuestionForm({
             label="Clé de la question de départ"
             name="conditionDependsOn"
             icon={GitBranch}
+            placeholder="Ex. porte_des_locs"
             defaultValue={condition.dependsOn}
             hint="Exemple : porte_des_locs"
           />
@@ -161,6 +167,7 @@ function QuestionForm({
             label="Valeur attendue"
             name="conditionEquals"
             icon={GitBranch}
+            placeholder="Ex. oui"
             defaultValue={condition.equals}
             hint="Exemple : oui"
           />
