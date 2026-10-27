@@ -149,6 +149,7 @@ function PromotionForm({
         maxLength={120}
         defaultValue={promotion?.name ?? ''}
         placeholder="Ex. Offre de rentrée"
+        autoComplete="off"
       />
       <Input
         label="Code promo (facultatif)"
@@ -188,7 +189,7 @@ function PromotionForm({
           required
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          placeholder={kind === 'PERCENT' ? 'Ex. 20' : 'Ex. 5000'}
+          placeholder={kind === 'PERCENT' ? 'Ex. 20' : 'Ex. 5'}
         />
       </div>
       <Input

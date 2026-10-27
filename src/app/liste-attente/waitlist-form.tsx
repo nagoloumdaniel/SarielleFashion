@@ -51,7 +51,12 @@ export function WaitlistForm({ services }: { services: { id: string; name: strin
         <Input label={t('waitlist.form.date')} name="date" type="date" required />
         <Input label={t('waitlist.form.time')} name="time" type="time" required />
       </div>
-      <Input label={t('waitlist.form.name')} name="name" required />
+      <Input
+        label={t('waitlist.form.name')}
+        name="name"
+        placeholder={t('common.ui.placeholders.name')}
+        required
+      />
       <Input label={t('waitlist.form.email')} name="email" type="email" required />
       <Input label={t('waitlist.form.phone')} name="phone" type="tel" required />
       <input

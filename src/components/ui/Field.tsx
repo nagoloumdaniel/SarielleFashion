@@ -65,8 +65,7 @@ export function autoPlaceholder(t: Translate, label: string, type?: string, name
     return /price|prix|amount|value|montant/i.test(n)
       ? t('common.ui.placeholders.price')
       : t('common.ui.placeholders.number');
-  if (/^(name|nom|fullname|customerName|requesterName)$/i.test(n))
-    return t('common.ui.placeholders.name');
+  if (/^(fullname|customerName|requesterName)$/i.test(n)) return t('common.ui.placeholders.name');
   if (/subject|objet/i.test(n)) return t('common.ui.placeholders.subject');
   const clean = label
     .replace(/\s*\((facultatif|obligatoire|optional|freiwillig|Pflichtfeld)\)\s*/gi, ' ')

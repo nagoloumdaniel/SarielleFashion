@@ -35,6 +35,7 @@ export function PasswordCard() {
         <Input
           label="Mot de passe actuel"
           name="currentPassword"
+          placeholder="Ton mot de passe actuel"
           type="password"
           icon={Lock}
           autoComplete="current-password"
@@ -44,6 +45,7 @@ export function PasswordCard() {
         <Input
           label="Nouveau mot de passe"
           name="newPassword"
+          placeholder="Nouveau mot de passe"
           type="password"
           icon={Lock}
           autoComplete="new-password"
@@ -55,6 +57,7 @@ export function PasswordCard() {
         <Input
           label="Confirmer le nouveau mot de passe"
           name="confirmPassword"
+          placeholder="Répète le nouveau mot de passe"
           type="password"
           icon={Lock}
           autoComplete="new-password"

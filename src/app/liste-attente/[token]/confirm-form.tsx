@@ -58,7 +58,13 @@ export function ConfirmForm({
       }}
       className="flex flex-col gap-4"
     >
-      <Input label={t('waitlist.confirm.name')} name="name" required defaultValue={defaultName} />
+      <Input
+        label={t('waitlist.confirm.name')}
+        name="name"
+        placeholder={t('common.ui.placeholders.name')}
+        required
+        defaultValue={defaultName}
+      />
       <Input
         label={t('waitlist.confirm.email')}
         name="email"

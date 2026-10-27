@@ -461,7 +461,13 @@ export function CompatibilityWizard({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input label={t('compat.wizard.name')} name="name" required autoComplete="name" />
+              <Input
+                label={t('compat.wizard.name')}
+                name="name"
+                placeholder={t('common.ui.placeholders.name')}
+                required
+                autoComplete="name"
+              />
               <Input
                 label={t('compat.wizard.email')}
                 name="email"

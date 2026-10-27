@@ -333,6 +333,7 @@ export function BlockedPeriodsEditor({ periods }: { periods: BlockedPeriodView[]
         <Textarea
           label="Motif (facultatif)"
           name="reason"
+          placeholder="Ex. Congés, formation"
           rows={2}
           maxLength={200}
           hint="Ex. pause déjeuner, congé, rendez-vous personnel."
@@ -437,6 +438,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Maintien d’un créneau en attente (min)"
           name="holdSlotMinutes"
+          placeholder="Ex. 30"
           type="number"
           min={0}
           max={1440}
@@ -446,6 +448,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Délai minimum d’annulation (min)"
           name="minCancelNoticeMinutes"
+          placeholder="Ex. 30"
           type="number"
           min={0}
           max={10080}
@@ -455,6 +458,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Rappel avant rendez-vous (h)"
           name="reminderLeadHours"
+          placeholder="Ex. 24"
           type="number"
           min={0}
           max={720}
@@ -463,6 +467,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Marge entre deux prestations (min)"
           name="bufferMinutes"
+          placeholder="Ex. 15"
           type="number"
           min={0}
           max={240}
@@ -471,6 +476,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Intervalle des créneaux (min)"
           name="slotIntervalMinutes"
+          placeholder="Ex. 30"
           type="number"
           min={5}
           max={120}
@@ -479,6 +485,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Horizon de réservation (jours)"
           name="maxAdvanceDays"
+          placeholder="Ex. 90"
           type="number"
           min={1}
           max={365}
@@ -487,6 +494,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Délai minimum avant réservation (min)"
           name="minLeadTimeMinutes"
+          placeholder="Ex. 60"
           type="number"
           min={0}
           max={10080}
@@ -495,6 +503,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Conservation des données (mois)"
           name="dataRetentionMonths"
+          placeholder="Ex. 36"
           type="number"
           min={1}
           max={120}
@@ -504,6 +513,7 @@ export function BookingSettingsEditor({ settings }: { settings: BookingSettingsV
         <Input
           label="Conservation des photos (jours)"
           name="photoRetentionDays"
+          placeholder="Ex. 30"
           type="number"
           min={7}
           max={3650}

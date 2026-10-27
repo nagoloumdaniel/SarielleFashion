@@ -74,7 +74,7 @@ export function ServiceFilters({
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Nom, slug, description"
+        placeholder="Nom, description"
       />
       <Select
         label="Catégorie"

@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, Clock, House, MessageSquareText, Save, UserRound } from 'lucide-react';
+import { Banknote, Clock, House, MessageSquareText, Save, Store, UserRound } from 'lucide-react';
 import { useActionState, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -82,6 +82,9 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
           <Input
             label="Nom professionnel"
             name="name"
+            icon={Store}
+            placeholder="Ex. Sarielle Fashion"
+            autoComplete="organization"
             value={values.name}
             onChange={set('name')}
             required
@@ -92,6 +95,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             label="E-mail public"
             name="contactEmail"
             type="email"
+            placeholder="contact@exemple.com"
             value={values.contactEmail}
             onChange={set('contactEmail')}
             maxLength={200}
@@ -100,6 +104,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
           <Textarea
             label="Adresse ou quartier"
             name="address"
+            placeholder="Ex. Clausthal-Zellerfeld"
             rows={2}
             value={values.address}
             onChange={set('address')}
@@ -181,6 +186,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             <Input
               label="Frais de déplacement (€)"
               name="travelFeeEur"
+              placeholder="Ex. 10"
               type="number"
               inputMode="numeric"
               icon={Banknote}
@@ -209,6 +215,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             <Textarea
               label="Règles d’annulation"
               name="cancellationPolicy"
+              placeholder="Ex. Annulation gratuite jusqu’à 30 minutes avant le rendez-vous."
               rows={3}
               value={values.cancellationPolicy}
               onChange={set('cancellationPolicy')}
@@ -219,6 +226,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
             <Textarea
               label="Règles de réservation"
               name="bookingPolicy"
+              placeholder="Ex. Arrive avec les cheveux propres et démêlés."
               rows={3}
               value={values.bookingPolicy}
               onChange={set('bookingPolicy')}
@@ -230,6 +238,7 @@ export function SalonProfileForm({ settings }: { settings: Settings }) {
           <Textarea
             label="Signature des e-mails"
             name="emailSignature"
+            placeholder="Ex. À bientôt, Sarielle"
             rows={2}
             value={values.emailSignature}
             onChange={set('emailSignature')}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, EyeOff, FolderPlus, Pencil, Save, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, FolderOpen, FolderPlus, Pencil, Save, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -33,16 +33,6 @@ import {
  * activer/désactiver, monter/descendre (optimistic), supprimer si vide.
  * ============================================================ */
 
-function slugify(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
-}
-
 function CategoryForm({
   action,
   initial,
@@ -58,9 +48,6 @@ function CategoryForm({
   onDone: () => void;
 }) {
   const { state, onSubmit, pending } = useFormAction(action, onDone);
-  const [name, setName] = useState(initial?.name ?? '');
-  const [slug, setSlug] = useState(initial?.slug ?? '');
-  const [slugTouched, setSlugTouched] = useState(Boolean(initial?.id));
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
@@ -70,29 +57,17 @@ function CategoryForm({
       <Input
         label="Nom"
         name="name"
+        icon={FolderOpen}
+        placeholder="Ex. Robes"
+        autoComplete="off"
         required
         autoFocus
-        value={name}
-        onChange={(event) => {
-          const next = event.target.value;
-          setName(next);
-          if (!slugTouched) setSlug(slugify(next));
-        }}
-      />
-      <Input
-        label="Slug"
-        name="slug"
-        required
-        value={slug}
-        onChange={(event) => {
-          setSlugTouched(true);
-          setSlug(event.target.value);
-        }}
-        hint="Minuscules, chiffres et tirets. Utilisé dans l'URL publique."
+        defaultValue={initial?.name ?? ''}
       />
       <Textarea
         label="Description (facultative)"
         name="description"
+        placeholder="Ex. Robes et ensembles sur mesure pour toutes les occasions."
         rows={3}
         defaultValue={initial?.description ?? ''}
       />
@@ -183,7 +158,7 @@ function CategoryRow({
             )}
           </span>
           <span className="mt-0.5 block text-sm text-muted">
-            /{category.slug} · {category.serviceCount} prestation
+            {category.serviceCount} prestation
             {category.serviceCount > 1 ? 's' : ''}
           </span>
           {category.description ? (

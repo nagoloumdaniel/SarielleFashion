@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, EyeOff, Pencil, Plus, Save, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Pencil, Plus, Save, Sparkles, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { AdminServiceOption } from '@/lib/catalogue-admin';
 import { Badge } from '@/components/ui/Badge';
@@ -65,6 +65,9 @@ function OptionForm({
       <Input
         label="Nom de l'option"
         name="name"
+        icon={Sparkles}
+        placeholder="Ex. Retouche"
+        autoComplete="off"
         required
         autoFocus
         defaultValue={initial?.name ?? ''}
@@ -73,6 +76,7 @@ function OptionForm({
         <Input
           label="Prix (€)"
           name="priceEuros"
+          placeholder="Ex. 10"
           type="number"
           inputMode="numeric"
           min={0}
@@ -83,6 +87,7 @@ function OptionForm({
         <Input
           label="Durée ajoutée (minutes)"
           name="durationMinutes"
+          placeholder="Ex. 15"
           type="number"
           inputMode="numeric"
           min={0}

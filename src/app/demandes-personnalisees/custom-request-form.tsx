@@ -82,6 +82,7 @@ export function CustomRequestForm() {
           <Input
             label={t('requests.form.name')}
             name="name"
+            placeholder="Votre nom et prénom"
             autoComplete="name"
             required
             minLength={2}
