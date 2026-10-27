@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { GalleryGrid } from '@/components/galerie/GalleryGrid';
-import { withTempPreview } from '@/components/galerie/temp-preview'; // TEMP-PREVIEW: à supprimer après vérification
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Title } from '@/components/ui/Title';
 import { pageMetadata } from '@/i18n/metadata';
