@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import type { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import { AppError } from '@/lib/errors';
+import { DEFAULT_LOCALE, absoluteUrl, isLocale, type Locale } from '@/i18n/config';
 import { buildNotifyExpiry, pickNextWaitingEntry } from './engine';
 
 /* ============================================================
@@ -16,6 +17,7 @@ export async function addToWaitlist(input: {
   name: string;
   email: string;
   phone: string;
+  locale?: Locale;
 }): Promise<void> {
   const service = await db.service.findUnique({
     where: { id: input.serviceId },
@@ -30,12 +32,9 @@ export async function addToWaitlist(input: {
       customerName: input.name,
       customerEmail: input.email,
       customerPhone: input.phone,
+      locale: input.locale ?? DEFAULT_LOCALE,
     },
   });
-}
-
-function appBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 }
 
 /**
@@ -73,8 +72,8 @@ export async function notifyWaitlistForFreedSlot(
     data: { status: 'NOTIFIED', notifyToken, notifyTokenExpiresAt, notifiedAt: now },
   });
 
-  const appUrl = appBaseUrl();
   const entry = waiting.find((w) => w.id === next.id)!;
+  const locale: Locale = isLocale(entry.locale) ? entry.locale : DEFAULT_LOCALE;
   await tx.notification.createMany({
     data: [
       {
@@ -83,10 +82,11 @@ export async function notifyWaitlistForFreedSlot(
         templateKey: 'waitlist_slot_available',
         payload: {
           kind: 'waitlist',
+          locale,
           customerName: entry.customerName,
           serviceName,
           startsAt: startsAt.toISOString(),
-          confirmUrl: `${appUrl}/liste-attente/${notifyToken}`,
+          confirmUrl: absoluteUrl(locale, `/liste-attente/${notifyToken}`),
           expiresAt: notifyTokenExpiresAt.toISOString(),
         } as Prisma.InputJsonValue,
       },

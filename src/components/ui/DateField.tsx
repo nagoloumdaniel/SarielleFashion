@@ -2,24 +2,24 @@
 
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useId, useState, type ChangeEvent } from 'react';
+import { INTL_LOCALE, type Locale } from '@/i18n/config';
+import { useI18n } from '@/i18n/client';
 import { Field, fieldBox } from './Field';
 import { fakeChange, usePopover } from './usePopover';
 
-const MONTHS = [
-  'Janvier',
-  'Février',
-  'Mars',
-  'Avril',
-  'Mai',
-  'Juin',
-  'Juillet',
-  'Août',
-  'Septembre',
-  'Octobre',
-  'Novembre',
-  'Décembre',
-];
-const DAYS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+/* Noms de mois et initiales de jours via Intl (langue de la page). Lundi en premier. */
+function monthName(locale: Locale, month: number): string {
+  const name = new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(2024, month, 1)));
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+function weekdayInitials(locale: Locale): string[] {
+  const fmt = new Intl.DateTimeFormat(INTL_LOCALE[locale], { weekday: 'narrow', timeZone: 'UTC' });
+  // 1er janvier 2024 = lundi
+  return Array.from({ length: 7 }, (_, i) => fmt.format(new Date(Date.UTC(2024, 0, 1 + i))));
+}
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const iso = (y: number, m: number, d: number) => `${y}-${pad(m + 1)}-${pad(d)}`;
@@ -31,10 +31,15 @@ function todayISO() {
   const n = new Date();
   return iso(n.getFullYear(), n.getMonth(), n.getDate());
 }
-export function formatDateFr(v: string) {
+/** « 24/10/2026 » (fr) ou « 24.10.2026 » (de). */
+export function formatDateLocal(v: string, locale: Locale = 'fr') {
   const p = parse(v);
-  return p ? `${pad(p[2])}/${pad(p[1] + 1)}/${p[0]}` : '';
+  if (!p) return '';
+  return locale === 'de'
+    ? `${pad(p[2])}.${pad(p[1] + 1)}.${p[0]}`
+    : `${pad(p[2])}/${pad(p[1] + 1)}/${p[0]}`;
 }
+export const formatDateFr = (v: string) => formatDateLocal(v, 'fr');
 
 type Props = {
   label: string;
@@ -68,6 +73,7 @@ export function DateField({
   className,
   onChange,
 }: Props) {
+  const { t, locale } = useI18n();
   const auto = useId();
   const inputId = id ?? `date-${auto}`;
   const { open, setOpen, ref } = usePopover();
@@ -115,30 +121,30 @@ export function DateField({
         >
           <CalendarDays aria-hidden="true" className="size-4 shrink-0 text-cacao" />
           <span className={current ? '' : 'text-muted'}>
-            {current ? formatDateFr(current) : 'jj/mm/aaaa'}
+            {current ? formatDateLocal(current, locale) : t('common.ui.date.placeholder')}
           </span>
         </button>
         {open ? (
           <div
             role="dialog"
-            aria-label={`Choisir une date : ${label}`}
+            aria-label={t('common.ui.date.choose', { label })}
             className="absolute left-0 z-50 mt-1 w-72 rounded-[var(--radius-md)] border border-line bg-card p-3 shadow-soft"
           >
             <div className="mb-2 flex items-center justify-between">
               <button
                 type="button"
-                aria-label="Mois précédent"
+                aria-label={t('common.ui.date.prevMonth')}
                 onClick={() => shift(-1)}
                 className={nav}
               >
                 <ChevronLeft aria-hidden="true" className="size-4" />
               </button>
               <p className="font-heading text-sm font-bold text-fg" aria-live="polite">
-                {MONTHS[vm]} {vy}
+                {monthName(locale, vm)} {vy}
               </p>
               <button
                 type="button"
-                aria-label="Mois suivant"
+                aria-label={t('common.ui.date.nextMonth')}
                 onClick={() => shift(1)}
                 className={nav}
               >
@@ -146,7 +152,7 @@ export function DateField({
               </button>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold text-muted">
-              {DAYS.map((d, i) => (
+              {weekdayInitials(locale).map((d, i) => (
                 <span key={i}>{d}</span>
               ))}
             </div>
@@ -161,7 +167,7 @@ export function DateField({
                     type="button"
                     disabled={blocked(v)}
                     aria-pressed={sel}
-                    aria-label={formatDateFr(v)}
+                    aria-label={formatDateLocal(v, locale)}
                     onClick={() => pick(v)}
                     className={`flex size-8 items-center justify-center rounded-full text-sm transition disabled:opacity-30 ${
                       sel
@@ -183,11 +189,11 @@ export function DateField({
                 onClick={() => pick(today)}
                 className="text-accent disabled:opacity-40"
               >
-                Aujourd’hui
+                {t('common.ui.date.today')}
               </button>
               {!required && current ? (
                 <button type="button" onClick={() => pick('')} className="text-muted">
-                  Effacer
+                  {t('common.ui.date.clear')}
                 </button>
               ) : null}
             </div>

@@ -1,11 +1,15 @@
 import type { EmailContext } from '@/modules/parametres/policies';
-import { PAYMENT_SHORT } from '@/modules/parametres/payment';
-import { formatEuro } from '@/modules/reservations/format';
+import { formatEuro as formatEuroFr } from '@/modules/reservations/format';
+import { DEFAULT_LOCALE, INTL_LOCALE, absoluteUrl, isLocale, type Locale } from '@/i18n/config';
+import { formatEuro as formatEuroLocale } from '@/i18n/format';
+import { MESSAGES } from '@/i18n/messages';
+import { createTranslator } from '@/i18n/translate';
 
 /* ============================================================
  * P7.3 : modèles d'e-mails transactionnels.
- * Textes français sobres, lien direct, aucune donnée sensible
- * au-delà de ce que le destinataire doit connaître.
+ * Textes sobres (fr / de selon payload.locale), lien direct, aucune donnée
+ * sensible au-delà de ce que le destinataire doit connaître.
+ * Les e-mails admin_* restent en français.
  * ============================================================ */
 
 export type NotificationTemplateKey =
@@ -30,6 +34,8 @@ export type NotificationTemplateKey =
   | 'admin_assessment_received';
 
 export interface AppointmentEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'appointment';
   appointmentId?: string;
   customerName: string;
@@ -48,6 +54,8 @@ export interface AppointmentEmailPayload {
 }
 
 export interface ConversationEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'conversation';
   conversationId?: string;
   customerName: string;
@@ -58,6 +66,8 @@ export interface ConversationEmailPayload {
 }
 
 export interface CustomRequestEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'custom';
   requestId: string;
   requesterName: string;
@@ -72,6 +82,8 @@ export interface CustomRequestEmailPayload {
 }
 
 export interface WaitlistEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'waitlist';
   customerName: string;
   serviceName: string;
@@ -81,6 +93,8 @@ export interface WaitlistEmailPayload {
 }
 
 export interface ReviewEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'review';
   customerName: string;
   serviceName: string;
@@ -90,6 +104,8 @@ export interface ReviewEmailPayload {
 export type AssessmentDecisionKind = 'ACCEPTED' | 'CONDITIONAL' | 'REFUSED' | 'INFO_REQUESTED';
 
 export interface AssessmentEmailPayload {
+  /** Langue de l'e-mail client ('fr' par défaut si absente : anciennes lignes). */
+  locale?: string;
   kind?: 'assessment';
   assessmentId?: string;
   customerName: string;
@@ -114,6 +130,38 @@ export interface RenderedEmail {
   text: string;
 }
 
+/** Langue d'un e-mail client. */
+export type NotificationLocale = Locale;
+
+/** Langue portée par le payload ('fr' si absente ou inconnue : lignes créées avant l'i18n). */
+export function payloadLocale(payload: unknown): NotificationLocale {
+  const value =
+    payload && typeof payload === 'object' ? (payload as { locale?: unknown }).locale : undefined;
+  return isLocale(value) ? value : DEFAULT_LOCALE;
+}
+
+function fill(template: string, params: Record<string, string | number> = {}): string {
+  return template.replace(/\{(\w+)\}/g, (m, name: string) =>
+    name in params ? String(params[name]) : m,
+  );
+}
+
+/** Textes de la langue + formats : t('...') avec paramètres {nom}. */
+function copyFor(locale: Locale) {
+  const m = MESSAGES[locale].emails;
+  return {
+    locale,
+    m,
+    f: fill,
+    euro: (cents: number) =>
+      locale === DEFAULT_LOCALE ? formatEuroFr(cents) : formatEuroLocale(locale, cents),
+    /** Chemin interne -> URL absolue dans la langue ; URL déjà absolue conservée. */
+    url: (pathOrUrl: string) =>
+      pathOrUrl.startsWith('/') ? absoluteUrl(locale, pathOrUrl) : pathOrUrl,
+  };
+}
+type Copy = ReturnType<typeof copyFor>;
+
 const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
 const SALON_NAME = 'Sarielle Fashion';
 
@@ -126,11 +174,12 @@ function escapeHtml(value: unknown): string {
     .replaceAll("'", '&#39;');
 }
 
-function formatDate(iso: string | undefined): string {
-  if (!iso) return 'date à confirmer';
+function formatDate(iso: string | undefined, locale: Locale = DEFAULT_LOCALE): string {
+  const tbd = MESSAGES[locale].emails.dateTbd;
+  if (!iso) return tbd;
   const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return 'date à confirmer';
-  return new Intl.DateTimeFormat('fr-FR', {
+  if (Number.isNaN(date.getTime())) return tbd;
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
     dateStyle: 'full',
     timeStyle: 'short',
     timeZone: 'Europe/Berlin',
@@ -158,31 +207,59 @@ function isAssessment(payload: EmailPayload): payload is AssessmentEmailPayload 
 }
 
 function renderWaitlist(payload: WaitlistEmailPayload, ctx: EmailContext): RenderedEmail {
+  const c = copyFor(payloadLocale(payload));
+  const w = c.m.waitlist;
+  const p = {
+    name: payload.customerName,
+    service: payload.serviceName,
+    when: formatDate(payload.startsAt, c.locale),
+    expires: formatDate(payload.expiresAt, c.locale),
+    url: payload.confirmUrl,
+  };
   return {
-    subject: `Une place s’est libérée : ${payload.serviceName}`,
-    html: layout(ctx, {
-      title: 'Un créneau s’est libéré',
-      intro: `Bonjour ${payload.customerName}, le créneau que tu attendais pour ${payload.serviceName} vient de se libérer.`,
-      rows: [['Créneau', formatDate(payload.startsAt)]],
-      ctaLabel: 'Confirmer ma réservation',
-      ctaUrl: payload.confirmUrl,
-      note: `Ce lien est valable jusqu’au ${formatDate(payload.expiresAt)}. Passé ce délai, la place sera proposée à la personne suivante.`,
-    }),
-    text: `Bonjour ${payload.customerName},\n\nLe créneau du ${formatDate(payload.startsAt)} pour ${payload.serviceName} est disponible.\nConfirme ta réservation : ${payload.confirmUrl}\nLien valable jusqu’au ${formatDate(payload.expiresAt)}.\n\n${SALON_NAME}`,
+    subject: c.f(w.subject, p),
+    html: layout(
+      ctx,
+      {
+        title: w.title,
+        intro: c.f(w.intro, p),
+        rows: [[c.m.row.slot, p.when]],
+        ctaLabel: w.cta,
+        ctaUrl: payload.confirmUrl,
+        note: c.f(w.note, p),
+      },
+      c.locale,
+    ),
+    text: `${c.f(c.m.hello, p)}
+
+${c.f(w.text, p)}
+
+${c.m.salon}`,
   };
 }
 
 function renderReview(payload: ReviewEmailPayload, ctx: EmailContext): RenderedEmail {
+  const c = copyFor(payloadLocale(payload));
+  const r = c.m.review;
+  const p = { name: payload.customerName, service: payload.serviceName, url: payload.reviewUrl };
   return {
-    subject: 'Ton avis compte pour Sarielle',
-    html: layout(ctx, {
-      title: 'Comment s’est passé ton rendez-vous ?',
-      intro: `Bonjour ${payload.customerName}, Sarielle espère que ta prestation « ${payload.serviceName} » t’a plu. Ton avis aide d’autres clientes à faire leur choix.`,
-      ctaLabel: 'Laisser un avis',
-      ctaUrl: payload.reviewUrl,
-      note: 'Ton avis est publié sur le site dès son envoi, avec la mention « client vérifié ».',
-    }),
-    text: `Bonjour ${payload.customerName},\n\nTon avis sur ${payload.serviceName} compte pour Sarielle.\nLaisser un avis : ${payload.reviewUrl}\n\n${SALON_NAME}`,
+    subject: r.subject,
+    html: layout(
+      ctx,
+      {
+        title: r.title,
+        intro: c.f(r.intro, p),
+        ctaLabel: r.cta,
+        ctaUrl: payload.reviewUrl,
+        note: r.note,
+      },
+      c.locale,
+    ),
+    text: `${c.f(c.m.hello, p)}
+
+${c.f(r.text, p)}
+
+${c.m.salon}`,
   };
 }
 
@@ -202,7 +279,8 @@ function multiline(value: string): string {
   return escapeHtml(value).replaceAll('\n', '<br />');
 }
 
-function layout(ctx: EmailContext, input: LayoutInput): string {
+function layout(ctx: EmailContext, input: LayoutInput, locale: Locale = DEFAULT_LOCALE): string {
+  const lm = MESSAGES[locale].emails;
   const rows = (input.rows ?? [])
     .map(
       ([label, value]) => `
@@ -236,7 +314,7 @@ function layout(ctx: EmailContext, input: LayoutInput): string {
   const signature = ctx.signature?.trim() ? `<br /><br />${multiline(ctx.signature.trim())}` : '';
 
   return `<!doctype html>
-<html lang="fr">
+<html lang="${locale}">
   <body style="margin:0;padding:24px 12px;background:#fff8f7;font-family:Arial,Helvetica,sans-serif">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
       <tr>
@@ -253,7 +331,7 @@ function layout(ctx: EmailContext, input: LayoutInput): string {
               ${policies}
               <p style="margin:24px 0 0;border-top:1px solid #f1d6d3;padding-top:16px;color:#67494c;font-size:12px;line-height:1.6">
                 ${SALON_NAME}<br />
-                ${PAYMENT_SHORT} Merci pour ta confiance.${signature}
+                ${lm.paymentShort} ${lm.thanks}${signature}
               </p>
             </td></tr>
           </table>
@@ -264,55 +342,89 @@ function layout(ctx: EmailContext, input: LayoutInput): string {
 </html>`;
 }
 
-function travelFeeLabel(cents: number | null | undefined): string {
-  return cents ? formatEuro(cents) : 'Offerts';
+function travelFeeLabel(cents: number | null | undefined, c: Copy): string {
+  return cents ? c.euro(cents) : c.m.free;
 }
 
 /** Lignes texte « coiffure à domicile » (version texte brut des e-mails), vide sinon. */
-function homeServiceText(payload: AppointmentEmailPayload): string {
+function homeServiceText(payload: AppointmentEmailPayload, c: Copy): string {
   if (!payload.homeService) return '';
-  return `Lieu : à domicile${payload.homeAddress ? ` (${payload.homeAddress})` : ''}
-Frais de déplacement : ${travelFeeLabel(payload.travelFeeCents)}
-`;
+  const address = payload.homeAddress ? ` (${payload.homeAddress})` : '';
+  return `${c.f(c.m.text.homeLocation, { address })}\n${c.f(c.m.text.travelFee, { fee: travelFeeLabel(payload.travelFeeCents, c) })}\n`;
 }
 
 function appointmentRows(
   payload: AppointmentEmailPayload,
   admin: boolean,
+  c: Copy,
 ): Array<[string, string]> {
   const rows: Array<[string, string]> = [];
-  if (payload.customerName)
-    rows.push([
-      admin ? 'Cliente' : 'Prestation',
-      admin ? payload.customerName : (payload.serviceName ?? 'Prestation'),
-    ]);
   if (admin) {
+    // E-mails admin : toujours en français.
+    if (payload.customerName) rows.push(['Cliente', payload.customerName]);
     if (payload.serviceName) rows.push(['Prestation', payload.serviceName]);
     if (payload.customerEmail) rows.push(['E-mail', payload.customerEmail]);
     if (payload.customerPhone) rows.push(['Téléphone', payload.customerPhone]);
+    rows.push(['Créneau', formatDate(payload.startsAt)]);
+    if (payload.homeService) {
+      rows.push(['Lieu', 'À domicile']);
+      if (payload.homeAddress) rows.push(['Adresse', payload.homeAddress]);
+      rows.push(['Frais de déplacement', travelFeeLabel(payload.travelFeeCents, c)]);
+    }
+    if (payload.reason) rows.push(['Motif', payload.reason]);
+    return rows;
   }
-  rows.push([admin ? 'Créneau' : 'Date et heure', formatDate(payload.startsAt)]);
+  const r = c.m.row;
+  if (payload.customerName) rows.push([r.service, payload.serviceName ?? r.service]);
+  rows.push([r.dateTime, formatDate(payload.startsAt, c.locale)]);
   if (payload.homeService) {
-    rows.push(['Lieu', 'À domicile']);
-    if (payload.homeAddress) rows.push(['Adresse', payload.homeAddress]);
-    rows.push(['Frais de déplacement', travelFeeLabel(payload.travelFeeCents)]);
+    rows.push([r.location, r.atHome]);
+    if (payload.homeAddress) rows.push([r.address, payload.homeAddress]);
+    rows.push([r.travelFee, travelFeeLabel(payload.travelFeeCents, c)]);
   }
-  if (payload.reason) rows.push(['Motif', payload.reason]);
+  if (payload.reason) rows.push([r.reason, payload.reason]);
   return rows;
 }
 
-function confirmationPolicies(ctx: EmailContext): Array<[string, string]> {
+/* Politiques : texte saisi par Sarielle conservé tel quel ; à défaut, texte par défaut dans la langue du client. */
+function formatNoticeDelayLocalized(minutes: number, locale: Locale): string {
+  const total = Math.max(0, Math.round(minutes));
+  const t = createTranslator(locale, MESSAGES[locale]);
+  const hours = Math.floor(total / 60);
+  const rest = total % 60;
+  if (total < 60) return t('emails.policy.delayMinutes', { count: total, n: total });
+  if (rest === 0) return t('emails.policy.delayHours', { count: hours, n: hours });
+  return t('emails.policy.delayHoursMinutes', { h: hours, m: String(rest).padStart(2, '0') });
+}
+
+function localizedPolicies(ctx: EmailContext, c: Copy): { cancellation: string; booking: string } {
+  const raw = ctx.raw;
+  if (c.locale === DEFAULT_LOCALE || !raw) {
+    return { cancellation: ctx.cancellationPolicy ?? '', booking: ctx.bookingPolicy ?? '' };
+  }
+  const notice = Math.max(0, Math.round(raw.minCancelNoticeMinutes));
+  const cancellation =
+    raw.cancellationPolicy?.trim() ||
+    (notice > 0
+      ? c.f(c.m.policy.cancelDefaultNotice, { delay: formatNoticeDelayLocalized(notice, c.locale) })
+      : c.m.policy.cancelDefault);
+  const booking = raw.bookingPolicy?.trim() || c.m.policy.bookingDefault;
+  return { cancellation, booking };
+}
+
+function confirmationPolicies(ctx: EmailContext, c: Copy): Array<[string, string]> {
   const rows: Array<[string, string]> = [];
-  if (ctx.cancellationPolicy) rows.push(['Annulation', ctx.cancellationPolicy]);
-  if (ctx.bookingPolicy) rows.push(['Conditions de réservation', ctx.bookingPolicy]);
+  const { cancellation, booking } = localizedPolicies(ctx, c);
+  if (cancellation) rows.push([c.m.policy.cancellation, cancellation]);
+  if (booking) rows.push([c.m.policy.booking, booking]);
   return rows;
 }
 
-function confirmationPoliciesText(ctx: EmailContext): string {
-  const rows = confirmationPolicies(ctx);
+function confirmationPoliciesText(ctx: EmailContext, c: Copy): string {
+  const rows = confirmationPolicies(ctx, c);
   return rows.length === 0
     ? ''
-    : `\n${rows.map(([title, text]) => `${title} : ${text}`).join('\n\n')}\n`;
+    : `\n${rows.map(([title, text]) => c.f(c.m.text.policyLine, { title, text })).join('\n\n')}\n`;
 }
 
 function renderAppointment(
@@ -321,83 +433,112 @@ function renderAppointment(
   ctx: EmailContext,
 ): RenderedEmail {
   const admin = key.startsWith('admin_');
-  const service = payload.serviceName ?? 'ta prestation';
+  const c = copyFor(admin ? DEFAULT_LOCALE : payloadLocale(payload));
+  const service = payload.serviceName ?? c.m.yourService;
   const customer = payload.customerName;
-  const when = formatDate(payload.startsAt);
-  const rows = appointmentRows(payload, admin);
-  const home = homeServiceText(payload);
+  const when = formatDate(payload.startsAt, c.locale);
+  const rows = appointmentRows(payload, admin, c);
+  const home = homeServiceText(payload, c);
+  const pay = c.m.paymentShort;
+  const p = { name: customer, service, when };
+  const hello = c.f(c.m.hello, p);
+  const salon = c.m.salon;
+  const newBookingUrl = c.url('/reserver');
   const appointmentLink = payload.appointmentId
     ? `${APP_URL}/dashboard/reservations/${payload.appointmentId}`
     : `${APP_URL}/dashboard/reservations`;
 
   switch (key) {
-    case 'booking_received':
+    case 'booking_received': {
+      const b = c.m.bookingReceived;
       return {
-        subject: 'Ta demande de rendez-vous est enregistrée',
-        html: layout(ctx, {
-          title: 'Ton rendez-vous est enregistré',
-          intro: `Bonjour ${customer}, ta réservation pour ${service} a bien été enregistrée. Sarielle confirmera ton créneau si nécessaire.`,
-          rows,
-          note: `${PAYMENT_SHORT} Tu recevras une confirmation dès que le rendez-vous sera validé.`,
-        }),
-        text: `Bonjour ${customer},\n\nTa réservation pour ${service} est enregistrée.\nDate : ${when}\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
+        subject: b.subject,
+        html: layout(
+          ctx,
+          { title: b.title, intro: c.f(b.intro, p), rows, note: `${pay} ${b.note}` },
+          c.locale,
+        ),
+        text: `${hello}\n\n${c.f(b.text, p)}\n${c.f(c.m.text.dateLabel, p)}\n${home}${pay}\n\n${salon}`,
       };
-    case 'booking_confirmed':
+    }
+    case 'booking_confirmed': {
+      const b = c.m.bookingConfirmed;
       return {
-        subject: 'Ton rendez-vous est confirmé',
-        html: layout(ctx, {
-          title: 'Ton rendez-vous est confirmé',
-          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} est confirmé.`,
-          rows,
-          ctaLabel: 'Gérer ou annuler mon rendez-vous',
-          ctaUrl: payload.cancelUrl ?? null,
-          note: `${PAYMENT_SHORT} Conserve ce message pour retrouver ton rendez-vous.`,
-          policies: confirmationPolicies(ctx),
-        }),
-        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} est confirmé le ${when}.\n${home}${PAYMENT_SHORT}\n${payload.cancelUrl ? `Gérer mon rendez-vous : ${payload.cancelUrl}\n` : ''}${confirmationPoliciesText(ctx)}\n${SALON_NAME}`,
+        subject: b.subject,
+        html: layout(
+          ctx,
+          {
+            title: b.title,
+            intro: c.f(b.intro, p),
+            rows,
+            ctaLabel: b.cta,
+            ctaUrl: payload.cancelUrl ?? null,
+            note: `${pay} ${b.note}`,
+            policies: confirmationPolicies(ctx, c),
+          },
+          c.locale,
+        ),
+        text: `${hello}\n\n${c.f(b.text, p)}\n${home}${pay}\n${payload.cancelUrl ? `${c.f(c.m.text.manageLink, { url: payload.cancelUrl })}\n` : ''}${confirmationPoliciesText(ctx, c)}\n${salon}`,
       };
+    }
     case 'booking_cancelled_customer':
-    case 'booking_cancelled_admin':
+    case 'booking_cancelled_admin': {
+      const b = c.m.bookingCancelled;
       return {
-        subject: 'Ton rendez-vous est annulé',
-        html: layout(ctx, {
-          title: 'Ton rendez-vous est annulé',
-          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} a été annulé${key === 'booking_cancelled_admin' ? ' par Sarielle' : ''}.`,
-          rows,
-          paragraphs: [
-            'Le créneau a été libéré. Tu peux réserver un nouveau rendez-vous depuis le site.',
-          ],
-          ctaLabel: 'Réserver un nouveau créneau',
-          ctaUrl: `${APP_URL}/reserver`,
-        }),
-        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} du ${when} a été annulé.\nTu peux réserver un nouveau créneau : ${APP_URL}/reserver\n\n${SALON_NAME}`,
+        subject: b.subject,
+        html: layout(
+          ctx,
+          {
+            title: b.title,
+            intro: c.f(key === 'booking_cancelled_admin' ? b.introByAdmin : b.intro, p),
+            rows,
+            paragraphs: [b.paragraph],
+            ctaLabel: b.cta,
+            ctaUrl: newBookingUrl,
+          },
+          c.locale,
+        ),
+        text: `${hello}\n\n${c.f(b.text, { ...p, url: newBookingUrl })}\n\n${salon}`,
       };
-    case 'booking_rescheduled':
+    }
+    case 'booking_rescheduled': {
+      const b = c.m.bookingRescheduled;
       return {
-        subject: 'Ton rendez-vous est reprogrammé',
-        html: layout(ctx, {
-          title: 'Ton rendez-vous est reprogrammé',
-          intro: `Bonjour ${customer}, ton rendez-vous pour ${service} a été déplacé au nouveau créneau ci-dessous.`,
-          rows,
-          ctaLabel: 'Gérer ou annuler mon rendez-vous',
-          ctaUrl: payload.cancelUrl ?? null,
-          note: PAYMENT_SHORT,
-        }),
-        text: `Bonjour ${customer},\n\nTon rendez-vous pour ${service} est reprogrammé : ${when}.\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
+        subject: b.subject,
+        html: layout(
+          ctx,
+          {
+            title: b.title,
+            intro: c.f(b.intro, p),
+            rows,
+            ctaLabel: b.cta,
+            ctaUrl: payload.cancelUrl ?? null,
+            note: pay,
+          },
+          c.locale,
+        ),
+        text: `${hello}\n\n${c.f(b.text, p)}\n${home}${pay}\n\n${salon}`,
       };
-    case 'booking_reminder':
+    }
+    case 'booking_reminder': {
+      const b = c.m.bookingReminder;
       return {
-        subject: 'Rappel : ton rendez-vous approche',
-        html: layout(ctx, {
-          title: 'Ton rendez-vous approche',
-          intro: `Bonjour ${customer}, un rappel pour ton rendez-vous pour ${service}.`,
-          rows,
-          ctaLabel: 'Voir mon rendez-vous',
-          ctaUrl: payload.cancelUrl ?? `${APP_URL}/reserver`,
-          note: `${PAYMENT_SHORT} En cas d’empêchement, utilise le lien reçu avec ta confirmation.`,
-        }),
-        text: `Bonjour ${customer},\n\nRappel : rendez-vous pour ${service} le ${when}.\n${home}${PAYMENT_SHORT}\n\n${SALON_NAME}`,
+        subject: b.subject,
+        html: layout(
+          ctx,
+          {
+            title: b.title,
+            intro: c.f(b.intro, p),
+            rows,
+            ctaLabel: b.cta,
+            ctaUrl: payload.cancelUrl ?? newBookingUrl,
+            note: `${pay} ${b.note}`,
+          },
+          c.locale,
+        ),
+        text: `${hello}\n\n${c.f(b.text, p)}\n${home}${pay}\n\n${salon}`,
       };
+    }
     case 'admin_new_booking':
       return {
         subject: `Nouvelle réservation : ${customer}`,
@@ -464,28 +605,40 @@ function renderConversation(
       text: `Nouveau message de ${payload.customerName}.\nSujet : ${payload.subject}\n${payload.message ?? ''}\n\n${messageLink}`,
     };
   }
+  const c = copyFor(payloadLocale(payload));
+  const p = { name: payload.customerName, subject: payload.subject };
   if (key === 'contact_received') {
+    const m = c.m.contactReceived;
     return {
-      subject: 'Ton message a bien été reçu',
-      html: layout(ctx, {
-        title: 'Message bien reçu',
-        intro: `Bonjour ${payload.customerName}, Sarielle a bien reçu ton message et te répondra personnellement.`,
-        rows: [['Sujet', payload.subject]],
-        note: 'Tu peux répondre directement à cet e-mail.',
-      }),
-      text: `Bonjour ${payload.customerName},\n\nTon message « ${payload.subject} » a bien été reçu. Sarielle te répondra personnellement.\n\n${SALON_NAME}`,
+      subject: m.subject,
+      html: layout(
+        ctx,
+        {
+          title: m.title,
+          intro: c.f(m.intro, p),
+          rows: [[c.m.row.subject, payload.subject]],
+          note: m.note,
+        },
+        c.locale,
+      ),
+      text: `${c.f(c.m.hello, p)}\n\n${c.f(m.text, p)}\n\n${c.m.salon}`,
     };
   }
   // conversation_reply
+  const m = c.m.conversationReply;
   return {
-    subject: `Réponse à ton message : ${payload.subject}`,
-    html: layout(ctx, {
-      title: 'Réponse de Sarielle',
-      intro: `Bonjour ${payload.customerName}, voici la réponse à ton message.`,
-      paragraphs: payload.message ? [payload.message] : [],
-      note: 'Tu peux répondre directement à cet e-mail.',
-    }),
-    text: `Bonjour ${payload.customerName},\n\n${payload.message ?? ''}\n\n${SALON_NAME}`,
+    subject: c.f(m.subject, p),
+    html: layout(
+      ctx,
+      {
+        title: m.title,
+        intro: c.f(m.intro, p),
+        paragraphs: payload.message ? [payload.message] : [],
+        note: m.note,
+      },
+      c.locale,
+    ),
+    text: `${c.f(c.m.hello, p)}\n\n${payload.message ?? ''}\n\n${c.m.salon}`,
   };
 }
 
@@ -499,16 +652,28 @@ function renderCustomRequest(
     : `${APP_URL}/dashboard/demandes`;
   const desired = payload.desiredDate ? formatDate(payload.desiredDate) : null;
   if (key === 'custom_request_received') {
+    const c = copyFor(payloadLocale(payload));
+    const m = c.m.customRequestReceived;
+    const p = { name: payload.requesterName };
     return {
-      subject: 'Ta demande de coiffure personnalisée a bien été reçue',
-      html: layout(ctx, {
-        title: 'Demande bien reçue',
-        intro: `Bonjour ${payload.requesterName}, Sarielle a bien reçu ta demande de coiffure personnalisée et te répondra personnellement.`,
-        rows: [['Date souhaitée', desired ?? 'Non précisée']],
-        paragraphs: [payload.description],
-        note: 'Cette demande ne réserve pas encore de créneau. Sarielle te proposera une prestation ou un rendez-vous adapté.',
-      }),
-      text: `Bonjour ${payload.requesterName},\n\nTa demande de coiffure personnalisée a bien été reçue. Sarielle te répondra personnellement.\n\n${SALON_NAME}`,
+      subject: m.subject,
+      html: layout(
+        ctx,
+        {
+          title: m.title,
+          intro: c.f(m.intro, p),
+          rows: [
+            [
+              c.m.row.desiredDate,
+              payload.desiredDate ? formatDate(payload.desiredDate, c.locale) : c.m.notSpecified,
+            ],
+          ],
+          paragraphs: [payload.description],
+          note: m.note,
+        },
+        c.locale,
+      ),
+      text: `${c.f(c.m.hello, p)}\n\n${m.text}\n\n${c.m.salon}`,
     };
   }
   if (key === 'admin_custom_request') {
@@ -530,30 +695,32 @@ function renderCustomRequest(
     };
   }
   if (key !== 'custom_request_decision') return null;
-  const price =
-    payload.estimatedPriceCents == null
-      ? null
-      : new Intl.NumberFormat('fr-FR', {
-          style: 'currency',
-          currency: 'EUR',
-          maximumFractionDigits: 2,
-        }).format(payload.estimatedPriceCents / 100);
+  const c = copyFor(payloadLocale(payload));
+  const m = c.m.customRequestDecision;
+  const p = { name: payload.requesterName };
+  const price = payload.estimatedPriceCents == null ? null : c.euro(payload.estimatedPriceCents);
   const rows: Array<[string, string]> = [];
-  if (price) rows.push(['Prix estimé', price]);
-  if (payload.proposedServiceName) rows.push(['Prestation proposée', payload.proposedServiceName]);
-  if (payload.proposedSlot) rows.push(['Créneau proposé', formatDate(payload.proposedSlot)]);
+  if (price) rows.push([c.m.row.estimatedPrice, price]);
+  if (payload.proposedServiceName)
+    rows.push([c.m.row.proposedService, payload.proposedServiceName]);
+  if (payload.proposedSlot)
+    rows.push([c.m.row.proposedSlot, formatDate(payload.proposedSlot, c.locale)]);
   return {
-    subject: 'Réponse à ta demande de coiffure personnalisée',
-    html: layout(ctx, {
-      title: 'Réponse de Sarielle',
-      intro: `Bonjour ${payload.requesterName}, voici la réponse à ta demande de coiffure personnalisée.`,
-      rows,
-      paragraphs: payload.adminReply ? [payload.adminReply] : [],
-      ctaLabel: 'Réserver un créneau',
-      ctaUrl: `${APP_URL}/reserver`,
-      note: 'Une proposition de créneau ne réserve pas automatiquement le rendez-vous : la réservation reste nécessaire.',
-    }),
-    text: `Bonjour ${payload.requesterName},\n\n${payload.adminReply ?? ''}\n${price ? `Prix estimé : ${price}\n` : ''}${payload.proposedServiceName ? `Prestation proposée : ${payload.proposedServiceName}\n` : ''}\n${SALON_NAME}`,
+    subject: m.subject,
+    html: layout(
+      ctx,
+      {
+        title: m.title,
+        intro: c.f(m.intro, p),
+        rows,
+        paragraphs: payload.adminReply ? [payload.adminReply] : [],
+        ctaLabel: m.cta,
+        ctaUrl: c.url('/reserver'),
+        note: m.note,
+      },
+      c.locale,
+    ),
+    text: `${c.f(c.m.hello, p)}\n\n${payload.adminReply ?? ''}\n${price ? `${c.f(c.m.text.priceLine, { price })}\n` : ''}${payload.proposedServiceName ? `${c.f(c.m.text.proposedServiceLine, { service: payload.proposedServiceName })}\n` : ''}\n${c.m.salon}`,
   };
 }
 
@@ -599,50 +766,46 @@ function renderAssessmentDecision(
   ctx: EmailContext,
 ): RenderedEmail | null {
   if (!payload.decision || !ASSESSMENT_DECISIONS.includes(payload.decision)) return null;
-  const name = payload.customerName;
-  const service = payload.serviceName;
-  const catalogUrl = `${APP_URL}/coiffures`;
+  const c = copyFor(payloadLocale(payload));
+  const a = c.m.assessment;
+  const p = { name: payload.customerName, service: payload.serviceName };
+  const catalogUrl = c.url('/coiffures');
   const canBook = payload.decision === 'ACCEPTED' || payload.decision === 'CONDITIONAL';
   const copy: Record<AssessmentDecisionKind, { subject: string; title: string; intro: string }> = {
-    ACCEPTED: {
-      subject: `Évaluation acceptée : ${service}`,
-      title: 'Ton évaluation est acceptée',
-      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » : ta chevelure est compatible.`,
-    },
-    CONDITIONAL: {
-      subject: `Évaluation acceptée sous conditions : ${service}`,
-      title: 'Évaluation acceptée sous conditions',
-      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » : la prestation est possible sous conditions, détaillées ci-dessous.`,
-    },
-    REFUSED: {
-      subject: `Réponse à ton évaluation : ${service}`,
-      title: 'Réponse à ton évaluation',
-      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} ». Cette prestation ne peut malheureusement pas être réalisée dans ta situation.`,
-    },
-    INFO_REQUESTED: {
-      subject: `Précisions demandées : ${service}`,
-      title: 'Sarielle a besoin de précisions',
-      intro: `Bonjour ${name}, Sarielle a étudié ton évaluation pour « ${service} » et souhaite quelques précisions avant de se prononcer.`,
-    },
+    ACCEPTED: a.accepted,
+    CONDITIONAL: a.conditional,
+    REFUSED: a.refused,
+    INFO_REQUESTED: a.infoRequested,
   };
   const { subject, title, intro } = copy[payload.decision];
   const message = payload.message?.trim() ?? '';
   const note = canBook
-    ? 'Cette réponse ne réserve aucun rendez-vous : choisis ta coiffure et ton créneau depuis le catalogue.'
+    ? a.noteBook
     : payload.decision === 'INFO_REQUESTED'
-      ? 'Aucun rendez-vous n’est réservé. Réponds à cet e-mail ou contacte Sarielle depuis le site.'
+      ? a.noteInfo
       : undefined;
+  const introText = c.f(intro, p);
   return {
-    subject,
-    html: layout(ctx, {
-      title,
-      intro,
-      paragraphs: message ? [message] : [],
-      ctaLabel: canBook ? 'Choisir ma coiffure et réserver' : undefined,
-      ctaUrl: canBook ? catalogUrl : null,
-      note,
-    }),
-    text: [intro, message, canBook ? `Catalogue : ${catalogUrl}` : '', note ?? '', SALON_NAME]
+    subject: c.f(subject, p),
+    html: layout(
+      ctx,
+      {
+        title,
+        intro: introText,
+        paragraphs: message ? [message] : [],
+        ctaLabel: canBook ? a.cta : undefined,
+        ctaUrl: canBook ? catalogUrl : null,
+        note,
+      },
+      c.locale,
+    ),
+    text: [
+      introText,
+      message,
+      canBook ? c.f(a.catalogue, { url: catalogUrl }) : '',
+      note ?? '',
+      c.m.salon,
+    ]
       .filter(Boolean)
       .join('\n\n'),
   };

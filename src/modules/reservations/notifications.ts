@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { SalonSettingsData } from '@/modules/disponibilites/queries';
+import { DEFAULT_LOCALE, absoluteUrl, isLocale, type Locale } from '@/i18n/config';
 
 /* ============================================================
  * Notifications de réservation (outbox P7)
@@ -49,10 +50,8 @@ export interface NotificationContext {
   homeAddress?: string | null;
   travelFeeCents?: number | null;
   idempotencySuffix?: string;
-}
-
-function appBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').replace(/\/$/, '');
+  /** Langue de la cliente (fr | de) : transmise aux modèles d'e-mail via payload.locale. */
+  locale?: string | null;
 }
 
 export async function queueAppointmentNotifications(
@@ -61,9 +60,10 @@ export async function queueAppointmentNotifications(
   context: NotificationContext,
 ): Promise<void> {
   const suffix = context.idempotencySuffix ?? context.status;
-  const appUrl = appBaseUrl();
+  const locale: Locale = isLocale(context.locale) ? context.locale : DEFAULT_LOCALE;
   const payload = {
     kind: 'appointment',
+    locale,
     appointmentId: context.appointmentId,
     customerName: context.customerName,
     customerEmail: context.customerEmail,
@@ -73,7 +73,9 @@ export async function queueAppointmentNotifications(
     endsAt: context.endsAt.toISOString(),
     status: context.status,
     reason: context.reason ?? null,
-    cancelUrl: context.cancelToken ? `${appUrl}/annulation/${context.cancelToken}` : null,
+    cancelUrl: context.cancelToken
+      ? absoluteUrl(locale, `/annulation/${context.cancelToken}`)
+      : null,
     homeService: context.homeService ?? false,
     homeAddress: context.homeService ? (context.homeAddress ?? null) : null,
     travelFeeCents: context.homeService ? (context.travelFeeCents ?? 0) : null,

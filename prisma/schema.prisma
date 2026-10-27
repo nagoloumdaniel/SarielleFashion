@@ -243,6 +243,8 @@ enum AppointmentStatus {
 
 model Appointment {
   id                   String            @id @default(cuid())
+  // Langue de l\'interface au moment de la demande (fr | de) : langue des e-mails envoyés au client
+  locale  String @default("fr")
   customerId           String
   customer             Customer          @relation(fields: [customerId], references: [id])
   serviceId            String
@@ -307,6 +309,8 @@ enum CustomRequestStatus {
 
 model CustomRequest {
   id                  String                  @id @default(cuid())
+  // Langue de l\'interface au moment de la demande (fr | de) : langue des e-mails envoyés au client
+  locale  String @default("fr")
   customerId          String?
   customer            Customer?               @relation(fields: [customerId], references: [id])
   // Coordonnées du demandeur si pas encore de Customer
@@ -422,6 +426,8 @@ enum ConversationSource {
 
 model Conversation {
   id            String             @id @default(cuid())
+  // Langue de l\'interface au moment de la demande (fr | de) : langue des e-mails envoyés au client
+  locale  String @default("fr")
   customerId    String?
   customer      Customer?          @relation(fields: [customerId], references: [id])
   subject       String
@@ -531,6 +537,8 @@ enum WaitlistStatus {
 
 model WaitlistEntry {
   id                     String         @id @default(cuid())
+  // Langue de l\'interface au moment de la demande (fr | de) : langue des e-mails envoyés au client
+  locale  String @default("fr")
   serviceId              String
   service                Service        @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   // Créneau exact souhaité (UTC) — pas de date "libre" : évite toute
@@ -559,6 +567,8 @@ model WaitlistEntry {
 /// Un avis sans submittedAt est une demande d'avis envoyée par e-mail (lien à jeton) restée sans réponse.
 model Review {
   id             String        @id @default(cuid())
+  // Langue de l\'interface au moment de la demande (fr | de) : langue des e-mails envoyés au client
+  locale  String @default("fr")
   serviceId      String
   service        Service       @relation(fields: [serviceId], references: [id])
   // Lien par jeton (e-mail après rendez-vous) : avis « client vérifié ».

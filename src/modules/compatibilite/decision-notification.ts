@@ -1,4 +1,5 @@
 import type { Prisma } from '@prisma/client';
+import type { Locale } from '@/i18n/config';
 import type { AssessmentDecision } from './schemas';
 
 /* ============================================================
@@ -23,6 +24,8 @@ export interface AssessmentNotificationInput {
   customerEmail: string | null | undefined;
   message: string;
   decidedAt: Date;
+  /** Langue de la cliente (mémorisée à l'envoi de l'évaluation) : langue de l'e-mail. */
+  locale?: Locale;
 }
 
 export function buildAssessmentDecisionNotification(input: AssessmentNotificationInput): {
@@ -45,6 +48,7 @@ export function buildAssessmentDecisionNotification(input: AssessmentNotificatio
       serviceName: input.serviceName,
       decision: EMAIL_VARIANT[input.decision],
       message: input.message,
+      locale: input.locale ?? 'fr',
     },
   };
 }

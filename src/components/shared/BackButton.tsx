@@ -1,17 +1,13 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useT } from '@/i18n/client';
+import { useRouter } from '@/i18n/link';
 import { Button } from '@/components/ui/Button';
 
 /* Retour à la page précédente ; `fallbackHref` si l'accès est direct ou externe. */
-export function BackButton({
-  fallbackHref,
-  label = 'Retour',
-}: {
-  fallbackHref: string;
-  label?: string;
-}) {
+export function BackButton({ fallbackHref, label }: { fallbackHref: string; label?: string }) {
+  const t = useT();
   const router = useRouter();
 
   /* router.back() seulement si la page précédente est de ce site (sinon on quitterait le site). */
@@ -29,7 +25,7 @@ export function BackButton({
 
   return (
     <Button type="button" variant="secondary" size="sm" icon={ArrowLeft} onClick={goBack}>
-      {label}
+      {label ?? t('common.back')}
     </Button>
   );
 }

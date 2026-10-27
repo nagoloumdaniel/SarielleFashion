@@ -82,3 +82,11 @@ describe('travelFeeFromLabel', () => {
     expect(travelFeeFromLabel(1500)).toMatch(/^à partir de 15\s€$/);
   });
 });
+
+describe('textes publics en allemand', () => {
+  it('should localise the travel fee label and sentence', () => {
+    expect(travelFeeFromLabel(1500, 'de')).toMatch(/^ab 15\s€$/);
+    expect(homeServiceSentence(1500, 'de')).toContain('Anfahrtskosten');
+    expect(homeServiceSentence(0, 'de')).toContain('ohne Anfahrtskosten');
+  });
+});

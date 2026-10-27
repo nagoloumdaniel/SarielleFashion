@@ -53,3 +53,12 @@ describe('formatHour', () => {
     expect(formatHour(23 * 60 + 59)).toBe('23:59');
   });
 });
+
+describe('weekdayName', () => {
+  it('should name weekdays in each locale (0 = Monday)', async () => {
+    const { weekdayName } = await import('./dates');
+    expect(weekdayName('fr', 0)).toBe('lundi');
+    expect(weekdayName('de', 0)).toBe('Montag');
+    expect(weekdayName('de', 6)).toBe('Sonntag');
+  });
+});

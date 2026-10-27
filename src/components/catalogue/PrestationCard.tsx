@@ -1,5 +1,6 @@
 import { CalendarCheck } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/link';
+import { getI18n } from '@/i18n/server';
 import { ButtonLink } from '@/components/ui/Button';
 import { RatingLine } from '@/components/shared/Stars';
 import type { RatingSummary } from '@/modules/avis/engine';
@@ -22,7 +23,7 @@ export type PrestationCardProps = {
 
 /* Carte prestation immersive (DESIGN-RULES.md) : photo plein cadre, voile et flou
    adaptés au thème, carte entièrement cliquable vers la fiche (lien étiré sur le titre). */
-export function PrestationCard({
+export async function PrestationCard({
   href,
   bookHref,
   images,
@@ -35,6 +36,7 @@ export function PrestationCard({
   priority = false,
   rating,
 }: PrestationCardProps) {
+  const { t } = await getI18n();
   return (
     <article className="prestation-card group relative isolate aspect-[4/5] overflow-hidden rounded-[var(--radius-xl)] bg-line text-[#fff4f2] focus-within:ring-4 focus-within:ring-accent">
       <CardImages images={images} href={href} priority={priority} />
@@ -76,7 +78,7 @@ export function PrestationCard({
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/20 pt-3 text-sm">
           <p>
-            <span className="font-light text-[#fff4f2]/70">Durée : </span>
+            <span className="font-light text-[#fff4f2]/70">{t('catalogue.card.duration')}</span>
             <span className="font-bold">{duration}</span>
           </p>
           {optionsLabel ? (
@@ -88,7 +90,7 @@ export function PrestationCard({
             icon={CalendarCheck}
             className="pointer-events-auto relative z-[3]"
           >
-            Réserver
+            {t('catalogue.card.reserve')}
           </ButtonLink>
         </div>
       </div>

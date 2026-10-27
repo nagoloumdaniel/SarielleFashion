@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useI18n } from '@/i18n/client';
+import { useRouter } from '@/i18n/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IMAGE_BLUR_DATA_URL } from '@/lib/image-placeholder';
 import { DOT_CLASS, dotWindow } from './dots';
@@ -24,6 +25,7 @@ export function CardImages({
   priority?: boolean;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(false);
   const count = images.length;
@@ -96,7 +98,7 @@ export function CardImages({
         onClick={onClick}
         tabIndex={count > 1 ? 0 : undefined}
         role="group"
-        aria-label="Photos de la prestation"
+        aria-label={t('catalogue.card.photosGroup')}
         className="card-slides"
       >
         {images.map((image, i) => (
@@ -119,7 +121,7 @@ export function CardImages({
       {dots ? (
         <div
           role="img"
-          aria-label={`Photo ${index + 1} sur ${count}`}
+          aria-label={t('catalogue.card.photoOf', { n: index + 1, count })}
           className="pointer-events-none absolute inset-x-0 bottom-[8.25rem] z-[2] flex justify-center gap-1.5"
         >
           {dots.sizes.map((size, slot) => (

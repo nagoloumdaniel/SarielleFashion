@@ -2,6 +2,7 @@
 
 import { MessageSquareText, type LucideIcon } from 'lucide-react';
 import { useCallback, useId, useLayoutEffect, useRef, type TextareaHTMLAttributes } from 'react';
+import { useT } from '@/i18n/client';
 import { autoPlaceholder } from './Field';
 
 type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -30,6 +31,7 @@ export function Textarea({
   onChange,
   ...rest
 }: TextareaProps) {
+  const t = useT();
   const autoId = useId();
   const inputId = id ?? `textarea-${autoId}`;
   const areaRef = useRef<HTMLTextAreaElement>(null);
@@ -64,7 +66,7 @@ export function Textarea({
             *
           </span>
         ) : null}
-        {required ? <span className="sr-only">(obligatoire)</span> : null}
+        {required ? <span className="sr-only">{t('common.ui.required')}</span> : null}
       </label>
       <div className="relative">
         <Icon
@@ -76,7 +78,7 @@ export function Textarea({
         <textarea
           {...rest}
           ref={areaRef}
-          placeholder={rest.placeholder ?? autoPlaceholder(label, undefined, rest.name)}
+          placeholder={rest.placeholder ?? autoPlaceholder(t, label, undefined, rest.name)}
           id={inputId}
           required={required}
           aria-invalid={error ? true : undefined}

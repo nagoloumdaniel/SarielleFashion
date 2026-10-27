@@ -182,7 +182,7 @@ test.describe('Parcours complet', () => {
     await expect(page.getByText('Bonne nouvelle')).toBeVisible();
     await page.getByRole('link', { name: 'Réserver cette prestation' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Vos informations capillaires' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Tes informations capillaires' })).toBeVisible();
     await page.getByLabel('Longs', { exact: true }).check();
     await page.getByLabel('Non, je ne porte pas de locs').check();
     await page.getByRole('button', { name: 'Vérifier et continuer' }).click();
@@ -202,9 +202,9 @@ test.describe('Parcours complet', () => {
     await page.getByRole('button', { name: 'Voir le récapitulatif' }).click();
     await expect(page.getByRole('heading', { name: 'Récapitulatif' })).toBeVisible();
     await page.getByRole('button', { name: 'Confirmer ma réservation' }).click();
-    await expect(page.getByRole('heading', { name: 'Votre rendez-vous est confirmé' })).toBeVisible(
-      { timeout: 20_000 },
-    );
+    await expect(page.getByRole('heading', { name: 'Ton rendez-vous est confirmé' })).toBeVisible({
+      timeout: 20_000,
+    });
 
     const appointment = await db.appointment.findFirst({
       where: { serviceId, customer: { email: customerEmail } },

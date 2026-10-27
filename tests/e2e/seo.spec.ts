@@ -33,7 +33,7 @@ test.describe('SEO et métadonnées', () => {
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.+/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
-      /localhost:3000\/?$/,
+      /^https?:\/\/localhost:\d+\/?$/,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /.+/);
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(1);

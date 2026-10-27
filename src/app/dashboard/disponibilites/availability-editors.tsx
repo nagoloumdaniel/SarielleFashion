@@ -158,13 +158,12 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
           Ouvert
         </label>
       </div>
-      {/* Jour fermé : seuls les sélecteurs d'heure sont désactivés ; le bouton reste actif pour
-          enregistrer la fermeture. Mobile : Début et Fin côte à côte, bouton pleine largeur dessous.
-          Dès sm : une seule ligne, bouton carré h-10 aligné au bas des sélecteurs. */}
-      <div
-        role="group"
+      <fieldset
+        disabled={!active}
         aria-label={`Horaires de ${WEEKDAYS[weekday]}`}
-        className="grid min-w-0 grid-cols-2 items-end gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+        className={`min-w-0 border-0 p-0 transition-opacity ${
+          active ? '' : 'opacity-50'
+        } ${active ? '' : 'grayscale'}`}
       >
         <div className={`min-w-0 transition-opacity ${active ? '' : 'opacity-50 grayscale'}`}>
           <Input
@@ -195,7 +194,7 @@ function WeekdayForm({ weekday, rule }: { weekday: number; rule: WeeklyRuleView 
         >
           <span className="sm:sr-only">Enregistrer</span>
         </Button>
-      </div>
+      </fieldset>
     </form>
   );
 }
