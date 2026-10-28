@@ -208,7 +208,6 @@ export interface ServiceWriteInput {
   priceOnRequest: boolean;
   durationMinutes: number | null;
   status: ServiceStatus;
-  order: number;
 }
 
 export async function listAdminServices(
@@ -499,6 +498,9 @@ export async function createService(data: ServiceWriteInput) {
     maxLength: 120,
     fallback: 'prestation',
   });
+  // Nouvelle prestation en dernière position (ordres consécutifs automatiques).
+  const last = await db.service.aggregate({ _max: { order: true } });
+  const order = (last._max.order ?? -1) + 1;
   return db.service.create({
     data: {
       name: data.name,
@@ -510,7 +512,7 @@ export async function createService(data: ServiceWriteInput) {
       priceOnRequest: data.priceOnRequest,
       durationMinutes: data.durationMinutes,
       status: data.status,
-      order: data.order,
+      order,
     },
   });
 }
@@ -539,7 +541,6 @@ export async function updateService(id: string, data: ServiceWriteInput) {
       priceOnRequest: data.priceOnRequest,
       durationMinutes: data.durationMinutes,
       status: data.status,
-      order: data.order,
     },
   });
 }

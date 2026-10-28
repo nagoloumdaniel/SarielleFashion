@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, FolderOpen, Hash, Plus, Save, Scissors, Tag, Wallet } from 'lucide-react';
+import { Clock, FolderOpen, Plus, Save, Scissors, Tag, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { PhotoSlotsField, type ExistingPhoto } from '@/components/shared/PhotoSlotsField';
 import { Button } from '@/components/ui/Button';
@@ -163,17 +163,6 @@ export function ServiceForm({
           placeholder="Ex. 120"
           defaultValue={initial?.durationMinutes ?? ''}
           hint="Facultative si la durée dépend de la longueur des cheveux."
-        />
-        <Input
-          label="Ordre d'affichage"
-          name="order"
-          icon={Hash}
-          type="number"
-          inputMode="numeric"
-          min={0}
-          placeholder="Ex. 0"
-          defaultValue={String(initial?.order ?? 0)}
-          hint="Les plus petits nombres apparaissent en premier."
         />
       </div>
 
