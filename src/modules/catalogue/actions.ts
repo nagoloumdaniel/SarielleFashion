@@ -351,7 +351,6 @@ export async function adminCreateService(
       priceOnRequest: price.priceOnRequest,
       durationMinutes: parsed.data.durationMinutes ?? null,
       status: parsed.data.status,
-      order: parsed.data.order,
     });
     created = { id: service.id, name: service.name, slug: service.slug };
     await logAudit({
@@ -413,7 +412,6 @@ export async function adminUpdateService(
       priceOnRequest: price.priceOnRequest,
       durationMinutes: parsed.data.durationMinutes ?? null,
       status: parsed.data.status,
-      order: parsed.data.order,
     });
     await logAudit({
       userId: user.id,
