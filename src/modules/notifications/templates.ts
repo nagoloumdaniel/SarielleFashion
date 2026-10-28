@@ -273,6 +273,8 @@ interface LayoutInput {
   note?: string;
   /** Blocs de politique affichés avant le pied (titre, texte). */
   policies?: Array<[string, string]>;
+  /** E-mail destiné à la coiffeuse / au salon (bandeau « Espace professionnel »). */
+  admin?: boolean;
 }
 
 function multiline(value: string): string {
@@ -282,58 +284,77 @@ function multiline(value: string): string {
 function layout(ctx: EmailContext, input: LayoutInput, locale: Locale = DEFAULT_LOCALE): string {
   const lm = MESSAGES[locale].emails;
   const rows = (input.rows ?? [])
-    .map(
-      ([label, value]) => `
+    .map(([label, value], index, all) => {
+      const border = index < all.length - 1 ? 'border-bottom:1px solid #f1d6d3;' : '';
+      return `
         <tr>
-          <td style="padding:6px 0;color:#67494c;font-size:14px;vertical-align:top;width:38%">${escapeHtml(label)}</td>
-          <td style="padding:6px 0;color:#271719;font-size:14px;font-weight:600">${escapeHtml(value)}</td>
-        </tr>`,
-    )
+          <td style="padding:11px 0;${border}color:#67494c;font-size:12px;letter-spacing:.06em;text-transform:uppercase;vertical-align:top;width:38%">${escapeHtml(label)}</td>
+          <td style="padding:11px 0;${border}color:#271719;font-size:15px;font-weight:600;vertical-align:top">${escapeHtml(value)}</td>
+        </tr>`;
+    })
     .join('');
   const paragraphs = (input.paragraphs ?? [])
     .map(
       (paragraph) =>
-        `<p style="margin:0 0 14px;color:#271719;font-size:15px;line-height:1.6">${escapeHtml(paragraph)}</p>`,
+        `<p style="margin:0 0 16px;color:#271719;font-size:15px;line-height:1.7">${multiline(paragraph)}</p>`,
     )
     .join('');
   const cta =
     input.ctaLabel && input.ctaUrl
-      ? `<p style="margin:22px 0"><a href="${escapeHtml(input.ctaUrl)}" style="display:inline-block;background:#c62828;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px">${escapeHtml(input.ctaLabel)}</a></p>`
+      ? `<table role="presentation" cellspacing="0" cellpadding="0" style="margin:28px 0 8px"><tr><td align="center" bgcolor="#c62828" style="border-radius:999px;background:#c62828"><a href="${escapeHtml(input.ctaUrl)}" style="display:inline-block;padding:15px 32px;color:#ffffff;font-size:15px;font-weight:700;letter-spacing:.02em;text-decoration:none;border-radius:999px">${escapeHtml(input.ctaLabel)}</a></td></tr></table>`
       : '';
   const note = input.note
-    ? `<p style="margin:18px 0 0;color:#67494c;font-size:13px;line-height:1.5">${escapeHtml(input.note)}</p>`
+    ? `<p style="margin:20px 0 0;color:#67494c;font-size:13px;line-height:1.6">${escapeHtml(input.note)}</p>`
     : '';
-
   const policies = (input.policies ?? [])
     .filter(([, text]) => text.trim() !== '')
     .map(
       ([title, text]) =>
-        `<p style="margin:14px 0 0;color:#271719;font-size:13px;line-height:1.5"><strong>${escapeHtml(title)}</strong><br />${multiline(text)}</p>`,
+        `<p style="margin:0 0 12px;color:#271719;font-size:13px;line-height:1.6"><strong style="color:#c62828">${escapeHtml(title)}</strong><br />${multiline(text)}</p>`,
     )
     .join('');
   const signature = ctx.signature?.trim() ? `<br /><br />${multiline(ctx.signature.trim())}` : '';
+  const badge = input.admin ? 'Espace professionnel' : 'Message pour vous';
 
   return `<!doctype html>
 <html lang="${locale}">
-  <body style="margin:0;padding:24px 12px;background:#fff8f7;font-family:Arial,Helvetica,sans-serif">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>${escapeHtml(input.title)}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f7ecea;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${escapeHtml(input.intro)}</div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f7ecea">
       <tr>
-        <td align="center">
-          <table role="presentation" width="100%" style="max-width:560px;background:#ffffff;border-radius:16px;padding:28px;border:1px solid #f1d6d3">
-            <tr><td>
-              <p style="margin:0 0 4px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#c62828;font-weight:700">${SALON_NAME}</p>
-              <h1 style="margin:0 0 16px;font-family:Georgia,serif;color:#271719;font-size:24px;line-height:1.3">${escapeHtml(input.title)}</h1>
-              <p style="margin:0 0 16px;color:#271719;font-size:15px;line-height:1.6">${escapeHtml(input.intro)}</p>
-              ${rows ? `<table role="presentation" width="100%" style="border-top:1px solid #f1d6d3;border-bottom:1px solid #f1d6d3;margin:8px 0 18px">${rows}</table>` : ''}
-              ${paragraphs}
-              ${cta}
-              ${note}
-              ${policies}
-              <p style="margin:24px 0 0;border-top:1px solid #f1d6d3;padding-top:16px;color:#67494c;font-size:12px;line-height:1.6">
-                ${SALON_NAME}<br />
+        <td align="center" style="padding:32px 12px">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px">
+            <tr>
+              <td align="center" style="background:#271719;border-radius:20px 20px 0 0;padding:34px 28px 28px">
+                <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:26px;letter-spacing:.06em;color:#ffffff">${SALON_NAME}</p>
+                <p style="margin:8px 0 0;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#ff6b6b">Mode &amp; couture</p>
+              </td>
+            </tr>
+            <tr><td style="height:4px;line-height:4px;font-size:0;background:#ff6b6b">&nbsp;</td></tr>
+            <tr>
+              <td style="background:#ffffff;padding:36px 36px 32px;border-left:1px solid #f1d6d3;border-right:1px solid #f1d6d3">
+                <p style="margin:0 0 14px"><span style="display:inline-block;padding:5px 12px;border-radius:999px;background:#fff4f2;border:1px solid #f1d6d3;color:#c62828;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">${badge}</span></p>
+                <h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-weight:normal;color:#271719;font-size:28px;line-height:1.25">${escapeHtml(input.title)}</h1>
+                <p style="margin:0 0 22px;color:#271719;font-size:16px;line-height:1.7">${escapeHtml(input.intro)}</p>
+                ${rows ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fff4f2;border:1px solid #f1d6d3;border-left:4px solid #c62828;border-radius:12px;margin:0 0 24px"><tr><td style="padding:8px 20px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0">${rows}</table></td></tr></table>` : ''}
+                ${paragraphs}
+                ${cta}
+                ${note}
+                ${policies ? `<div style="margin:26px 0 0;padding:16px 18px;background:#fff4f2;border-radius:12px">${policies}</div>` : ''}
+              </td>
+            </tr>
+            <tr>
+              <td align="center" style="background:#fff4f2;border:1px solid #f1d6d3;border-top:0;border-radius:0 0 20px 20px;padding:22px 28px;color:#67494c;font-size:12px;line-height:1.7">
+                <strong style="color:#271719;font-family:Georgia,'Times New Roman',serif;font-size:14px">${SALON_NAME}</strong><br />
                 ${lm.paymentShort} ${lm.thanks}${signature}
-              </p>
-            </td></tr>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>
@@ -544,6 +565,7 @@ function renderAppointment(
         subject: `Nouvelle réservation : ${customer}`,
         html: layout(ctx, {
           title: 'Nouvelle réservation',
+          admin: true,
           intro: `${customer} vient de réserver ${service}.`,
           rows,
           ctaLabel: 'Ouvrir la fiche rendez-vous',
@@ -556,6 +578,7 @@ function renderAppointment(
         subject: `Annulation : ${customer}`,
         html: layout(ctx, {
           title: 'Rendez-vous annulé',
+          admin: true,
           intro: `${customer} a annulé son rendez-vous pour ${service}.`,
           rows,
           ctaLabel: 'Ouvrir la fiche rendez-vous',
@@ -568,6 +591,7 @@ function renderAppointment(
         subject: `Reprogrammation : ${customer}`,
         html: layout(ctx, {
           title: 'Rendez-vous reprogrammé',
+          admin: true,
           intro: `Le rendez-vous de ${customer} pour ${service} a été reprogrammé.`,
           rows,
           ctaLabel: 'Ouvrir la fiche rendez-vous',
@@ -593,6 +617,7 @@ function renderConversation(
       subject: `Nouveau message : ${payload.subject}`,
       html: layout(ctx, {
         title: 'Nouveau message de contact',
+        admin: true,
         intro: `${payload.customerName} t’a envoyé un message.`,
         rows: [
           ['Sujet', payload.subject],
@@ -681,6 +706,7 @@ function renderCustomRequest(
       subject: `Nouvelle demande personnalisée : ${payload.requesterName}`,
       html: layout(ctx, {
         title: 'Nouvelle demande personnalisée',
+        admin: true,
         intro: `${payload.requesterName} t’a envoyé une demande de coiffure hors catalogue.`,
         rows: [
           ['Demandeuse', payload.requesterName],
@@ -745,6 +771,7 @@ function renderAdminAssessmentReceived(
     subject: `Nouvelle évaluation : ${payload.serviceName}`,
     html: layout(ctx, {
       title: 'Nouvelle évaluation à traiter',
+      admin: true,
       intro,
       rows: [
         ['Cliente', payload.customerName],
