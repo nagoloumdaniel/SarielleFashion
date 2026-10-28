@@ -9,7 +9,6 @@ export const home: Messages['home'] = {
     ogDescription: 'Dein nächster Look. Ein Stil, der zu dir passt. Buche deinen Termin online.',
   },
   hero: {
-    badge: 'Clausthal-Zellerfeld · Hausbesuch möglich',
     title: 'Dein nächster Look. Ein Stil, der zu dir passt.',
     text: 'Frisuren, Make-up, Lace-Installation und Wimpern. Ich kümmere mich um dich, mit nur einer Priorität: deiner Zufriedenheit.',
     reserve: 'Termin buchen',
