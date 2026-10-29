@@ -17,9 +17,9 @@
     "nextjs",
     "prisma",
     "booking",
-    "hairstyle",
-    "dakar",
-    "senegal"
+    "hair-salon",
+    "i18n",
+    "germany"
   ],
   "engines": {
     "node": ">=22"

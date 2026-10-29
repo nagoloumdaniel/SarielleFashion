@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { db } from '@/lib/db';
+import { LOCALES, absoluteUrl } from '@/i18n/config';
 
 /**
  * P3.8 - Sitemap XML du site public.
@@ -23,11 +24,20 @@ const STATIC_ROUTES = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
+  /** Alternates hreflang (fr, de, x-default) d'un chemin public. */
+  const alternates = (path: string) => ({
+    languages: {
+      ...Object.fromEntries(LOCALES.map((l) => [l, absoluteUrl(l, path)])),
+      'x-default': absoluteUrl('fr', path),
+    },
+  });
+
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
     url: `${BASE_URL}${route.url}`,
     lastModified: now,
     changeFrequency: route.changeFrequency,
     priority: route.priority,
+    alternates: alternates(route.url),
   }));
 
   // Pages de prestations publiées (dynamiques)
@@ -42,6 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: service.updatedAt,
       changeFrequency: 'monthly' as const,
       priority: 0.8,
+      alternates: alternates(`/coiffures/${service.slug}`),
     }));
   } catch {
     // Base non disponible (build hors ligne) : on publie uniquement les routes statiques.
