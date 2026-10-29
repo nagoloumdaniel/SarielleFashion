@@ -44,7 +44,13 @@ Démo en ligne : <https://sariellefashion.vercel.app> (français) · <https://sa
 
 ## Captures d'écran
 
-Aucune capture n'est versionnée pour l'instant, afin de ne pas publier de données de test ou personnelles. Elles seront ajoutées dans `docs/assets/` à partir d'un jeu de données de démonstration (`npm run db:seed:demo`). À produire : accueil (clair et sombre), catalogue, fiche prestation, parcours de réservation, version allemande, calendrier du back-office, tableau de bord.
+Captures du [site en production](https://sariellefashion.vercel.app) (pages publiques uniquement, aucune donnée personnelle ni back-office).
+
+| Accueil (bureau)                                         | Catalogue (bureau)                                              | Accueil (mobile)                                        |
+| -------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------- |
+| ![Accueil, version bureau](docs/assets/home-desktop.png) | ![Catalogue des prestations](docs/assets/catalogue-desktop.png) | ![Accueil, version mobile](docs/assets/home-mobile.png) |
+
+Restent à produire à partir d'un jeu de données de démonstration (`npm run db:seed:demo`) : fiche prestation, parcours de réservation, version allemande, calendrier du back-office, tableau de bord.
 
 ## Stack
 
