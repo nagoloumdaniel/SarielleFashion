@@ -1,5 +1,7 @@
 # ROADMAP COMPLÈTE — Sarielle Fashion
 
+> Note du 29/10/2026 : les mentions de Resend ci-dessous sont historiques. Le projet envoie ses e-mails par SMTP Gmail (Nodemailer) depuis le 22/10/2026.
+
 **Source :** `Cahier de charge.md` v1.0 (18 sections, 1252 lignes)
 **Méthode :** exécution de A à Z, mini-tâches ordonnées, chaque tâche affectée à 1 skill obligatoire.
 **Catalogue skills :** `.claude/skills-catalog.md` (245 skills installés, extraits de `C:\Users\Landh\.claude\skills\`).

@@ -4,7 +4,26 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/).
 
 ## [Non publié]
 
-### Interface
+### Ajouté
+
+- Site public et e-mails clients en français et en allemand (`/de`), hreflang et sitemap bilingues.
+- E-mails premium (gabarits client et espace professionnel).
+- Prestation à domicile (frais de déplacement), délai de préavis d'annulation, photos dans le formulaire de prestation (3 maximum).
+- Présentation GitHub : README complet, CONTRIBUTING, SECURITY mis à jour.
+
+### Modifié
+
+- E-mails : Resend retiré, envoi par SMTP Gmail (Nodemailer) uniquement.
+- Migrations Prisma appliquées au build Vercel via `DIRECT_URL`, sans verrou advisory ; builds limités à `main`.
+- Slug des prestations généré côté serveur, ordre des prestations automatique.
+- Mots-clés `package.json` alignés sur l'Allemagne (retrait de Dakar / Sénégal).
+
+### Corrigé
+
+- Horaires désactivés pour les jours fermés, ligne unique Début / Fin / Enregistrer, hero mobile.
+- Anti double-réservation : index unique partiel limité aux rendez-vous actifs (un créneau annulé redevient réservable).
+
+### Interface (refonte)
 
 - Refonte premium : accueil, catalogue, fiche coiffure (galerie, bloc de réservation sticky, coiffures similaires), contact, demandes personnalisées, dashboard.
 - Page d'erreur plein écran ; boutons « Réessayer » et « Voir le catalogue » de même taille ; boutons de taille mesurée sur tout le site.
@@ -38,7 +57,7 @@ Version initiale complète correspondant au périmètre MVP du cahier des charge
 
 ### Notifications et messagerie
 
-- File d'e-mails (Resend, mode console en développement) idempotente, reprise sur échec, jamais bloquante pour l'enregistrement d'une réservation.
+- File d'e-mails (fournisseur Resend à l'époque, remplacé depuis par SMTP Gmail ; mode console en développement) idempotente, reprise sur échec, jamais bloquante pour l'enregistrement d'une réservation.
 - Rappels automatiques H-24 anti-doublon, notifications dashboard avec lien direct.
 - Messagerie centralisée (contact, renseignements, compatibilité, demandes personnalisées) avec notes internes invisibles côté client.
 

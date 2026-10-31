@@ -2,11 +2,14 @@
 
 ## Signaler une vulnérabilité
 
-Ne créez **pas** d'issue publique. Utilisez l'onglet **Security → Report a vulnerability**
-du dépôt GitHub (signalement privé), ou écrivez à l'adresse indiquée dans les mentions
-légales du site. Merci d'inclure les étapes de reproduction et l'impact estimé.
+Ne publiez **aucun détail technique** dans une issue publique.
 
-Réponse visée : accusé de réception sous 72 h, correctif ou plan sous 14 jours.
+1. Si l'onglet **Security → Report a vulnerability** est disponible sur le dépôt GitHub, utilisez-le (signalement privé).
+2. Sinon, ouvrez une issue **non sensible** intitulée « Demande de contact sécurité », sans détail de la faille : le mainteneur répondra pour convenir d'un canal privé.
+
+Merci d'inclure, une fois le canal privé établi, les étapes de reproduction et l'impact estimé.
+
+Réponse visée : accusé de réception sous 72 h, correctif ou plan sous 14 jours (projet maintenu par une seule personne : délais indicatifs).
 
 ## Périmètre
 
